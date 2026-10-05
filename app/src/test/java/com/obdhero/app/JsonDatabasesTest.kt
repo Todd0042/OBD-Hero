@@ -204,4 +204,47 @@ class JsonDatabasesTest {
         val p1185 = dtcs.find { it.code == "P1185" }
         assertNotNull("P1185 oil temp sensor must be present", p1185)
     }
+
+    @Test
+    fun testHyundaiKiaProfileJsonLoadsAndValidates() {
+        val file = File("src/main/assets/profiles/hyundai_kia_can.json")
+        assertTrue("Hyundai/Kia profile file must exist", file.exists())
+
+        val profile = gson.fromJson(FileReader(file), VehicleProfileDefinition::class.java)
+        assertEquals("HYUNDAI_KIA_CAN", profile.profileId)
+        assertEquals("Hyundai", profile.make)
+        assertEquals("7E0", profile.ecmHeader)
+        assertEquals("7E1", profile.tcmHeader)
+        assertEquals("7D1", profile.absHeader)
+        assertEquals("7A0", profile.bcmHeader)
+        assertTrue(profile.vinWmis.contains("KM8"))
+        assertTrue(profile.vinWmis.contains("KNA"))
+        assertTrue(profile.metrics.containsKey("OIL_TEMP"))
+        assertTrue(profile.metrics.containsKey("TRANSMISSION_TEMP"))
+        assertTrue(profile.metrics.containsKey("TRANSMISSION_GEAR"))
+    }
+
+    @Test
+    fun testHyundaiKiaDtcJsonLoadsAndValidates() {
+        val file = File("src/main/assets/dtc/dtc_hyundai_kia.json")
+        assertTrue("Hyundai/Kia DTC file must exist", file.exists())
+
+        val type = object : TypeToken<List<DtcInfo>>() {}.type
+        val dtcs: List<DtcInfo> = gson.fromJson(FileReader(file), type)
+        assertTrue("Hyundai/Kia DTC database must have 400+ codes", dtcs.size >= 400)
+
+        val p1326 = dtcs.find { it.code == "P1326" }
+        assertNotNull("P1326 KSDS limp mode code must be present", p1326)
+        assertTrue(p1326!!.meaning.contains("KSDS") || p1326.title.contains("KSDS") || p1326.meaning.contains("bearing"))
+
+        val c1200 = dtcs.find { it.code == "C1200" }
+        assertNotNull("C1200 wheel speed sensor must be present", c1200)
+
+        val c1503 = dtcs.find { it.code == "C1503" }
+        assertNotNull("C1503 MDPS torque sensor must be present", c1503)
+
+        val b1346 = dtcs.find { it.code == "B1346" }
+        assertNotNull("B1346 driver airbag clockspring code must be present", b1346)
+        assertTrue(b1346!!.title.contains("Airbag") || b1346.meaning.contains("Airbag"))
+    }
 }

@@ -74,4 +74,22 @@ class VinDecoderTest {
         val decodedVin = manager.parseVin(sampleElmResponse)
         assertEquals("JM1NDAM76N0123456", decodedVin)
     }
+
+    @Test
+    fun testHyundaiSonataVinDecodesProperly() {
+        // 2021 Hyundai Sonata (5NPE... USA built)
+        val profile = VinDecoder.decode("5NPE24AF4MH123456")
+        assertEquals("Hyundai", profile.make)
+        assertEquals(2021, profile.year)
+        assertEquals("Sonata", profile.model)
+    }
+
+    @Test
+    fun testKiaOptimaVinDecodesProperly() {
+        // 2020 Kia Optima (5XXG... Georgia built)
+        val profile = VinDecoder.decode("5XXGT4L37LG123456")
+        assertEquals("Kia", profile.make)
+        assertEquals(2020, profile.year)
+        assertEquals("Optima / K5", profile.model)
+    }
 }

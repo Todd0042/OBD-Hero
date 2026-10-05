@@ -22,7 +22,8 @@ object VinDecoder {
         "1HG" to "Honda", "2HG" to "Honda", "3HG" to "Honda", "5J6" to "Honda", "JHM" to "Honda",
         "1N4" to "Nissan", "3N1" to "Nissan", "5N1" to "Nissan", "JN1" to "Nissan",
         "KM8" to "Hyundai", "KMH" to "Hyundai", "5NP" to "Hyundai",
-        "KNA" to "Kia", "KND" to "Kia", "5XX" to "Kia",
+        "KNA" to "Kia", "KND" to "Kia", "5XX" to "Kia", "3KP" to "Kia",
+        "KMT" to "Genesis", "KMU" to "Genesis",
         "4S3" to "Subaru", "4S4" to "Subaru", "JF1" to "Subaru", "JF2" to "Subaru",
         "JM1" to "Mazda", "JM3" to "Mazda", "3MZ" to "Mazda",
         "1C3" to "Chrysler", "1C4" to "Chrysler/Jeep", "1C6" to "Ram", "2C3" to "Dodge", "3C6" to "Ram",
@@ -87,6 +88,32 @@ object VinDecoder {
                 cleanVin.startsWith("2C3CDZ") || cleanVin.contains("CHALLENGER") -> "Dodge Challenger"
                 cleanVin.startsWith("2C4RC") -> "Chrysler Pacifica"
                 else -> "FCA / Stellantis Vehicle"
+            }
+            "Hyundai" -> when {
+                cleanVin.contains("DN") || cleanVin.startsWith("5NPE") -> "Sonata"
+                cleanVin.contains("CN") || cleanVin.startsWith("KMHD") -> "Elantra"
+                cleanVin.contains("TM") || cleanVin.startsWith("5NMS") -> "Santa Fe"
+                cleanVin.contains("NX") || cleanVin.startsWith("KM8J") -> "Tucson"
+                cleanVin.contains("LX") || cleanVin.startsWith("KM8R") -> "Palisade"
+                cleanVin.contains("OS") -> "Kona"
+                else -> "Hyundai Vehicle"
+            }
+            "Kia" -> when {
+                cleanVin.contains("DL") || cleanVin.startsWith("5XXG") -> "Optima / K5"
+                cleanVin.contains("BD") || cleanVin.startsWith("3KPF") -> "Forte"
+                cleanVin.contains("NQ") || cleanVin.startsWith("KNDJ") -> "Sportage"
+                cleanVin.contains("MQ") || cleanVin.startsWith("5XXK") -> "Sorento"
+                cleanVin.contains("ON") || cleanVin.startsWith("5XYP") -> "Telluride"
+                cleanVin.contains("SK") || cleanVin.startsWith("KNDP") -> "Soul"
+                cleanVin.contains("CK") -> "Stinger"
+                else -> "Kia Vehicle"
+            }
+            "Genesis" -> when {
+                cleanVin.contains("IK") -> "G70"
+                cleanVin.contains("RG") -> "G80"
+                cleanVin.contains("JK") -> "GV70"
+                cleanVin.contains("JX") -> "GV80"
+                else -> "Genesis Luxury Vehicle"
             }
             else -> "Standard Model"
         }

@@ -94,6 +94,15 @@ object VehicleProfileRepository {
             )) {
                 return profile
             }
+
+            if (profile.profileId == "HYUNDAI_KIA_CAN" && (
+                profile.vinWmis.any { cleanVin.startsWith(it) } ||
+                make.contains("Hyundai", ignoreCase = true) ||
+                make.contains("Kia", ignoreCase = true) ||
+                make.contains("Genesis", ignoreCase = true)
+            )) {
+                return profile
+            }
         }
 
         // 2. Make match

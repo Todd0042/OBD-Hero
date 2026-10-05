@@ -70,6 +70,11 @@ object DtcRepository {
             loadManufacturerFile(context, "buick", "dtc/dtc_gm.json")
             loadManufacturerFile(context, "gm", "dtc/dtc_gm.json")
 
+            // 8. Load Hyundai / Kia / Genesis Codes
+            loadManufacturerFile(context, "hyundai", "dtc/dtc_hyundai_kia.json")
+            loadManufacturerFile(context, "kia", "dtc/dtc_hyundai_kia.json")
+            loadManufacturerFile(context, "genesis", "dtc/dtc_hyundai_kia.json")
+
             isInitialized = true
             Log.i(TAG, "DTC repository initialized with ${masterDefinitions.size} master definitions, ${genericCodes.size} rich generic guides, and ${manufacturerCodes.size} OEM packs.")
         } catch (e: Exception) {
