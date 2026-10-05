@@ -1,5 +1,27 @@
 [
   {
+    "code": "P0597",
+    "title": "Thermostat Heater Control Circuit Open",
+    "category": "Powertrain System (Engine & Transmission)",
+    "meaning": "DME detected an open circuit in the electric heating element inside the map-controlled characteristic thermostat (BMW N52, N54, N55, N20).",
+    "symptoms": [
+      "Check Engine light illuminated",
+      "Electric radiator cooling fan runs at 100% full speed roaring like a jet engine",
+      "Engine running cooler than optimal operating temperature"
+    ],
+    "inspectionSteps": [
+      "Measure electrical resistance across the two pins of the thermostat electrical heater connector; normal resistance is 12-16 ohms. If open circuit (infinite ohms), internal element has burned out.",
+      "Inspect wiring harness to thermostat for heat brittleness or rodent damage near water pump.",
+      "Check coolant level in expansion tank."
+    ],
+    "verifiedFixes": [
+      "Replace the composite thermostat assembly and aluminum mounting bolts (BMW part 11537549476).",
+      "Bleed BMW electric cooling system: Fill coolant, turn ignition on (engine off), set cabin temp to 84\u00b0F, fan on low, hold gas pedal to floor for 10 seconds to activate automated 12-minute electric water pump bleed cycle."
+    ],
+    "difficulty": "Moderate",
+    "isCommunitySourced": true
+  },
+  {
     "code": "P1014",
     "title": "Valvetronic Eccentric Shaft Sensor Reference Plausibility",
     "category": "BMW Valvetronic System",
@@ -20,6 +42,30 @@
       "Relearn Valvetronic stops via ISTA / tool"
     ],
     "difficulty": "Advanced"
+  },
+  {
+    "code": "P1030",
+    "title": "Valvetronic Eccentric Shaft Sensor / Actuator Sluggish Movement",
+    "category": "Powertrain System (Engine & Transmission)",
+    "meaning": "DME detected sluggish response from Valvetronic eccentric shaft sensor or servomotor on BMW N52, N54, N55, S55 engines.",
+    "symptoms": [
+      "Engine enters Valvetronic fail-safe limp mode (operates on throttle butterfly with sluggish throttle response)",
+      "Yellow Half-Engine light illuminated on instrument cluster",
+      "Rough idle and clicking noise from valve cover on key-on"
+    ],
+    "inspectionSteps": [
+      "Remove engine beauty cover and locate eccentric shaft sensor connector on front-top of valve cover.",
+      "Unclip electrical connector and inspect male and female pins: if pins are flooded with engine oil, the internal sensor seal has failed, allowing pressurized oil into connector.",
+      "Spray connector pins thoroughly with electronic cleaner and inspect wire insulation.",
+      "Perform Valvetronic stop limit relearn using scan tool."
+    ],
+    "verifiedFixes": [
+      "Clean oil from connector pins and replace the eccentric shaft sensor round rubber valve cover gasket (BMW 11127528242).",
+      "If fault returns or sensor tracks are shorted, replace eccentric shaft sensor (Continental VDO OEM) and relearn Valvetronic end stops.",
+      "Replace Valvetronic servomotor actuator if internal worm gear is stripped."
+    ],
+    "difficulty": "Advanced",
+    "isCommunitySourced": true
   },
   {
     "code": "P1083",

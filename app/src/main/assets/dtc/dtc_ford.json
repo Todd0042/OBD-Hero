@@ -1,73 +1,49 @@
 [
   {
-    "code": "P1450",
-    "title": "Unable to Bleed Up Fuel Tank Vacuum - Purge Valve Stuck Open",
-    "category": "Ford Powertrain",
-    "meaning": "ECM detected excessive manifold vacuum pulling into the fuel tank with the EVAP purge valve commanded closed. The canister purge valve is mechanically stuck open, pulling high engine vacuum directly into the plastic fuel tank, which can cause tank deformation and fuel gauge erratic readouts (TSB 18-2358 / Recall 18S32 on Focus, Mustang, F-150 EcoBoost).",
+    "code": "P0012",
+    "title": "Camshaft Position A - Timing Over-Retarded (Bank 1)",
+    "category": "Powertrain System (Engine & Transmission)",
+    "meaning": "Camshaft timing on Bank 1 is slower to advance than PCM commanded target. Common technician finding on 3.5L EcoBoost and 5.0L Coyote engines due to variable camshaft timing (VCT) solenoid varnish or timing chain stretch.",
     "symptoms": [
-      "Check Engine Light on",
-      "Severe engine stumble, rough idle, or stall immediately after filling the gas tank at a gas station",
-      "Audible hissing sound or vacuum whoosh when opening fuel filler neck",
-      "Fuel tank gauge reading erratic or tank physically buckling under vacuum"
+      "Rattling noise on cold start for 2-5 seconds",
+      "Rough idle when engine reaches full operating temperature",
+      "Hesitation or loss of power in low RPM band",
+      "Misfire codes under load"
     ],
     "inspectionSteps": [
-      "Disconnect the EVAP vapor line from the intake manifold purge valve with engine running at idle.",
-      "Place your finger or vacuum gauge over the purge valve vacuum inlet port. If any vacuum suction is felt while the valve is electrically unplugged, the internal valve seat is stuck open.",
-      "Inspect EVAP line running back to canister under vehicle for collapse or pinching.",
-      "Check fuel tank shape from under the car to ensure plastic tank has not collapsed or cracked."
+      "Check engine oil level and condition; dirty or low oil starves VCT hydraulic chambers.",
+      "Remove Bank 1 VCT solenoids and inspect microscopic oil feed screens for sludge, varnish, or metal debris.",
+      "Log VCT_ACT (actual) vs VCT_DSR (desired) degrees using live data scan.",
+      "Perform timing chain elongation inspection via valve cover or timing inspection plug if rattle exceeds 5 seconds."
     ],
     "verifiedFixes": [
-      "Replace faulty engine bay EVAP Canister Purge Solenoid Valve assembly",
-      "Inspect and replace deformed fuel tank and fuel delivery module if tank collapsed",
-      "Update PCM powertrain calibration to latest Ford software strategy"
+      "Replace Bank 1 VCT variable cam timing solenoids and perform engine oil/filter change with Motorcraft FL-500S and full synthetic oil.",
+      "If rattle persists on cold startup, replace primary timing chain, tensioners, and cam phasers (TSB 20-2191)."
     ],
-    "difficulty": "Moderate"
+    "difficulty": "Advanced",
+    "isCommunitySourced": true
   },
   {
-    "code": "P0299",
-    "title": "Turbocharger / Supercharger 'A' Underboost Condition",
-    "category": "Ford Powertrain",
-    "meaning": "Manifold Absolute Pressure (MAP) and Charge Air Cooler (CAC) pressure sensors registered actual boost levels significantly below PCM commanded target for more than 5 consecutive seconds on EcoBoost 1.5L, 2.0L, 2.7L, or 3.5L engines.",
+    "code": "P0014",
+    "title": "Camshaft Position B - Timing Over-Advanced (Bank 1)",
+    "category": "Powertrain System (Engine & Transmission)",
+    "meaning": "Exhaust camshaft timing on Bank 1 exceeded advance target limit. Common on Ford EcoBoost and Coyote engines caused by sticky exhaust VCT solenoid or oil contamination.",
     "symptoms": [
-      "Check Engine Light on and wrench icon illuminated",
-      "Severe lack of acceleration and poor highway passing power",
-      "Hissing or blowing air noise under boost acceleration",
-      "Increased fuel consumption"
+      "Cold start rattle or valvetrain ticking",
+      "Rough idle at stoplights",
+      "Loss of top-end engine power"
     ],
     "inspectionSteps": [
-      "Inspect rubber charge air cooler (intercooler) silicone boots and clamps for tears, slipping, or oil soaking.",
-      "Perform smoke test on intake and intercooler piping between turbo outlet and throttle body.",
-      "Inspect internal turbocharger wastegate flapper arm pivot on exhaust housing for excessive play, slop, or carbon binding.",
-      "Test electric or pneumatic wastegate control solenoid and vacuum lines."
+      "Inspect Bank 1 exhaust VCT solenoid connector and harness.",
+      "Check engine oil viscosity and change interval history.",
+      "Log live cam advance angles on scan tool to detect slow mechanical return spring."
     ],
     "verifiedFixes": [
-      "Tighten or replace cracked intercooler charge pipe rubber boot coupling",
-      "Replace turbocharger assembly if wastegate flapper pivot has loose clearance slop and does not seal against turbine housing",
-      "Replace faulty turbocharger wastegate boost control solenoid valve"
+      "Replace Bank 1 exhaust VCT solenoid.",
+      "Perform complete oil and filter change with Motorcraft specification oil."
     ],
-    "difficulty": "Moderate"
-  },
-  {
-    "code": "P1247",
-    "title": "Turbo Boost Pressure Low - PowerStroke / EcoBoost",
-    "category": "Ford Powertrain",
-    "meaning": "MAP sensor indicated boost pressure below minimum operating threshold during commanded high-load operation.",
-    "symptoms": [
-      "Check Engine Light on",
-      "Sluggish throttle response under load or while towing",
-      "Black smoke from diesel exhaust or rich smell"
-    ],
-    "inspectionSteps": [
-      "Inspect exhaust backpressure (EBP) tube and sensor for soot clogging.",
-      "Inspect turbo up-pipes and exhaust manifolds for black carbon soot leaks indicating pre-turbo exhaust gas loss.",
-      "Check MAP sensor rubber vacuum hose for splits."
-    ],
-    "verifiedFixes": [
-      "Clean or replace exhaust backpressure (EBP) tube and sensor",
-      "Replace leaking stainless steel turbo up-pipe bellows / gaskets",
-      "Replace split MAP sensor reference vacuum line"
-    ],
-    "difficulty": "Moderate"
+    "difficulty": "Moderate",
+    "isCommunitySourced": true
   },
   {
     "code": "P0016",
@@ -92,6 +68,51 @@
       "Replace VCT oil control solenoids"
     ],
     "difficulty": "Advanced"
+  },
+  {
+    "code": "P0299",
+    "title": "Turbocharger / Supercharger Underboost Condition",
+    "category": "Powertrain System (Engine & Transmission)",
+    "meaning": "PCM detected turbocharger boost pressure is significantly below commanded setpoint for more than 5 seconds (common on Ford EcoBoost 1.5L, 2.0L, 2.7L, 3.5L).",
+    "symptoms": [
+      "Sluggish acceleration and limp mode under highway load",
+      "Whistling or blowing air sound from intercooler piping",
+      "Loss of boost gauge pressure"
+    ],
+    "inspectionSteps": [
+      "Inspect rubber charge air cooler (intercooler) silicone boots and clamps for tears, slipping, or oil blow-by.",
+      "Inspect electronic or pneumatic wastegate actuator linkage arm for play, binding, or missing circlip.",
+      "Test turbocharger bypass / blow-off valve (BOV) diaphragm for tear or leak."
+    ],
+    "verifiedFixes": [
+      "Re-seat and torque charge air cooler hose clamps, or replace cracked intercooler plastic end tank.",
+      "Replace electronic turbocharger recirculating / bypass valve (eBOV) diaphragm.",
+      "Adjust or replace turbocharger wastegate actuator if arm has excessive pivot pin slop."
+    ],
+    "difficulty": "Moderate",
+    "isCommunitySourced": true
+  },
+  {
+    "code": "P0456",
+    "title": "EVAP Control System Very Small Leak Detected (0.020\")",
+    "category": "Powertrain System (Engine & Transmission)",
+    "meaning": "EVAP monitor detected a leak smaller than 0.020\" on Ford Easy Fuel capless filler neck or canister purge circuit.",
+    "symptoms": [
+      "\"Check Fuel Fill Inlet\" message on instrument cluster",
+      "Check engine light illuminated",
+      "Intermittent fuel vapor odor after refueling"
+    ],
+    "inspectionSteps": [
+      "Inspect Easy Fuel capless filler neck outer and inner spring-loaded flapper doors for road dirt, dust, or sand preventing a tight rubber O-ring seal.",
+      "Insert the factory emergency white plastic refueling funnel (located in spare tire well) into filler neck repeatedly (10-15 times) while spraying WD-40 or compressed air around seal to dislodge trapped debris.",
+      "Perform smoke test on EVAP test port if cleaning flapper does not seal."
+    ],
+    "verifiedFixes": [
+      "Clean and lubricate Easy Fuel capless filler neck flapper seal with silicone spray and emergency funnel cycle.",
+      "Replace capless fuel filler neck pipe assembly if flapper return spring is broken or distorted."
+    ],
+    "difficulty": "Beginner",
+    "isCommunitySourced": true
   },
   {
     "code": "P0741",
@@ -2357,6 +2378,28 @@
     ],
     "verifiedFixes": [
       "Data unavailable publicly, contact an official repair center for details."
+    ],
+    "difficulty": "Moderate"
+  },
+  {
+    "code": "P1247",
+    "title": "Turbo Boost Pressure Low - PowerStroke / EcoBoost",
+    "category": "Ford Powertrain",
+    "meaning": "MAP sensor indicated boost pressure below minimum operating threshold during commanded high-load operation.",
+    "symptoms": [
+      "Check Engine Light on",
+      "Sluggish throttle response under load or while towing",
+      "Black smoke from diesel exhaust or rich smell"
+    ],
+    "inspectionSteps": [
+      "Inspect exhaust backpressure (EBP) tube and sensor for soot clogging.",
+      "Inspect turbo up-pipes and exhaust manifolds for black carbon soot leaks indicating pre-turbo exhaust gas loss.",
+      "Check MAP sensor rubber vacuum hose for splits."
+    ],
+    "verifiedFixes": [
+      "Clean or replace exhaust backpressure (EBP) tube and sensor",
+      "Replace leaking stainless steel turbo up-pipe bellows / gaskets",
+      "Replace split MAP sensor reference vacuum line"
     ],
     "difficulty": "Moderate"
   },
@@ -5132,6 +5175,54 @@
     "difficulty": "Moderate"
   },
   {
+    "code": "P144C",
+    "title": "EVAP System Purge Check Valve Performance",
+    "category": "Powertrain System (Engine & Transmission)",
+    "meaning": "ECU detected improper fuel tank vapor flow during boosted operating conditions. On EcoBoost turbo engines (2.0L, 2.7L, 3.5L), manifold vacuum is insufficient under boost, relying on an ejector/check valve harness.",
+    "symptoms": [
+      "Check engine light illuminated",
+      "Rough idle immediately after refilling fuel tank",
+      "Hesitation under boost acceleration",
+      "Hissing vacuum sound from engine bay"
+    ],
+    "inspectionSteps": [
+      "Locate the EVAP canister purge valve line on intake manifold.",
+      "Disconnect vacuum harness and apply hand vacuum pump to internal check valve.",
+      "Verify one-way check valve seals boost pressure and does not leak back into fuel tank vapor line.",
+      "Inspect purge solenoid electrical harness for 12V key-on and PCM ground duty cycle."
+    ],
+    "verifiedFixes": [
+      "Replace EVAP purge valve assembly with updated revision check valve harness (Motorcraft CX-2409 / AU5Z-9C915-B).",
+      "Clear adaptive fuel trims in PCM after replacement."
+    ],
+    "difficulty": "Beginner",
+    "isCommunitySourced": true
+  },
+  {
+    "code": "P1450",
+    "title": "Unable to Bleed Up Fuel Tank Vacuum - Purge Valve Stuck Open",
+    "category": "Ford Powertrain",
+    "meaning": "ECM detected excessive manifold vacuum pulling into the fuel tank with the EVAP purge valve commanded closed. The canister purge valve is mechanically stuck open, pulling high engine vacuum directly into the plastic fuel tank, which can cause tank deformation and fuel gauge erratic readouts (TSB 18-2358 / Recall 18S32 on Focus, Mustang, F-150 EcoBoost).",
+    "symptoms": [
+      "Check Engine Light on",
+      "Severe engine stumble, rough idle, or stall immediately after filling the gas tank at a gas station",
+      "Audible hissing sound or vacuum whoosh when opening fuel filler neck",
+      "Fuel tank gauge reading erratic or tank physically buckling under vacuum"
+    ],
+    "inspectionSteps": [
+      "Disconnect the EVAP vapor line from the intake manifold purge valve with engine running at idle.",
+      "Place your finger or vacuum gauge over the purge valve vacuum inlet port. If any vacuum suction is felt while the valve is electrically unplugged, the internal valve seat is stuck open.",
+      "Inspect EVAP line running back to canister under vehicle for collapse or pinching.",
+      "Check fuel tank shape from under the car to ensure plastic tank has not collapsed or cracked."
+    ],
+    "verifiedFixes": [
+      "Replace faulty engine bay EVAP Canister Purge Solenoid Valve assembly",
+      "Inspect and replace deformed fuel tank and fuel delivery module if tank collapsed",
+      "Update PCM powertrain calibration to latest Ford software strategy"
+    ],
+    "difficulty": "Moderate"
+  },
+  {
     "code": "P1451",
     "title": "Secondary Air Injection Circuit Short To Ground",
     "category": "Ford Powertrain",
@@ -7085,5 +7176,51 @@
       "Data unavailable publicly, contact an official repair center for details."
     ],
     "difficulty": "Moderate"
+  },
+  {
+    "code": "P2196",
+    "title": "O2 Sensor Signal Biased / Stuck Rich (Bank 1 Sensor 1)",
+    "category": "Powertrain System (Engine & Transmission)",
+    "meaning": "Bank 1 upstream air-fuel ratio sensor indicates an uncorrectable rich fuel condition. On Ford direct-injection EcoBoost engines, community master techs frequently identify camshaft-driven High-Pressure Fuel Pump (HPFP) internal seal failure.",
+    "symptoms": [
+      "Strong gasoline smell from engine oil dipstick",
+      "Black soot on exhaust tips",
+      "Extended engine cranking before start",
+      "Negative fuel trims (-20% to -30% STFT/LTFT)"
+    ],
+    "inspectionSteps": [
+      "Pull engine oil dipstick and inspect for diluted oil level and gasoline smell.",
+      "Log High Pressure Fuel Rail (FRP) pressure leak-down test when engine is shut off; rail pressure should not rapidly bleed to zero.",
+      "Inspect spark plugs on Bank 1; if all plugs are equally sooty, rich condition is systemic (fuel in oil or HPFP) rather than single injector stuck open.",
+      "Test EVAP purge solenoid for internal vacuum leak drawing raw fumes into intake."
+    ],
+    "verifiedFixes": [
+      "Replace mechanical High Pressure Fuel Pump (HPFP) mounted on valve cover (internal plunger seal failure washes fuel directly into crankcase).",
+      "Perform complete engine oil and filter change immediately to remove diluted, combustible gasoline from engine crankcase."
+    ],
+    "difficulty": "Moderate",
+    "isCommunitySourced": true
+  },
+  {
+    "code": "P2198",
+    "title": "O2 Sensor Signal Biased / Stuck Rich (Bank 2 Sensor 1)",
+    "category": "Powertrain System (Engine & Transmission)",
+    "meaning": "Bank 2 upstream sensor stuck rich. On EcoBoost 3.5L V6, can be caused by leaking HPFP internal seal washing fuel into crankcase or leaking direct fuel injector.",
+    "symptoms": [
+      "Fuel odor in engine oil",
+      "Rich exhaust smell and soot buildup",
+      "Blackened spark plugs across Bank 2"
+    ],
+    "inspectionSteps": [
+      "Inspect oil dipstick level and sniff for gasoline dilution.",
+      "Check high pressure fuel pump bleed-down on scan tool.",
+      "Check for stuck open Bank 2 direct injector using cylinder balance test."
+    ],
+    "verifiedFixes": [
+      "Replace High Pressure Fuel Pump (HPFP) assembly and change engine oil and filter.",
+      "Replace affected direct fuel injector if isolated to single cylinder."
+    ],
+    "difficulty": "Moderate",
+    "isCommunitySourced": true
   }
 ]

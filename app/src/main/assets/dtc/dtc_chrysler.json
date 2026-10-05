@@ -1,48 +1,25 @@
 [
   {
-    "code": "P0520",
-    "title": "Engine Oil Pressure Sensor Circuit Malfunction - Pentastar 3.6L",
-    "category": "Chrysler Powertrain",
-    "meaning": "ECM registered out-of-range voltage on the dual-stage oil pressure sensor circuit. On Chrysler/Dodge/Jeep/Ram 3.6L Pentastar engines, the factory oil pressure sensor mounted under the oil filter adapter housing fails internally, often causing oil leaks into the engine valley (TSB 18-034-14).",
+    "code": "C121A",
+    "title": "Steering Angle Sensor Not Initialized",
+    "category": "Chassis System (ABS, Traction, Steering, Suspension)",
+    "meaning": "ABS / ESC control module has lost steering angle center calibration zero point. Occurs after battery disconnect, front-end alignment, or clockspring service on Jeep Wrangler, Grand Cherokee, Dodge Durango.",
     "symptoms": [
-      "Illuminated Check Engine Light",
-      "Dashboard oil pressure gauge pegged at maximum 99 PSI or dropping to 0 PSI",
-      "Oil pooling in the engine 'V' valley under the lower intake manifold",
-      "Burning oil odor when engine reaches full operating temperature"
+      "Electronic Stability Control (ESC) light illuminated",
+      "Traction Control off indicator on",
+      "ABS light on"
     ],
     "inspectionSteps": [
-      "Inspect the engine valley under the intake manifold with a flashlight for pooled engine oil around the oil filter housing base.",
-      "Connect mechanical oil pressure test gauge to verify physical oil pressure (minimum 5 PSI warm idle, 30 PSI at 3000 RPM).",
-      "Measure sensor signal voltage with scan tool: 0.5V at 0 PSI, scaling linearly to 4.5V at 100 PSI."
+      "Verify vehicle wheel alignment is centered (steering wheel straight when driving forward).",
+      "Check SAS degrees on scan tool; angle should read 0.0\u00b0 when wheels are dead ahead.",
+      "Inspect clockspring wiring connector."
     ],
     "verifiedFixes": [
-      "Replace faulty engine oil pressure sensor (located on rear of oil filter adapter)",
-      "Replace complete plastic oil filter adapter housing assembly with updated aluminum unit if cracked or leaking",
-      "Clean harness connector and install new upper/lower intake manifold gaskets"
+      "Perform manual lock-to-lock Steering Angle Sensor relearn procedure: Park on level ground, start engine, turn steering wheel smoothly all the way to left lock, hold 2 seconds, turn smoothly all the way to right lock, hold 2 seconds, return to center, drive straight at 15+ MPH for 100 yards.",
+      "If relearn fails to store, recalibrate via bi-directional ABS service function or replace steering column clockspring/SAS module."
     ],
-    "difficulty": "Moderate"
-  },
-  {
-    "code": "P0456",
-    "title": "EVAP System Small Leak Detected - ESIM Switch Failure",
-    "category": "Chrysler Powertrain",
-    "meaning": "Evaporative System Integrity Monitor (ESIM) detected micro-leak (0.020 inch equivalent). On FCA vehicles, the weighted diaphragm and switch contacts inside the ESIM switch housing mounted directly to the charcoal canister fail, preventing vacuum detection.",
-    "symptoms": [
-      "Check Engine Light on",
-      "'GASCAP' indicator illuminated in odometer display",
-      "Fails state emissions OBD inspection"
-    ],
-    "inspectionSteps": [
-      "Inspect ESIM (Evaporative System Integrity Monitor) switch mounted on rear charcoal canister.",
-      "Verify ESIM switch internal contacts open/close using handheld vacuum pump.",
-      "Inspect ESIM rubber seal ring and vapor line connector for dry rot cracks."
-    ],
-    "verifiedFixes": [
-      "Replace faulty ESIM (Evaporative System Integrity Monitor) switch assembly",
-      "Replace fuel filler cap with genuine OEM cap",
-      "Replace cracked charcoal canister housing"
-    ],
-    "difficulty": "Beginner"
+    "difficulty": "Beginner",
+    "isCommunitySourced": true
   },
   {
     "code": "P0300",
@@ -68,25 +45,47 @@
     "difficulty": "Advanced"
   },
   {
-    "code": "U0100",
-    "title": "Lost Communication with ECM - TIPM Fuel Pump Relay Internal Failure",
-    "category": "Chrysler Network & CAN Bus",
-    "meaning": "Modules lost CAN communication frames from the ECM. On Dodge Durango, Grand Cherokee, Ram, and Chrysler minivans, the internal fuel pump relay soldered inside the Totally Integrated Power Module (TIPM) circuit board burns out (NHTSA Recall 14V-530 / TSB 19-001-15).",
+    "code": "P0456",
+    "title": "EVAP System Small Leak Detected - ESIM Switch Failure",
+    "category": "Chrysler Powertrain",
+    "meaning": "Evaporative System Integrity Monitor (ESIM) detected micro-leak (0.020 inch equivalent). On FCA vehicles, the weighted diaphragm and switch contacts inside the ESIM switch housing mounted directly to the charcoal canister fail, preventing vacuum detection.",
     "symptoms": [
-      "Engine cranks continuously but will not start",
-      "Battery drains dead overnight while parked (relay contacts stuck closed)",
-      "Vehicle stalls suddenly while driving on highway",
-      "Fuel pump continues running after ignition turned off"
+      "Check Engine Light on",
+      "'GASCAP' indicator illuminated in odometer display",
+      "Fails state emissions OBD inspection"
     ],
     "inspectionSteps": [
-      "Check for battery voltage at fuel pump connector under rear seat while cranking.",
-      "Perform external TIPM fuel pump relay test jumper.",
-      "Inspect TIPM multi-pin harness plugs under hood for green corrosion or pushed-out pins."
+      "Inspect ESIM (Evaporative System Integrity Monitor) switch mounted on rear charcoal canister.",
+      "Verify ESIM switch internal contacts open/close using handheld vacuum pump.",
+      "Inspect ESIM rubber seal ring and vapor line connector for dry rot cracks."
     ],
     "verifiedFixes": [
-      "Install external fuel pump relay bypass kit (Chrysler Recall kit CBWPR091AA)",
-      "Replace or rebuild Totally Integrated Power Module (TIPM)",
-      "Repair loose wiring harness ground under driver kick panel"
+      "Replace faulty ESIM (Evaporative System Integrity Monitor) switch assembly",
+      "Replace fuel filler cap with genuine OEM cap",
+      "Replace cracked charcoal canister housing"
+    ],
+    "difficulty": "Beginner"
+  },
+  {
+    "code": "P0520",
+    "title": "Engine Oil Pressure Sensor Circuit Malfunction - Pentastar 3.6L",
+    "category": "Chrysler Powertrain",
+    "meaning": "ECM registered out-of-range voltage on the dual-stage oil pressure sensor circuit. On Chrysler/Dodge/Jeep/Ram 3.6L Pentastar engines, the factory oil pressure sensor mounted under the oil filter adapter housing fails internally, often causing oil leaks into the engine valley (TSB 18-034-14).",
+    "symptoms": [
+      "Illuminated Check Engine Light",
+      "Dashboard oil pressure gauge pegged at maximum 99 PSI or dropping to 0 PSI",
+      "Oil pooling in the engine 'V' valley under the lower intake manifold",
+      "Burning oil odor when engine reaches full operating temperature"
+    ],
+    "inspectionSteps": [
+      "Inspect the engine valley under the intake manifold with a flashlight for pooled engine oil around the oil filter housing base.",
+      "Connect mechanical oil pressure test gauge to verify physical oil pressure (minimum 5 PSI warm idle, 30 PSI at 3000 RPM).",
+      "Measure sensor signal voltage with scan tool: 0.5V at 0 PSI, scaling linearly to 4.5V at 100 PSI."
+    ],
+    "verifiedFixes": [
+      "Replace faulty engine oil pressure sensor (located on rear of oil filter adapter)",
+      "Replace complete plastic oil filter adapter housing assembly with updated aluminum unit if cracked or leaking",
+      "Clean harness connector and install new upper/lower intake manifold gaskets"
     ],
     "difficulty": "Moderate"
   },
@@ -3016,20 +3015,26 @@
   },
   {
     "code": "P1288",
-    "title": "Turbocharge Bypass Valve Short To B+",
-    "category": "Chrysler Powertrain",
-    "meaning": "Official Chrysler / Jeep / Dodge / Ram Factory Definition: Turbocharge Bypass Valve Short To B+. Manufacturer proprietary diagnostic flowcharts are guarded behind official dealer service subscriptions.",
+    "title": "Short Runner Valve (SRV) Solenoid Circuit / Performance",
+    "category": "Powertrain System (Engine & Transmission)",
+    "meaning": "PCM detected the Short Runner Valve actuator failed to reach target open/closed position. Ubiquitous issue on FCA 3.6L Pentastar V6 intake manifold (Grand Cherokee, Durango, Charger, Challenger, Wrangler, Pacifica).",
     "symptoms": [
-      "Illuminated Check Engine or Warning Indicator",
-      "Detailed driveability symptoms unavailable publicly. Contact an official repair center for details."
+      "Check Engine light illuminated",
+      "Loss of top-end horsepower above 4,000 RPM",
+      "Buzzing or clicking noise from top of intake manifold when revving engine"
     ],
     "inspectionSteps": [
-      "Data unavailable publicly, contact an official repair center for details."
+      "Inspect the SRV actuator motor located on rear of upper intake manifold.",
+      "Check plastic ball-and-socket linkage arm connecting electric actuator to manifold internal runner flap shaft; widely known to pop off or snap due to heat cycling.",
+      "Manually move manifold flap shaft with fingers; verify smooth rotation without carbon binding."
     ],
     "verifiedFixes": [
-      "Data unavailable publicly, contact an official repair center for details."
+      "Snap aftermarket reinforced metal retention clip or replacement linkage arm onto SRV actuator ball stud (avoids replacing entire upper intake manifold).",
+      "If internal manifold flaps are gummed with PCV oil residue, remove upper manifold and clean runner flaps with throttle body cleaner.",
+      "Replace SRV electric actuator solenoid if internal gears are stripped."
     ],
-    "difficulty": "Moderate"
+    "difficulty": "Beginner",
+    "isCommunitySourced": true
   },
   {
     "code": "P1289",
@@ -7074,6 +7079,73 @@
     ],
     "verifiedFixes": [
       "Data unavailable publicly, contact an official repair center for details."
+    ],
+    "difficulty": "Moderate"
+  },
+  {
+    "code": "P2096",
+    "title": "Post Catalyst Fuel Trim System Too Lean (Bank 1)",
+    "category": "Powertrain System (Engine & Transmission)",
+    "meaning": "PCM detected downstream O2 sensor fuel trim correction has reached maximum rich limit. Extremely common on Jeep Wrangler (JK/JL), Dodge Charger, Ram 1500.",
+    "symptoms": [
+      "Check Engine light illuminated",
+      "Mild reduction in fuel economy",
+      "Hissing or ticking exhaust leak sound on acceleration"
+    ],
+    "inspectionSteps": [
+      "Inspect exhaust pipe flange welds and catalytic converter ball-and-socket connections upstream of downstream O2 sensor for soot trails or pinhole cracks.",
+      "Check exhaust manifold bolts on cylinder head; broken rear exhaust manifold bolts allow cold air to leak into exhaust stream.",
+      "Test downstream oxygen sensor heater resistance and voltage response.",
+      "Perform smoke test on exhaust system with tailpipe capped."
+    ],
+    "verifiedFixes": [
+      "Repair cracked exhaust manifold or replace broken exhaust manifold studs and gaskets.",
+      "Tighten or replace leaking exhaust flange clamp upstream of catalytic converter.",
+      "Flash PCM with latest FCA powertrain software update (TSB 18-033-14 for false lean threshold tuning)."
+    ],
+    "difficulty": "Moderate",
+    "isCommunitySourced": true
+  },
+  {
+    "code": "P2098",
+    "title": "Post Catalyst Fuel Trim System Too Lean (Bank 2)",
+    "category": "Powertrain System (Engine & Transmission)",
+    "meaning": "Downstream Bank 2 fuel trim indicated lean correction limit reached on FCA 3.6L Pentastar or 5.7L Hemi.",
+    "symptoms": [
+      "Check Engine light illuminated",
+      "Exhaust ticking noise on passenger side"
+    ],
+    "inspectionSteps": [
+      "Inspect Bank 2 exhaust manifold gasket and catalytic converter collector flange for pinhole leaks.",
+      "Check Bank 2 downstream O2 sensor pigtail for harness heat damage."
+    ],
+    "verifiedFixes": [
+      "Seal Bank 2 exhaust collector flange leak.",
+      "Replace Bank 2 downstream oxygen sensor."
+    ],
+    "difficulty": "Moderate",
+    "isCommunitySourced": true
+  },
+  {
+    "code": "U0100",
+    "title": "Lost Communication with ECM - TIPM Fuel Pump Relay Internal Failure",
+    "category": "Chrysler Network & CAN Bus",
+    "meaning": "Modules lost CAN communication frames from the ECM. On Dodge Durango, Grand Cherokee, Ram, and Chrysler minivans, the internal fuel pump relay soldered inside the Totally Integrated Power Module (TIPM) circuit board burns out (NHTSA Recall 14V-530 / TSB 19-001-15).",
+    "symptoms": [
+      "Engine cranks continuously but will not start",
+      "Battery drains dead overnight while parked (relay contacts stuck closed)",
+      "Vehicle stalls suddenly while driving on highway",
+      "Fuel pump continues running after ignition turned off"
+    ],
+    "inspectionSteps": [
+      "Check for battery voltage at fuel pump connector under rear seat while cranking.",
+      "Perform external TIPM fuel pump relay test jumper.",
+      "Inspect TIPM multi-pin harness plugs under hood for green corrosion or pushed-out pins."
+    ],
+    "verifiedFixes": [
+      "Install external fuel pump relay bypass kit (Chrysler Recall kit CBWPR091AA)",
+      "Replace or rebuild Totally Integrated Power Module (TIPM)",
+      "Repair loose wiring harness ground under driver kick panel"
     ],
     "difficulty": "Moderate"
   }

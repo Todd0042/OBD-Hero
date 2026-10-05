@@ -1,72 +1,172 @@
 [
   {
-    "code": "P1326",
-    "title": "Knock Sensor Detection System (KSDS) - Engine Limp Home Mode",
-    "category": "Hyundai/Kia Powertrain",
-    "meaning": "Knock Sensor Detection System (KSDS) algorithm detected abnormal high-frequency engine vibration frequencies characteristic of severe connecting rod bearing wear / clearance play (Technical Service Bulletin 21-01-052H). ECM forced vehicle into 1,800-2,000 RPM Limp-Home Mode.",
+    "code": "B1346",
+    "title": "Driver Airbag Resistance High (1st Stage) - Clockspring Failure",
+    "category": "Hyundai/Kia Body & SRS",
+    "meaning": "SRS Airbag Control Module detected squib circuit resistance exceeding 3.5 ohms in the driver's steering wheel airbag circuit, typically caused by broken ribbon tape in the clockspring.",
     "symptoms": [
-      "Flashing Check Engine Light (MIL)",
-      "Engine throttled to limp-home mode (max 1800-2000 RPM)",
-      "Audible bottom-end rod bearing knock under light acceleration",
-      "Loss of acceleration and passing power on highway"
+      "Airbag warning light illuminated constantly",
+      "Steering wheel horn or cruise control buttons intermittently inoperative",
+      "Audible rubbing or clicking noise when rotating steering wheel"
     ],
     "inspectionSteps": [
-      "DO NOT clear code before documenting freeze frame data for Hyundai/Kia extended engine warranty claim (Campaign 953 / T3G).",
-      "Perform Hyundai/Kia Bearing Clearance Test (BCT) using factory SST or specialized acoustic tool.",
-      "Inspect engine oil level, oil filter condition, and check oil pan for bronze/metallic bearing glitter.",
-      "Verify knock sensor resistance and wiring harness sub-assembly near starter motor."
+      "DISCONNECT BATTERY AND WAIT 5 MINUTES before servicing steering wheel SRS system.",
+      "Measure clockspring ribbon continuity while turning steering wheel lock-to-lock.",
+      "Inspect yellow SRS squib connector behind airbag module."
     ],
     "verifiedFixes": [
-      "Complete engine short-block or long-block replacement under Hyundai/Kia extended lifetime bearing warranty",
-      "Update ECM KSDS software calibration and replace knock sensor wiring harness if bearing clearance test passes"
+      "Replace steering column Clockspring assembly (contact coil)",
+      "Repair damaged steering column airbag sub-harness connector"
     ],
-    "difficulty": "Advanced"
+    "difficulty": "Moderate"
+  },
+  {
+    "code": "C1200",
+    "title": "Wheel Speed Sensor Front-Left Circuit",
+    "category": "Chassis System (ABS, Traction, Steering, Suspension)",
+    "meaning": "ESC / ABS module detected missing or erratic signal from wheel speed sensor. On Hyundai Sonata, Elantra, Tucson and Kia Optima, Sportage, Forte, technician community identifies rust jacking on tone ring / hub as primary culprit.",
+    "symptoms": [
+      "ABS, ESC, and Traction Control warning lights illuminated",
+      "Speedometer needle drops or jumps intermittently",
+      "Electronic parking brake warning"
+    ],
+    "inspectionSteps": [
+      "Inspect wheel speed sensor wiring harness near knuckle for stress cracks.",
+      "Remove wheel speed sensor bolt and pull sensor from hub mounting bore.",
+      "Inspect sensor mounting face and hub bore for rust scaling (\"rust jacking\") that pushes the sensor tip outward, exceeding the 0.5-1.5mm air gap tolerance to the magnetic tone ring.",
+      "Inspect tone ring inside wheel hub bearing for debris."
+    ],
+    "verifiedFixes": [
+      "Remove sensor, clean rust scaling and oxidation from sensor mounting surface with wire brush and file to restore proper air gap, apply anti-seize, and reinstall.",
+      "Replace wheel bearing hub assembly if magnetic encoder ring is cracked or demagnetized."
+    ],
+    "difficulty": "Beginner",
+    "isCommunitySourced": true
+  },
+  {
+    "code": "C1201",
+    "title": "Wheel Speed Sensor Front-Right Circuit",
+    "category": "Chassis System (ABS, Traction, Steering, Suspension)",
+    "meaning": "ESC / ABS module detected missing or erratic signal from front-right wheel speed sensor on Hyundai/Kia.",
+    "symptoms": [
+      "ABS and Traction lights illuminated",
+      "Low speed ABS pulsation on dry road"
+    ],
+    "inspectionSteps": [
+      "Inspect front-right sensor pigtail and hub mounting face for corrosion build-up.",
+      "Measure sensor resistance or monitor live wheel speed data on scan tool."
+    ],
+    "verifiedFixes": [
+      "Wire-brush rust scale from knuckle sensor seat to restore sensor air gap.",
+      "Replace front-right wheel speed sensor if internal coil is open."
+    ],
+    "difficulty": "Beginner",
+    "isCommunitySourced": true
+  },
+  {
+    "code": "C1202",
+    "title": "Wheel Speed Sensor Rear-Left Circuit",
+    "category": "Chassis System (ABS, Traction, Steering, Suspension)",
+    "meaning": "Rear-left wheel speed sensor circuit failure or air gap deviation on Hyundai/Kia.",
+    "symptoms": [
+      "ABS and electronic stability warning lamps",
+      "Cruise control disabled"
+    ],
+    "inspectionSteps": [
+      "Inspect rear-left hub magnetic encoder tone ring.",
+      "Check rear sensor harness clip near trailing arm."
+    ],
+    "verifiedFixes": [
+      "Clean rust jacking from rear hub sensor seat.",
+      "Replace rear wheel hub bearing assembly with integrated tone ring."
+    ],
+    "difficulty": "Beginner",
+    "isCommunitySourced": true
+  },
+  {
+    "code": "C1203",
+    "title": "Wheel Speed Sensor Rear-Right Circuit",
+    "category": "Chassis System (ABS, Traction, Steering, Suspension)",
+    "meaning": "Rear-right wheel speed sensor circuit failure on Hyundai/Kia.",
+    "symptoms": [
+      "ABS fault light on cluster",
+      "Traction control disabled"
+    ],
+    "inspectionSteps": [
+      "Inspect rear-right wheel speed sensor harness and tone ring."
+    ],
+    "verifiedFixes": [
+      "Clean rust scaling from sensor mating surface.",
+      "Replace rear-right wheel speed sensor."
+    ],
+    "difficulty": "Beginner",
+    "isCommunitySourced": true
+  },
+  {
+    "code": "C1503",
+    "title": "Motor Driven Power Steering (MDPS) - Torque Sensor Error",
+    "category": "Hyundai/Kia Steering & Chassis",
+    "meaning": "Electronic Power Steering (MDPS) ECU detected abnormal voltage differential across steering column optical/magnetic torque sensor coils.",
+    "symptoms": [
+      "Steering wheel icon warning light illuminated on cluster",
+      "Heavy manual steering effort (power assist abruptly cut)",
+      "Notchy or clicking feeling when turning steering wheel"
+    ],
+    "inspectionSteps": [
+      "Perform MDPS ASP (Absolute Steering Position) calibration zero-point relearn.",
+      "Inspect steering column flexible rubber coupling (star coupler) for disintegration/slop.",
+      "Check torque sensor harness connector under lower dash panel."
+    ],
+    "verifiedFixes": [
+      "Calibrate Absolute Steering Position (ASP) with diagnostic tool",
+      "Replace steering column flexible rubber coupler (Service Campaign 14-ST-002)",
+      "Replace steering column MDPS torque sensor assembly"
+    ],
+    "difficulty": "Moderate"
   },
   {
     "code": "P0011",
-    "title": "Continuous Variable Valve Timing (CVVT) - Intake Cam Over-Advanced (Bank 1)",
-    "category": "Hyundai/Kia Powertrain",
-    "meaning": "Intake camshaft timing angle has exceeded target advance threshold on Theta II / Gamma GDI engine, typically caused by sludged Oil Control Valve (OCV) or stuck camshaft phaser.",
+    "title": "Camshaft Position - Timing Over-Advanced (Bank 1)",
+    "category": "Powertrain System (Engine & Transmission)",
+    "meaning": "CVVT (Continuously Variable Valve Timing) oil control phaser failed to advance or retard camshaft to target angle on Hyundai/Kia 2.0L, 2.4L Theta II and 1.6L, 2.0L Nu engines.",
     "symptoms": [
-      "Illuminated Check Engine Light",
-      "Rough engine idle and hesitation on cold starts",
-      "Rattling or clicking noise from front timing cover during startup",
-      "Decreased fuel economy"
+      "Engine rattle / clicking during warm acceleration",
+      "Check engine light illuminated",
+      "Rough idle and stalling after highway driving"
     ],
     "inspectionSteps": [
-      "Check engine oil level and viscosity; low or sheared 5W-20/5W-30 oil starves CVVT phasers.",
-      "Remove and inspect Intake Oil Control Valve (OCV) spool and micro-mesh screen for carbon varnish.",
-      "Bench test OCV solenoid resistance (approx. 6.8 to 8.2 ohms) and 12V actuation."
+      "Check what brand of engine oil filter is currently installed on the engine. Hyundai/Kia technical community and TSB 14-EM-002 establish that many aftermarket paper filters lack proper internal bypass valve spring tension, starving CVVT solenoids of oil pressure at idle.",
+      "Remove intake and exhaust OCV (Oil Control Valve) solenoids and inspect for sludge or metal shavings.",
+      "Check intake cam phaser end bolt for backing out."
     ],
     "verifiedFixes": [
-      "Replace faulty Intake Camshaft Oil Control Valve (OCV)",
-      "Engine oil flush with genuine Hyundai/Kia OEM oil filter and fresh synthetic oil",
-      "Replace worn intake CVVT camshaft gear phaser assembly"
+      "Install genuine OEM Hyundai/Kia oil filter (Part 26300-35505) with genuine crush washer and fresh synthetic 5W-30 motor oil.",
+      "Clean or replace intake/exhaust Oil Control Valve (OCV) solenoids.",
+      "Perform engine oil flush if varnish is detected on solenoid barrels."
     ],
-    "difficulty": "Moderate"
+    "difficulty": "Beginner",
+    "isCommunitySourced": true
   },
   {
     "code": "P0014",
-    "title": "Continuous Variable Valve Timing (CVVT) - Exhaust Cam Over-Advanced (Bank 1)",
-    "category": "Hyundai/Kia Powertrain",
-    "meaning": "Exhaust camshaft position is more advanced than commanded by the ECM due to oil pressure starvation, sticking exhaust OCV solenoid, or timing chain elongation.",
+    "title": "Camshaft Position - Timing Over-Advanced (Bank 1 Exhaust)",
+    "category": "Powertrain System (Engine & Transmission)",
+    "meaning": "Exhaust camshaft CVVT phaser delayed or advanced beyond target. Common on Hyundai/Kia Theta II engines due to oil filter bypass pressure or degraded oil.",
     "symptoms": [
-      "Check Engine Light on",
-      "Engine stumbling or stalling when coming to a stop",
-      "Rough idle when warm",
-      "Pungent exhaust odor"
+      "Valvetrain ticking on warm idle",
+      "Loss of highway passing power",
+      "Check Engine light illuminated"
     ],
     "inspectionSteps": [
-      "Remove and clean Exhaust Oil Control Valve (OCV) on cylinder head.",
-      "Inspect timing chain tensioner extension and check for stretched timing chain slack.",
-      "Verify oil pressure at cylinder head port with mechanical pressure gauge."
+      "Inspect exhaust Oil Control Valve (OCV) spool for binding.",
+      "Verify OEM Hyundai/Kia oil filter installed."
     ],
     "verifiedFixes": [
-      "Replace Exhaust Oil Control Valve (OCV)",
-      "Replace timing chain, tensioner arms, and hydraulic tensioner",
-      "Fresh engine oil service with OEM filter"
+      "Replace exhaust camshaft Oil Control Valve (OCV).",
+      "Perform oil change with OEM filter (26300-35505)."
     ],
-    "difficulty": "Moderate"
+    "difficulty": "Beginner",
+    "isCommunitySourced": true
   },
   {
     "code": "P0455",
@@ -108,72 +208,6 @@
       "Replace Purge Control Solenoid Valve (PCSV)",
       "Replace fuel cap with OEM replacement",
       "Replace leaking Canister Close Valve (CCV)"
-    ],
-    "difficulty": "Moderate"
-  },
-  {
-    "code": "P1180",
-    "title": "High Pressure Fuel System - Pressure Low",
-    "category": "Hyundai/Kia Powertrain",
-    "meaning": "High Pressure Fuel Pump (HPFP) driven by camshaft lobe failed to deliver commanded rail pressure under high load.",
-    "symptoms": [
-      "Check Engine Light on",
-      "Engine sputtering or going flat above 3500 RPM",
-      "Long cranking time before starting",
-      "Vehicle enters reduced power mode"
-    ],
-    "inspectionSteps": [
-      "Monitor live high-pressure fuel rail sensor PID during wide-open throttle test.",
-      "Remove mechanical HPFP from valve cover and inspect tappet roller follower for wear against camshaft lobe.",
-      "Test low-pressure in-tank fuel pump delivery (approx. 5-6 bar supply)."
-    ],
-    "verifiedFixes": [
-      "Replace mechanical High Pressure Fuel Pump (HPFP)",
-      "Replace worn HPFP roller tappet follower and exhaust camshaft if scored",
-      "Replace in-tank low pressure fuel delivery pump"
-    ],
-    "difficulty": "Advanced"
-  },
-  {
-    "code": "C1503",
-    "title": "Motor Driven Power Steering (MDPS) - Torque Sensor Error",
-    "category": "Hyundai/Kia Steering & Chassis",
-    "meaning": "Electronic Power Steering (MDPS) ECU detected abnormal voltage differential across steering column optical/magnetic torque sensor coils.",
-    "symptoms": [
-      "Steering wheel icon warning light illuminated on cluster",
-      "Heavy manual steering effort (power assist abruptly cut)",
-      "Notchy or clicking feeling when turning steering wheel"
-    ],
-    "inspectionSteps": [
-      "Perform MDPS ASP (Absolute Steering Position) calibration zero-point relearn.",
-      "Inspect steering column flexible rubber coupling (star coupler) for disintegration/slop.",
-      "Check torque sensor harness connector under lower dash panel."
-    ],
-    "verifiedFixes": [
-      "Calibrate Absolute Steering Position (ASP) with diagnostic tool",
-      "Replace steering column flexible rubber coupler (Service Campaign 14-ST-002)",
-      "Replace steering column MDPS torque sensor assembly"
-    ],
-    "difficulty": "Moderate"
-  },
-  {
-    "code": "B1346",
-    "title": "Driver Airbag Resistance High (1st Stage) - Clockspring Failure",
-    "category": "Hyundai/Kia Body & SRS",
-    "meaning": "SRS Airbag Control Module detected squib circuit resistance exceeding 3.5 ohms in the driver's steering wheel airbag circuit, typically caused by broken ribbon tape in the clockspring.",
-    "symptoms": [
-      "Airbag warning light illuminated constantly",
-      "Steering wheel horn or cruise control buttons intermittently inoperative",
-      "Audible rubbing or clicking noise when rotating steering wheel"
-    ],
-    "inspectionSteps": [
-      "DISCONNECT BATTERY AND WAIT 5 MINUTES before servicing steering wheel SRS system.",
-      "Measure clockspring ribbon continuity while turning steering wheel lock-to-lock.",
-      "Inspect yellow SRS squib connector behind airbag module."
-    ],
-    "verifiedFixes": [
-      "Replace steering column Clockspring assembly (contact coil)",
-      "Repair damaged steering column airbag sub-harness connector"
     ],
     "difficulty": "Moderate"
   },
@@ -1315,6 +1349,29 @@
       "Data unavailable publicly, contact an official repair center for details."
     ],
     "difficulty": "Moderate"
+  },
+  {
+    "code": "P1180",
+    "title": "High Pressure Fuel System - Pressure Low",
+    "category": "Hyundai/Kia Powertrain",
+    "meaning": "High Pressure Fuel Pump (HPFP) driven by camshaft lobe failed to deliver commanded rail pressure under high load.",
+    "symptoms": [
+      "Check Engine Light on",
+      "Engine sputtering or going flat above 3500 RPM",
+      "Long cranking time before starting",
+      "Vehicle enters reduced power mode"
+    ],
+    "inspectionSteps": [
+      "Monitor live high-pressure fuel rail sensor PID during wide-open throttle test.",
+      "Remove mechanical HPFP from valve cover and inspect tappet roller follower for wear against camshaft lobe.",
+      "Test low-pressure in-tank fuel pump delivery (approx. 5-6 bar supply)."
+    ],
+    "verifiedFixes": [
+      "Replace mechanical High Pressure Fuel Pump (HPFP)",
+      "Replace worn HPFP roller tappet follower and exhaust camshaft if scored",
+      "Replace in-tank low pressure fuel delivery pump"
+    ],
+    "difficulty": "Advanced"
   },
   {
     "code": "P1181",
@@ -3542,6 +3599,29 @@
       "Data unavailable publicly, contact an official repair center for details."
     ],
     "difficulty": "Moderate"
+  },
+  {
+    "code": "P1326",
+    "title": "Knock Sensor Detection System (KSDS) - Engine Limp Home Mode",
+    "category": "Hyundai/Kia Powertrain",
+    "meaning": "Knock Sensor Detection System (KSDS) algorithm detected abnormal high-frequency engine vibration frequencies characteristic of severe connecting rod bearing wear / clearance play (Technical Service Bulletin 21-01-052H). ECM forced vehicle into 1,800-2,000 RPM Limp-Home Mode.",
+    "symptoms": [
+      "Flashing Check Engine Light (MIL)",
+      "Engine throttled to limp-home mode (max 1800-2000 RPM)",
+      "Audible bottom-end rod bearing knock under light acceleration",
+      "Loss of acceleration and passing power on highway"
+    ],
+    "inspectionSteps": [
+      "DO NOT clear code before documenting freeze frame data for Hyundai/Kia extended engine warranty claim (Campaign 953 / T3G).",
+      "Perform Hyundai/Kia Bearing Clearance Test (BCT) using factory SST or specialized acoustic tool.",
+      "Inspect engine oil level, oil filter condition, and check oil pan for bronze/metallic bearing glitter.",
+      "Verify knock sensor resistance and wiring harness sub-assembly near starter motor."
+    ],
+    "verifiedFixes": [
+      "Complete engine short-block or long-block replacement under Hyundai/Kia extended lifetime bearing warranty",
+      "Update ECM KSDS software calibration and replace knock sensor wiring harness if bearing clearance test passes"
+    ],
+    "difficulty": "Advanced"
   },
   {
     "code": "P1336",
@@ -7095,5 +7175,27 @@
       "Data unavailable publicly, contact an official repair center for details."
     ],
     "difficulty": "Moderate"
+  },
+  {
+    "code": "P1690",
+    "title": "SMARTRA (Smart Key / Immobilizer) - No Response",
+    "category": "Body System (BCM, Lighting, Airbags, Climate)",
+    "meaning": "PCM failed to receive authorization challenge reply from SMARTRA immobilizer control unit on ignition key turn. Documented community repair for Hyundai Accent, Elantra, Sonata, Kia Soul, Rio, Optima.",
+    "symptoms": [
+      "Engine cranks vigorously but will not start / fire",
+      "Immobilizer key indicator light on dash does not illuminate or blinks rapidly",
+      "Intermittent starting failure in humid weather"
+    ],
+    "inspectionSteps": [
+      "Observe instrument cluster on key ON: the yellow \"car with key\" icon should illuminate solid. If absent, immobilizer has not recognized transponder.",
+      "Check wiring harness connector M02-A connecting the antenna coil ring around key ignition barrel to SMARTRA harness under steering column.",
+      "Inspect female terminals of connector for loose pin tension (pin fitment spread) or fretting oxidation."
+    ],
+    "verifiedFixes": [
+      "Disconnect SMARTRA antenna coil connector, tighten female pin tension using precision probe tool, spray with DeoxIT / electrical contact cleaner, and reconnect firmly.",
+      "Replace ignition lock cylinder antenna coil ring if terminal impedance is open circuit."
+    ],
+    "difficulty": "Beginner",
+    "isCommunitySourced": true
   }
 ]

@@ -101,6 +101,7 @@ fun DiagnosticsScreen(
                     selectedCode = selectedDtc?.code,
                     moduleReports = moduleReports,
                     isScanning = isScanning,
+                    vehicleMake = vehicleMake,
                     onScanAllModules = onScanAllModules,
                     onSelectCode = { code -> onSelectDtc(DtcRepository.get(code, vehicleMake)) },
                     onOpenClearDialog = { showClearWarningDialog = true }
@@ -139,6 +140,7 @@ fun DiagnosticsScreen(
                     selectedCode = null,
                     moduleReports = moduleReports,
                     isScanning = isScanning,
+                    vehicleMake = vehicleMake,
                     onScanAllModules = onScanAllModules,
                     onSelectCode = { code -> onSelectDtc(DtcRepository.get(code, vehicleMake)) },
                     onOpenClearDialog = { showClearWarningDialog = true }
@@ -185,6 +187,7 @@ private fun DtcListSection(
     selectedCode: String?,
     moduleReports: List<ModuleDtcReport> = emptyList(),
     isScanning: Boolean = false,
+    vehicleMake: String? = null,
     onScanAllModules: () -> Unit = {},
     onSelectCode: (String) -> Unit,
     onOpenClearDialog: () -> Unit
@@ -270,6 +273,7 @@ private fun DtcListSection(
                         val originModule = moduleReports.find { it.storedCodes.contains(code) }?.module?.badge
                         DtcItemRow(
                             code = code,
+                            vehicleMake = vehicleMake,
                             moduleBadge = originModule,
                             isPending = false,
                             isSelected = (selectedCode == code),
@@ -286,6 +290,7 @@ private fun DtcListSection(
                         val originModule = moduleReports.find { it.pendingCodes.contains(code) }?.module?.badge
                         DtcItemRow(
                             code = code,
+                            vehicleMake = vehicleMake,
                             moduleBadge = originModule,
                             isPending = true,
                             isSelected = (selectedCode == code),
@@ -354,12 +359,13 @@ private fun MultiModuleHealthChips(
 @Composable
 private fun DtcItemRow(
     code: String,
+    vehicleMake: String? = null,
     moduleBadge: String? = null,
     isPending: Boolean,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val dtcInfo = remember(code) { DtcRepository.get(code) }
+    val dtcInfo = remember(code, vehicleMake) { DtcRepository.get(code, vehicleMake ?: "") }
     val borderColor = if (isSelected) RaceRed else BorderSubtle
 
     Surface(
@@ -398,6 +404,22 @@ private fun DtcItemRow(
                                 fontSize = 9.sp,
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+                            )
+                        }
+                    }
+                    if (dtcInfo.isCommunitySourced) {
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Surface(
+                            color = AlertAmber.copy(alpha = 0.15f),
+                            shape = RoundedCornerShape(4.dp),
+                            modifier = Modifier.border(1.dp, AlertAmber.copy(alpha = 0.7f), RoundedCornerShape(4.dp))
+                        ) {
+                            Text(
+                                text = "COMMUNITY",
+                                color = AlertAmber,
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp)
                             )
                         }
                     }
@@ -454,6 +476,46 @@ fun DtcDetailGuideCard(
                 Spacer(modifier = Modifier.height(16.dp))
                 HorizontalDivider(color = BorderSubtle)
                 Spacer(modifier = Modifier.height(16.dp))
+
+                // Prominent Orange/Amber Community Sourced Disclaimer Banner
+                if (dtcInfo.isCommunitySourced) {
+                    Surface(
+                        color = AlertAmber.copy(alpha = 0.12f),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp)
+                            .border(1.5.dp, AlertAmber, RoundedCornerShape(12.dp))
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(14.dp),
+                            verticalAlignment = Alignment.Top
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Warning,
+                                contentDescription = null,
+                                tint = AlertAmber,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Spacer(Modifier.width(12.dp))
+                            Column {
+                                Text(
+                                    text = "COMMUNITY-SOURCED FIELD REPAIR DATA",
+                                    color = AlertAmber,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Spacer(Modifier.height(4.dp))
+                                Text(
+                                    text = "This repair procedure is compiled from technician forum consensus, mechanic field logs, and enthusiast community teardowns. Accurate results may vary depending on vehicle trim, engine, and operating conditions.\n\nFor official factory specifications, wiring schematics, and manufacturer service bulletins, consult an authorized OEM repair facility.",
+                                    color = TextPrimary,
+                                    fontSize = 12.sp,
+                                    lineHeight = 17.sp
+                                )
+                            }
+                        }
+                    }
+                }
 
                 // Mode 02 Freeze Frame Engine Snapshot (if recorded for this DTC)
                 if (freezeFrame != null) {

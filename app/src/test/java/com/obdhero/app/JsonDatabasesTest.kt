@@ -247,4 +247,70 @@ class JsonDatabasesTest {
         assertNotNull("B1346 driver airbag clockspring code must be present", b1346)
         assertTrue(b1346!!.title.contains("Airbag") || b1346.meaning.contains("Airbag"))
     }
+
+    @Test
+    fun testCommunitySourcedDtcsAcrossManufacturers() {
+        val type = object : TypeToken<List<DtcInfo>>() {}.type
+
+        // 1. Generic P0300 should NOT be community sourced (SAE Standard)
+        val genericFile = File("src/main/assets/dtc/dtc_generic.json")
+        val genericDtcs: List<DtcInfo> = gson.fromJson(FileReader(genericFile), type)
+        val p0300 = genericDtcs.find { it.code == "P0300" }
+        assertNotNull("P0300 must exist", p0300)
+        assertFalse("P0300 must not be community sourced", p0300!!.isCommunitySourced)
+
+        // 2. Ford Community Codes
+        val fordFile = File("src/main/assets/dtc/dtc_ford.json")
+        val fordDtcs: List<DtcInfo> = gson.fromJson(FileReader(fordFile), type)
+        val p144c = fordDtcs.find { it.code == "P144C" }
+        assertNotNull("Ford P144C must exist", p144c)
+        assertTrue("Ford P144C must be marked community sourced", p144c!!.isCommunitySourced)
+        val p2196 = fordDtcs.find { it.code == "P2196" }
+        assertNotNull("Ford P2196 must exist", p2196)
+        assertTrue("Ford P2196 must be marked community sourced", p2196!!.isCommunitySourced)
+
+        // 3. GM Community Codes
+        val gmFile = File("src/main/assets/dtc/dtc_gm.json")
+        val gmDtcs: List<DtcInfo> = gson.fromJson(FileReader(gmFile), type)
+        val p1682 = gmDtcs.find { it.code == "P1682" }
+        assertNotNull("GM P1682 must exist", p1682)
+        assertTrue("GM P1682 must be marked community sourced", p1682!!.isCommunitySourced)
+        val p0741 = gmDtcs.find { it.code == "P0741" }
+        assertNotNull("GM P0741 must exist", p0741)
+        assertTrue("GM P0741 must be marked community sourced", p0741!!.isCommunitySourced)
+
+        // 4. Chrysler Community Codes
+        val chryslerFile = File("src/main/assets/dtc/dtc_chrysler.json")
+        val chryslerDtcs: List<DtcInfo> = gson.fromJson(FileReader(chryslerFile), type)
+        val p1288 = chryslerDtcs.find { it.code == "P1288" }
+        assertNotNull("Chrysler P1288 must exist", p1288)
+        assertTrue("Chrysler P1288 must be marked community sourced", p1288!!.isCommunitySourced)
+        val c121a = chryslerDtcs.find { it.code == "C121A" }
+        assertNotNull("Chrysler C121A must exist", c121a)
+        assertTrue("Chrysler C121A must be marked community sourced", c121a!!.isCommunitySourced)
+
+        // 5. Hyundai / Kia Community Codes
+        val hkFile = File("src/main/assets/dtc/dtc_hyundai_kia.json")
+        val hkDtcs: List<DtcInfo> = gson.fromJson(FileReader(hkFile), type)
+        val p1690 = hkDtcs.find { it.code == "P1690" }
+        assertNotNull("Hyundai/Kia P1690 must exist", p1690)
+        assertTrue("Hyundai/Kia P1690 must be marked community sourced", p1690!!.isCommunitySourced)
+        val c1200 = hkDtcs.find { it.code == "C1200" }
+        assertNotNull("Hyundai/Kia C1200 must exist", c1200)
+        assertTrue("Hyundai/Kia C1200 must be marked community sourced", c1200!!.isCommunitySourced)
+
+        // 6. BMW Community Codes
+        val bmwFile = File("src/main/assets/dtc/dtc_bmw.json")
+        val bmwDtcs: List<DtcInfo> = gson.fromJson(FileReader(bmwFile), type)
+        val p1030 = bmwDtcs.find { it.code == "P1030" }
+        assertNotNull("BMW P1030 must exist", p1030)
+        assertTrue("BMW P1030 must be marked community sourced", p1030!!.isCommunitySourced)
+
+        // 7. Mazda Community Codes
+        val mazdaFile = File("src/main/assets/dtc/dtc_mazda.json")
+        val mazdaDtcs: List<DtcInfo> = gson.fromJson(FileReader(mazdaFile), type)
+        val p011a = mazdaDtcs.find { it.code == "P011A" }
+        assertNotNull("Mazda P011A must exist", p011a)
+        assertTrue("Mazda P011A must be marked community sourced", p011a!!.isCommunitySourced)
+    }
 }

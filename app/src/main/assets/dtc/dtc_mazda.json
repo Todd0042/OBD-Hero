@@ -39,6 +39,52 @@
     "difficulty": "Moderate"
   },
   {
+    "code": "P011A",
+    "title": "Engine Coolant Temperature Sensor 1/2 Correlation",
+    "category": "Powertrain System (Engine & Transmission)",
+    "meaning": "PCM detected temperature discrepancy between Engine Coolant Temp (ECT) sensor 1 (cylinder head) and sensor 2 (radiator outlet) on Skyactiv-G 2.0L / 2.5L engines (Mazda 3, CX-5, Mazda 6, MX-5 ND).",
+    "symptoms": [
+      "Check Engine light illuminated",
+      "Heater blows lukewarm air during winter driving",
+      "Engine slow to enter closed-loop fuel control",
+      "Radiator cooling fan running continuously"
+    ],
+    "inspectionSteps": [
+      "Compare ECT1 and ECT2 live data temperature readings during engine warm-up on scan tool.",
+      "Inspect coolant control valve (electric thermostat multi-way valve) for sticking in semi-open position.",
+      "Check for air pockets in heater core; bleed cooling system using funnel adapter.",
+      "Review Mazda Technical Service Bulletin TSB 01-009/19."
+    ],
+    "verifiedFixes": [
+      "Replace electric coolant control valve assembly with updated Mazda revision part (TSB 01-009/19).",
+      "Perform vacuum refill of cooling system with genuine Mazda FL22 Long Life coolant."
+    ],
+    "difficulty": "Moderate",
+    "isCommunitySourced": true
+  },
+  {
+    "code": "P0421",
+    "title": "Warm Up Catalyst Efficiency Below Threshold (Bank 1)",
+    "category": "Powertrain System (Engine & Transmission)",
+    "meaning": "PCM catalytic converter efficiency monitor detected Bank 1 converter oxygen storage capacity is below threshold on Mazda 2.0L/2.5L Skyactiv.",
+    "symptoms": [
+      "Check Engine light illuminated",
+      "No perceptible change in driveability or performance"
+    ],
+    "inspectionSteps": [
+      "Inspect 4-2-1 factory tuned exhaust manifold (header) and donut gasket for pinhole exhaust leaks upstream of secondary O2 sensor drawing in false ambient air.",
+      "Check for Mazda PCM calibration software update per TSB 01-010/18 (overly sensitive catalyst deterioration monitoring logic).",
+      "Log upstream A/F sensor and downstream O2 sensor voltages on highway cruise; downstream should hold flat 0.6-0.8V."
+    ],
+    "verifiedFixes": [
+      "Reprogram PCM with updated Mazda calibration file per TSB 01-010/18 before replacing catalytic converter.",
+      "Replace leaking exhaust manifold flange gasket / donut seal.",
+      "Replace Bank 1 catalytic converter exhaust manifold assembly if converter honeycomb substrate is degraded."
+    ],
+    "difficulty": "Moderate",
+    "isCommunitySourced": true
+  },
+  {
     "code": "P05A0",
     "title": "Active Grille Air Shutter 'A' Stuck",
     "category": "Mazda Gen 7 Aerodynamics / Cooling",

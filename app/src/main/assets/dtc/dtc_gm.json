@@ -1,47 +1,162 @@
 [
   {
-    "code": "P0521",
-    "title": "Engine Oil Pressure Sensor Performance - LS / LT V8",
-    "category": "GM Powertrain",
-    "meaning": "ECM registered oil pressure sensor voltage inconsistent with engine speed and oil temperature. On GM Gen IV (5.3L/6.2L Vortec) and Gen V (LT1/L83/L86) engines, the tiny cylindrical mesh filter screen located directly underneath the oil pressure sensor becomes plugged with carbon/sludge, starving the sensor of actual oil pressure (GM Bulletin 10-06-01-008D).",
+    "code": "C0035",
+    "title": "Left Front Wheel Speed Sensor Circuit",
+    "category": "Chassis System (ABS, Traction, Steering, Suspension)",
+    "meaning": "EBCM (Electronic Brake Control Module) lost signal or detected erratic pulse train from front left wheel speed sensor on GM trucks and SUVs (Silverado, Tahoe, Sierra, Yukon).",
     "symptoms": [
-      "Check Engine Light on and dashboard 'Oil Pressure Low - Stop Engine' chime",
-      "Instrument cluster oil pressure gauge drops to 0 PSI or reads erratic 80 PSI pegged",
-      "No mechanical engine tapping or lifter noise present (when gauge is false reading)"
+      "ABS and Stabilitrak warning lights illuminated",
+      "Unwanted low-speed ABS activation when coming to a gentle stop on dry pavement",
+      "Service 4WD message"
     ],
     "inspectionSteps": [
-      "Verify actual mechanical engine oil pressure immediately with a physical pressure gauge hooked to the oil filter bypass port (minimum 6 PSI at hot idle, 24 PSI at 2000 RPM) to rule out oil pump failure.",
-      "Remove oil pressure sensor at rear of intake manifold behind cylinder 7.",
-      "Use a pick tool to reach down into the threaded oil port and remove the small plastic mesh filter screen (VLOM screen).",
-      "Inspect screen for heavy carbon varnish, metal debris, or sludged blockage."
+      "Inspect wheel speed sensor wiring harness where it routes along upper control arm and inner fender liner for chafing or broken copper wire.",
+      "Disconnect sensor pigtail and measure AC voltage while spinning wheel by hand (minimum 100 mV AC).",
+      "Inspect tone ring inside front wheel bearing hub assembly for rust scaling or chipped teeth."
     ],
     "verifiedFixes": [
-      "Clean or replace the small oil pressure sensor micro-screen filter underneath the sensor",
-      "Replace faulty Engine Oil Pressure Sensor with genuine GM/ACDelco unit",
-      "Perform engine oil and filter flush with OEM PF63/PF48 filter"
+      "Repair or replace chafed wheel speed sensor wiring harness jumper pigtail, securing harness clear of suspension travel.",
+      "Replace front wheel hub and bearing assembly if internal tone ring or sensor is degraded by rust jacking."
     ],
-    "difficulty": "Moderate"
+    "difficulty": "Moderate",
+    "isCommunitySourced": true
   },
   {
-    "code": "P1189",
-    "title": "Engine Oil Pressure Switch Circuit - Low Voltage",
-    "category": "GM Powertrain",
-    "meaning": "ECM detected electrical short to ground or open circuit on the engine oil pressure switch signal circuit wire.",
+    "code": "C0040",
+    "title": "Right Front Wheel Speed Sensor Circuit",
+    "category": "Chassis System (ABS, Traction, Steering, Suspension)",
+    "meaning": "EBCM lost signal from right front wheel speed sensor on GM GMT900 / K2XX platform vehicles.",
     "symptoms": [
-      "Check Engine Light illuminated",
-      "Oil pressure warning light on cluster illuminated continuously",
-      "Oil pressure readout reads maximum pegged or minimum flat"
+      "ABS and traction control dash warnings",
+      "Low speed brake pedal buzz on dry stops"
     ],
     "inspectionSteps": [
-      "Inspect wiring pigtail connector at the rear of engine block for heat damage from exhaust manifold.",
-      "Measure reference voltage from ECM (approx. 5.0V on 3-wire sensors, 12V on switches).",
-      "Test switch continuity to engine ground."
+      "Inspect right front wheel speed sensor wire routing near shock absorber tower.",
+      "Test harness continuity back to EBCM main connector."
     ],
     "verifiedFixes": [
-      "Replace faulty GM oil pressure switch/sensor assembly",
-      "Repair melted or shorted sensor harness wiring near firewall/exhaust"
+      "Replace right front ABS wheel speed sensor harness pigtail.",
+      "Replace front right wheel bearing hub assembly."
     ],
-    "difficulty": "Moderate"
+    "difficulty": "Moderate",
+    "isCommunitySourced": true
+  },
+  {
+    "code": "P0016",
+    "title": "Crankshaft Position - Camshaft Position Correlation (Bank 1 Sensor A)",
+    "category": "Powertrain System (Engine & Transmission)",
+    "meaning": "Timing correlation between crank sensor and intake camshaft is outside synchronization window. Notoriously common on GM 2.4L Ecotec (Equinox, Terrain, Malibu) and 3.6L High Feature V6 (Traverse, Acadia, Enclave, Camaro).",
+    "symptoms": [
+      "Rattling noise on cold start",
+      "Rough idle and stalling at stops",
+      "Reduced engine power message",
+      "Misfires under load"
+    ],
+    "inspectionSteps": [
+      "Remove variable valve timing (VVT) actuator solenoids and inspect micro-screens for metal shavings, debris, or missing screen mesh.",
+      "Verify engine oil level and condition; low oil pressure disables VVT phaser locking pin.",
+      "Check timing chain slack by removing oil fill cap or valve cover and using pick to test chain deflection between cam gears.",
+      "Monitor CMP and CKP live data degrees on scanner during acceleration."
+    ],
+    "verifiedFixes": [
+      "Replace primary and secondary timing chains, hydraulic tensioners, and revised chain guide shoes.",
+      "Replace intake and exhaust VVT camshaft actuator solenoids with updated GM parts.",
+      "Perform engine oil and filter flush."
+    ],
+    "difficulty": "Advanced",
+    "isCommunitySourced": true
+  },
+  {
+    "code": "P0017",
+    "title": "Crankshaft Position - Camshaft Position Correlation (Bank 1 Sensor B)",
+    "category": "Powertrain System (Engine & Transmission)",
+    "meaning": "Correlation mismatch between crankshaft and Bank 1 exhaust camshaft on GM Ecotec 2.4L and 3.6L V6 engines.",
+    "symptoms": [
+      "Extended cranking time",
+      "Engine rattling sound from timing cover",
+      "Loss of low-end torque"
+    ],
+    "inspectionSteps": [
+      "Check Bank 1 exhaust camshaft actuator solenoid screens for sludge blockage.",
+      "Verify oil pressure at idle (minimum 25-30 PSI hot).",
+      "Measure timing chain stretch with timing gauge."
+    ],
+    "verifiedFixes": [
+      "Replace timing chain kit with updated GM guides and hydraulic tensioners.",
+      "Replace exhaust camshaft actuator solenoid valve."
+    ],
+    "difficulty": "Advanced",
+    "isCommunitySourced": true
+  },
+  {
+    "code": "P0300",
+    "title": "Engine Misfire Detected - Active Fuel Management (AFM) Cylinder Deactivation",
+    "category": "GM Powertrain",
+    "meaning": "ECM detected erratic crankshaft deceleration pulses indicating cylinder misfire. On GM 5.3L and 6.2L V8 engines equipped with AFM / DFM, collapsed hydraulic deactivation lifters or bent pushrods on cylinders 1, 4, 6, or 7 are a primary cause (TSB 21-NA-096).",
+    "symptoms": [
+      "Flashing Check Engine Light under acceleration",
+      "Loud, rhythmic metallic ticking noise from cylinder head / valve cover",
+      "Rough engine vibration and shaking at idle",
+      "Stabilitrak / Traction Control service warning lights illuminated"
+    ],
+    "inspectionSteps": [
+      "Scan live misfire counters to identify specific failing cylinder (typically cylinder 1, 4, 6, or 7).",
+      "Remove valve cover and inspect rocker arm movement during manual engine rotation; check for stuck collapsed lifter with excessive valve lash play.",
+      "Remove pushrod and check on flat surface for curvature/bend.",
+      "Inspect VLOM (Valve Lifter Oil Manifold) solenoids for sticking."
+    ],
+    "verifiedFixes": [
+      "Replace collapsed AFM/DFM hydraulic valve lifters, lifter plastic guide trays, and bent pushrods",
+      "Replace Valve Lifter Oil Manifold (VLOM) assembly",
+      "AFM/DFM hardware delete with non-AFM camshaft and lifters (common enthusiast fix)"
+    ],
+    "difficulty": "Advanced"
+  },
+  {
+    "code": "P0449",
+    "title": "Evaporative Emission (EVAP) Vent Solenoid Control Circuit",
+    "category": "GM Powertrain",
+    "meaning": "ECM detected open circuit, short to voltage, or short to ground on the control circuit of the EVAP canister vent solenoid valve on Silverado, Tahoe, Suburban, Sierra, or Corvette.",
+    "symptoms": [
+      "Check Engine Light on",
+      "No perceptible change in engine performance or driveability",
+      "Vehicle fails state emissions smog inspection"
+    ],
+    "inspectionSteps": [
+      "Inspect EVAP vent solenoid valve mounted near the spare tire / fuel tank for road dirt contamination and salt corrosion.",
+      "Disconnect vent solenoid connector and test for battery voltage (12V) on power feed wire with key on.",
+      "Command vent solenoid ON/OFF with bi-directional scan tool and check for distinct audible click."
+    ],
+    "verifiedFixes": [
+      "Replace EVAP canister vent solenoid valve assembly with updated GM remote-breather kit",
+      "Repair broken chassis wiring harness near rear axle",
+      "Clean or replace fuel vapor canister"
+    ],
+    "difficulty": "Beginner"
+  },
+  {
+    "code": "P0521",
+    "title": "Engine Oil Pressure Sensor / Switch Range / Performance",
+    "category": "Powertrain System (Engine & Transmission)",
+    "meaning": "PCM detected engine oil pressure reading is inconsistent with calculated RPM and temperature model on GM Gen IV / Gen V V8 engines (5.3L, 6.2L with AFM / DFM).",
+    "symptoms": [
+      "Oil pressure gauge drops to 0 PSI on cluster",
+      "\"Oil Pressure Low - Turn Off Engine\" warning chime",
+      "Active Fuel Management lifter tick"
+    ],
+    "inspectionSteps": [
+      "Remove oil pressure sensor located behind intake manifold at rear of engine block.",
+      "Inspect the small cylindrical oil pressure sensor filter screen (VLOM screen) located directly underneath sensor bore using pick tool.",
+      "Check if screen is clogged with carbon or sludge, restricting oil flow to sensor.",
+      "Install manual mechanical oil pressure gauge to verify actual mechanical oil pressure before assuming engine damage."
+    ],
+    "verifiedFixes": [
+      "Clean or replace the small mesh filter screen (GM part 12585328) located under oil pressure sending unit.",
+      "Replace oil pressure sensor with genuine AC Delco OE sensor (aftermarket sensors frequently fail or read inaccurate resistance).",
+      "Perform engine oil flush if sludge was found on screen."
+    ],
+    "difficulty": "Moderate",
+    "isCommunitySourced": true
   },
   {
     "code": "P069E",
@@ -67,50 +182,27 @@
     "difficulty": "Moderate"
   },
   {
-    "code": "P0449",
-    "title": "Evaporative Emission (EVAP) Vent Solenoid Control Circuit",
-    "category": "GM Powertrain",
-    "meaning": "ECM detected open circuit, short to voltage, or short to ground on the control circuit of the EVAP canister vent solenoid valve on Silverado, Tahoe, Suburban, Sierra, or Corvette.",
+    "code": "P0741",
+    "title": "Torque Converter Clutch (TCC) System Performance / Stuck Off",
+    "category": "Powertrain System (Engine & Transmission)",
+    "meaning": "TCM detected excessive torque converter slip (>100 RPM) when lockup clutch was commanded ON. Common on GM 6L80, 6L90, and 8L90 automatic transmissions (Silverado, Sierra, Corvette, Camaro, Escalade).",
     "symptoms": [
-      "Check Engine Light on",
-      "No perceptible change in engine performance or driveability",
-      "Vehicle fails state emissions smog inspection"
+      "Transmission shudder or vibration at 35-55 MPH resembling driving over rumble strips",
+      "Higher highway engine RPM and reduced fuel economy",
+      "Delayed or harsh gear shifts"
     ],
     "inspectionSteps": [
-      "Inspect EVAP vent solenoid valve mounted near the spare tire / fuel tank for road dirt contamination and salt corrosion.",
-      "Disconnect vent solenoid connector and test for battery voltage (12V) on power feed wire with key on.",
-      "Command vent solenoid ON/OFF with bi-directional scan tool and check for distinct audible click."
+      "Log TCC Slip RPM and TCC Duty Cycle while cruising at 45 MPH on flat road; slip should be near 0-10 RPM when locked.",
+      "Inspect transmission fluid condition on dipstick or check plug for burnt odor, dark discoloration, or fine bronze glitter.",
+      "Review GM Service Bulletin TSB 18-NA-355 regarding fluid moisture absorption and shudder."
     ],
     "verifiedFixes": [
-      "Replace EVAP canister vent solenoid valve assembly with updated GM remote-breather kit",
-      "Repair broken chassis wiring harness near rear axle",
-      "Clean or replace fuel vapor canister"
+      "Perform complete transmission triple-flush procedure using Mobil 1 Synthetic LV ATF HP fluid per GM TSB 18-NA-355.",
+      "If shudder or slip persists after fluid flush, replace torque converter before failing clutch friction material contaminates valve body and pump.",
+      "Inspect and install upgraded thermal bypass valve (cooling valve) to lower operating temperature."
     ],
-    "difficulty": "Beginner"
-  },
-  {
-    "code": "P0300",
-    "title": "Engine Misfire Detected - Active Fuel Management (AFM) Cylinder Deactivation",
-    "category": "GM Powertrain",
-    "meaning": "ECM detected erratic crankshaft deceleration pulses indicating cylinder misfire. On GM 5.3L and 6.2L V8 engines equipped with AFM / DFM, collapsed hydraulic deactivation lifters or bent pushrods on cylinders 1, 4, 6, or 7 are a primary cause (TSB 21-NA-096).",
-    "symptoms": [
-      "Flashing Check Engine Light under acceleration",
-      "Loud, rhythmic metallic ticking noise from cylinder head / valve cover",
-      "Rough engine vibration and shaking at idle",
-      "Stabilitrak / Traction Control service warning lights illuminated"
-    ],
-    "inspectionSteps": [
-      "Scan live misfire counters to identify specific failing cylinder (typically cylinder 1, 4, 6, or 7).",
-      "Remove valve cover and inspect rocker arm movement during manual engine rotation; check for stuck collapsed lifter with excessive valve lash play.",
-      "Remove pushrod and check on flat surface for curvature/bend.",
-      "Inspect VLOM (Valve Lifter Oil Manifold) solenoids for sticking."
-    ],
-    "verifiedFixes": [
-      "Replace collapsed AFM/DFM hydraulic valve lifters, lifter plastic guide trays, and bent pushrods",
-      "Replace Valve Lifter Oil Manifold (VLOM) assembly",
-      "AFM/DFM hardware delete with non-AFM camshaft and lifters (common enthusiast fix)"
-    ],
-    "difficulty": "Advanced"
+    "difficulty": "Advanced",
+    "isCommunitySourced": true
   },
   {
     "code": "P1100",
@@ -1401,6 +1493,27 @@
     ],
     "verifiedFixes": [
       "Data unavailable publicly, contact an official repair center for details."
+    ],
+    "difficulty": "Moderate"
+  },
+  {
+    "code": "P1189",
+    "title": "Engine Oil Pressure Switch Circuit - Low Voltage",
+    "category": "GM Powertrain",
+    "meaning": "ECM detected electrical short to ground or open circuit on the engine oil pressure switch signal circuit wire.",
+    "symptoms": [
+      "Check Engine Light illuminated",
+      "Oil pressure warning light on cluster illuminated continuously",
+      "Oil pressure readout reads maximum pegged or minimum flat"
+    ],
+    "inspectionSteps": [
+      "Inspect wiring pigtail connector at the rear of engine block for heat damage from exhaust manifold.",
+      "Measure reference voltage from ECM (approx. 5.0V on 3-wire sensors, 12V on switches).",
+      "Test switch continuity to engine ground."
+    ],
+    "verifiedFixes": [
+      "Replace faulty GM oil pressure switch/sensor assembly",
+      "Repair melted or shorted sensor harness wiring near firewall/exhaust"
     ],
     "difficulty": "Moderate"
   },
@@ -7081,5 +7194,30 @@
       "Data unavailable publicly, contact an official repair center for details."
     ],
     "difficulty": "Moderate"
+  },
+  {
+    "code": "P1682",
+    "title": "Ignition 1 Switch Circuit 2 Correlation",
+    "category": "Powertrain System (Engine & Transmission)",
+    "meaning": "ECM detected a voltage discrepancy between Ignition 1 circuit and Ignition Switch circuit 2. Widely documented across GM GMT900 trucks (Silverado, Tahoe, Suburban) and GM Epsilon platforms (Malibu, Impala, Cruze).",
+    "symptoms": [
+      "Intermittent no-crank / no-start",
+      "Engine stalls immediately after starting",
+      "Stabilitrak / Traction Control service warnings flashing",
+      "Gauges sweep erratically on instrument cluster"
+    ],
+    "inspectionSteps": [
+      "Inspect Underhood Bus Electrical Center (UBEC fuse box) ignition main relay (RUN/CRANK relay). Swap with headlight or horn relay to test.",
+      "Inspect underside connectors of fuse block for terminal fretting corrosion or bent female spade pins.",
+      "Check ignition switch harness connector at steering column for high-resistance pin fitment.",
+      "Measure voltage drop between battery positive and ECM ignition feed fuses during cranking."
+    ],
+    "verifiedFixes": [
+      "Replace UBEC Run/Crank and Powertrain ignition relays with genuine OEM GM relays.",
+      "Disassemble UBEC fuse block, clean terminal fretting corrosion with contact cleaner, and apply dielectric grease to connector pins.",
+      "Replace electrical ignition switch assembly on steering column."
+    ],
+    "difficulty": "Moderate",
+    "isCommunitySourced": true
   }
 ]

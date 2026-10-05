@@ -11,7 +11,8 @@ data class DtcInfo(
     val symptoms: List<String>,
     val inspectionSteps: List<String>,
     val verifiedFixes: List<String>,
-    val difficulty: String = "Moderate" // Beginner, Moderate, Advanced
+    val difficulty: String = "Moderate", // Beginner, Moderate, Advanced
+    val isCommunitySourced: Boolean = false
 )
 
 /**
