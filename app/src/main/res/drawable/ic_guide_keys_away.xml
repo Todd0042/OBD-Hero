@@ -1,0 +1,34 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="140dp"
+    android:viewportWidth="200"
+    android:viewportHeight="140">
+    <!-- Vehicle Silhouette -->
+    <path
+        android:strokeColor="#222B3D"
+        android:strokeWidth="3"
+        android:fillColor="#111622"
+        android:pathData="M20,95 L35,65 L70,60 L85,95 Z" />
+    <!-- Distance Arrow -->
+    <path
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="3"
+        android:pathData="M95,85 L145,85" />
+    <!-- Arrow Head -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M142,80 L152,85 L142,90 Z" />
+    <!-- Key Fob Shell -->
+    <path
+        android:strokeColor="#FFB703"
+        android:strokeWidth="3"
+        android:fillColor="#181F30"
+        android:pathData="M160,65 C155,65 152,70 152,75 L152,95 C152,102 158,105 165,105 C172,105 178,102 178,95 L178,75 C178,70 175,65 168,65 Z" />
+    <!-- BMW Emblem / Buttons -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M165,75 A3,3 0 1,0 165,81 A3,3 0 1,0 165,75 Z" />
+    <path
+        android:fillColor="#64748B"
+        android:pathData="M162,88 L168,88 L168,90 L162,90 Z" />
+</vector>

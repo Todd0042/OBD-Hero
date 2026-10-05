@@ -1,0 +1,24 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="140dp"
+    android:viewportWidth="200"
+    android:viewportHeight="140">
+    <!-- Window Frame -->
+    <path
+        android:strokeColor="#222B3D"
+        android:strokeWidth="4"
+        android:fillColor="#111622"
+        android:pathData="M20,20 L180,20 L180,120 L20,120 Z" />
+    <!-- Window Glass Pane rolled down half way -->
+    <path
+        android:fillColor="#182A40"
+        android:pathData="M25,65 L175,65 L175,115 L25,115 Z" />
+    <!-- Arrow pointing down -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M100,28 L100,50 L92,50 L100,60 L108,50 L100,50 Z" />
+    <!-- Lock Guard Icon -->
+    <path
+        android:fillColor="#06D6A0"
+        android:pathData="M100,75 C95,75 92,79 92,84 L92,88 L88,88 L88,104 L112,104 L112,88 L108,88 L108,84 C108,79 105,75 100,75 Z M100,78 C103,78 105,80 105,84 L105,88 L95,88 L95,84 C95,80 97,78 100,78 Z" />
+</vector>

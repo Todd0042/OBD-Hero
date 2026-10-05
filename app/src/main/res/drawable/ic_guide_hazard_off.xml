@@ -1,0 +1,27 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="140dp"
+    android:viewportWidth="200"
+    android:viewportHeight="140">
+    <!-- Hazard Triangle Button Housing -->
+    <path
+        android:strokeColor="#222B3D"
+        android:strokeWidth="3"
+        android:fillColor="#111622"
+        android:pathData="M70,30 L130,30 C138,30 142,34 142,42 L142,108 C142,116 138,120 130,120 L70,120 C62,120 58,116 58,108 L58,42 C58,34 62,30 70,30 Z" />
+    <!-- Outer Triangle (Darkened / Not glowing) -->
+    <path
+        android:strokeColor="#64748B"
+        android:strokeWidth="4"
+        android:pathData="M100,45 L125,95 L75,95 Z" />
+    <!-- Inner Triangle (Dark / Extinguished) -->
+    <path
+        android:strokeColor="#222B3D"
+        android:strokeWidth="2"
+        android:fillColor="#0B0E14"
+        android:pathData="M100,58 L116,90 L84,90 Z" />
+    <!-- Green Check indicating dark -->
+    <path
+        android:fillColor="#06D6A0"
+        android:pathData="M140,50 L146,56 L160,40 L163,43 L146,62 L137,53 Z" />
+</vector>

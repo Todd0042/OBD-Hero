@@ -1,0 +1,30 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="140dp"
+    android:viewportWidth="200"
+    android:viewportHeight="140">
+    <!-- Automatic Gear Shifter Surround Console -->
+    <path
+        android:strokeColor="#222B3D"
+        android:strokeWidth="3"
+        android:fillColor="#111622"
+        android:pathData="M70,30 L130,30 C140,30 145,35 145,45 L145,115 C145,125 140,130 130,130 L70,130 C60,130 55,125 55,115 L55,45 C55,35 60,30 70,30 Z" />
+    <!-- Shift Knob Shaft -->
+    <path
+        android:fillColor="#1F2636"
+        android:pathData="M92,50 L108,50 L108,90 L92,90 Z" />
+    <!-- "P" Indicator Button on Shift Knob -->
+    <path
+        android:fillColor="#05070A"
+        android:strokeColor="#64748B"
+        android:strokeWidth="2"
+        android:pathData="M88,40 L112,40 C114,40 116,42 116,44 L116,56 C116,58 114,60 112,60 L88,60 C86,60 84,58 84,56 L84,44 C84,42 86,40 88,40 Z" />
+    <!-- Shift Plate 'P' Symbol (Dark/Extinguished) -->
+    <path
+        android:fillColor="#64748B"
+        android:pathData="M98,45 L102,45 C104,45 105,46 105,48 C105,50 104,51 102,51 L98,51 Z M96,43 L96,57 L98,57 L98,52 L102,52 C105,52 107,50 107,48 C107,45 105,43 102,43 Z" />
+    <!-- Green Check indicating extinguished -->
+    <path
+        android:fillColor="#06D6A0"
+        android:pathData="M140,50 L146,56 L160,40 L163,43 L146,62 L137,53 Z" />
+</vector>

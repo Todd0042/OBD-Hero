@@ -46,6 +46,20 @@ fun BatteryCalibrationScreen(
 
     val isBmwFrm = profile?.isBmwFrmVulnerable == true
 
+    var showWalkthroughDialog by remember { mutableStateOf(false) }
+
+    if (showWalkthroughDialog && profile != null) {
+        BmwSleepWalkthroughDialog(
+            lockManager = lockManager,
+            vin = profile.vin,
+            onDismiss = { showWalkthroughDialog = false },
+            onComplete = {
+                showWalkthroughDialog = false
+                lockState = lockManager.checkState()
+            }
+        )
+    }
+
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
@@ -84,13 +98,14 @@ fun BatteryCalibrationScreen(
                 } else {
                     BmwSleepPreparationCard(
                         onStartTimer = {
-                            lockState = lockManager.startSleepSession(profile.vin, durationSeconds = 1200L)
+                            showWalkthroughDialog = true
                         }
                     )
                 }
                 Spacer(modifier = Modifier.height(20.dp))
             }
         }
+
 
         // Standard Calibration Action Card
         item {

@@ -1,0 +1,31 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="140dp"
+    android:viewportWidth="200"
+    android:viewportHeight="140">
+    <!-- Trunk Body Frame -->
+    <path
+        android:strokeColor="#222B3D"
+        android:strokeWidth="3"
+        android:fillColor="#111622"
+        android:pathData="M15,90 L60,35 L140,35 L185,90 L185,120 L15,120 Z" />
+    <!-- Trunk Lid Open -->
+    <path
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="4"
+        android:pathData="M60,35 L100,10 L140,35" />
+    <!-- Mechanical Latch Mechanism -->
+    <path
+        android:fillColor="#FFB703"
+        android:pathData="M92,75 L108,75 L108,95 L102,95 L102,83 L98,83 L98,95 L92,95 Z" />
+    <!-- Screwdriver tripping the latch -->
+    <path
+        android:strokeColor="#FF3366"
+        android:strokeWidth="4"
+        android:pathData="M125,115 L100,85" />
+    <!-- Handle of tool -->
+    <path
+        android:strokeColor="#00B4D8"
+        android:strokeWidth="7"
+        android:pathData="M140,130 L125,115" />
+</vector>
