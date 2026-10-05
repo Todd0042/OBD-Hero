@@ -74,6 +74,21 @@ data class LiveTelemetry(
     val flTempF: Int = 85,
     val frTempF: Int = 86,
     val rlTempF: Int = 88,
-    val rrTempF: Int = 87
+    val rrTempF: Int = 87,
+    // Multi-ECU Powertrain & Transmission Metrics (TCM - 0x7E1 / Mode 22)
+    val transGear: String = "D4",
+    val transTempF: Int = 168,
+    // Fuel System & Hybrid/Electrical (ECM - 0x7E0 / Mode 01)
+    val fuelLevelPct: Int = 68,
+    val instantMpg: Float = 27.4f,
+    val airFuelRatio: Float = 14.7f,
+    // Chassis & Dynamics / Steering (ABS/ESP - 0x7E2)
+    val steeringAngleDeg: Float = 0.0f,
+    val lateralG: Float = 0.02f,
+    val longitudinalG: Float = 0.05f,
+    // ECU Polling & Bus Latency Performance
+    val ecmLatencyMs: Int = 38,
+    val tcmLatencyMs: Int = 45,
+    val bcmLatencyMs: Int = 52
 )
 

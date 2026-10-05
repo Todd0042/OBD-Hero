@@ -178,7 +178,18 @@ class ObdConnectionManager {
                     flTempF = 84,
                     frTempF = 83,
                     rlTempF = 87,
-                    rrTempF = 86
+                    rrTempF = 86,
+                    transGear = if (simulatedSpeed == 0) "P" else if (simulatedSpeed < 20) "D1" else if (simulatedSpeed < 38) "D2" else if (simulatedSpeed < 55) "D3" else "D4",
+                    transTempF = 168 + (simulatedSpeed / 8),
+                    fuelLevelPct = 68,
+                    instantMpg = if (simulatedSpeed == 0) 0.0f else (simulatedSpeed * 120.0f / (simulatedRpm + 100)).coerceIn(12.0f, 48.0f),
+                    airFuelRatio = 14.7f + (Math.sin(step * 0.1) * 0.3f).toFloat(),
+                    steeringAngleDeg = (Math.sin(step * 0.08) * 14.0).toFloat(),
+                    lateralG = (Math.sin(step * 0.08) * 0.18).toFloat(),
+                    longitudinalG = (Math.sin(step * 0.12) * 0.22).toFloat(),
+                    ecmLatencyMs = 32 + (step % 12),
+                    tcmLatencyMs = 42 + (step % 15),
+                    bcmLatencyMs = 48 + (step % 18)
                 )
                 delay(200)
             }
