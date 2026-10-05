@@ -1,31 +1,78 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="200dp"
-    android:height="140dp"
-    android:viewportWidth="200"
-    android:viewportHeight="140">
-    <!-- Trunk Body Frame -->
+    android:width="260dp"
+    android:height="170dp"
+    android:viewportWidth="260"
+    android:viewportHeight="170">
+
+    <!-- Trunk Compartment Lip / Rear Panel Structure -->
     <path
         android:strokeColor="#222B3D"
         android:strokeWidth="3"
-        android:fillColor="#111622"
-        android:pathData="M15,90 L60,35 L140,35 L185,90 L185,120 L15,120 Z" />
-    <!-- Trunk Lid Open -->
+        android:fillColor="#0D121D"
+        android:pathData="M20,135 L60,45 L200,45 L240,135 L240,155 L20,155 Z" />
+
+    <!-- Open Trunk Lid Edge (Lifted Up into open air) -->
     <path
         android:strokeColor="#00E5FF"
         android:strokeWidth="4"
-        android:pathData="M60,35 L100,10 L140,35" />
-    <!-- Mechanical Latch Mechanism -->
+        android:fillColor="#131B2A"
+        android:pathData="M60,45 L130,12 L200,45 L190,52 L130,22 L70,52 Z" />
+
+    <!-- Trunk Lock Assembly Mechanism (Center Latch Housing) -->
     <path
-        android:fillColor="#FFB703"
-        android:pathData="M92,75 L108,75 L108,95 L102,95 L102,83 L98,83 L98,95 L92,95 Z" />
-    <!-- Screwdriver tripping the latch -->
+        android:strokeColor="#475569"
+        android:strokeWidth="3"
+        android:fillColor="#1E293B"
+        android:pathData="M105,48 L155,48 C160,48 163,51 163,56 L163,90 C163,95 160,98 155,98 L105,98 C100,98 97,95 97,90 L97,56 C97,51 100,48 105,48 Z" />
+
+    <!-- Latch Slot / Strike Cavity -->
+    <path
+        android:fillColor="#05070A"
+        android:strokeColor="#334155"
+        android:strokeWidth="2"
+        android:pathData="M124,58 L136,58 L136,86 L124,86 Z" />
+
+    <!-- Internal Rotary Latch Claw (Shown clicked into CLOSED / ENGAGED position) -->
+    <path
+        android:strokeColor="#FFB703"
+        android:strokeWidth="3"
+        android:fillColor="#FB8500"
+        android:pathData="M120,66 C120,62 126,60 134,64 L138,72 L128,78 C122,76 120,71 120,66 Z" />
+
+    <!-- Screwdriver / Tool Shaft pushing into latch claw -->
+    <!-- Steel Shaft -->
+    <path
+        android:strokeColor="#E2E8F0"
+        android:strokeWidth="6"
+        android:pathData="M130,70 L185,125" />
+    <path
+        android:strokeColor="#94A3B8"
+        android:strokeWidth="3"
+        android:pathData="M130,70 L185,125" />
+
+    <!-- Screwdriver Fluted Handle -->
     <path
         android:strokeColor="#FF3366"
-        android:strokeWidth="4"
-        android:pathData="M125,115 L100,85" />
-    <!-- Handle of tool -->
+        android:strokeWidth="12"
+        android:pathData="M185,125 L215,155" />
     <path
-        android:strokeColor="#00B4D8"
-        android:strokeWidth="7"
-        android:pathData="M140,130 L125,115" />
+        android:strokeColor="#FB8500"
+        android:strokeWidth="4"
+        android:pathData="M190,130 L210,150" />
+
+    <!-- Force Action Arrow pointing into latch mechanism -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M148,82 L136,70 L148,64 L142,73 L154,79 Z" />
+
+    <!-- Status Badge: "LATCH TRIPPED CLOSED" -->
+    <path
+        android:fillColor="#06D6A0"
+        android:pathData="M35,68 L92,68 C95,68 97,70 97,73 L97,93 C97,96 95,98 92,98 L35,98 C32,98 30,96 30,93 L30,73 C30,70 32,68 35,68 Z" />
+    <!-- Checkmark inside status badge -->
+    <path
+        android:strokeColor="#05070A"
+        android:strokeWidth="3"
+        android:pathData="M40,84 L46,90 L58,76" />
+
 </vector>

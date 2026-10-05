@@ -221,8 +221,9 @@ private fun BmwSleepPreparationCard(onStartTimer: () -> Unit) {
             ) {
                 Icon(Icons.Default.HourglassBottom, contentDescription = null, tint = Color.Black)
                 Spacer(Modifier.width(8.dp))
-                Text("Start Mandatory 20-Min Deep Sleep Timer", color = Color.Black, fontWeight = FontWeight.Bold)
+                Text("Begin battery installation procedure", color = Color.Black, fontWeight = FontWeight.Bold)
             }
+
         }
     }
 }

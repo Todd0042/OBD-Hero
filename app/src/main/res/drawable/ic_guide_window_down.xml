@@ -1,24 +1,68 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="200dp"
-    android:height="140dp"
-    android:viewportWidth="200"
-    android:viewportHeight="140">
-    <!-- Window Frame -->
+    android:width="260dp"
+    android:height="170dp"
+    android:viewportWidth="260"
+    android:viewportHeight="170">
+
+    <!-- Car Door Exterior Silhouette / Panel -->
     <path
         android:strokeColor="#222B3D"
-        android:strokeWidth="4"
-        android:fillColor="#111622"
-        android:pathData="M20,20 L180,20 L180,120 L20,120 Z" />
-    <!-- Window Glass Pane rolled down half way -->
+        android:strokeWidth="3"
+        android:fillColor="#0D121D"
+        android:pathData="M25,150 L25,70 C25,50 35,30 65,22 L175,22 C210,22 235,45 235,70 L235,150 Z" />
+
+    <!-- Window Frame Molding / B-Pillar & A-Pillar -->
     <path
-        android:fillColor="#182A40"
-        android:pathData="M25,65 L175,65 L175,115 L25,115 Z" />
-    <!-- Arrow pointing down -->
+        android:strokeColor="#334155"
+        android:strokeWidth="5"
+        android:fillColor="#05070A"
+        android:pathData="M38,72 L72,32 L170,32 C198,32 218,50 222,72 Z" />
+
+    <!-- Driver Glass Pane (Retracted / Rolled halfway down into door) -->
+    <!-- Lower Half showing glass edge inside door cavity -->
+    <path
+        android:fillColor="#15263F"
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="2"
+        android:pathData="M40,70 L100,52 L220,52 L222,70 Z" />
+
+    <!-- Glass Open Air Void (Upper half showing window is rolled down) -->
+    <path
+        android:fillColor="#05070A"
+        android:pathData="M44,68 L74,36 L168,36 C194,36 214,50 218,68 Z" />
+
+    <!-- Exterior Door Handle -->
+    <path
+        android:strokeColor="#475569"
+        android:strokeWidth="2"
+        android:fillColor="#1E293B"
+        android:pathData="M165,95 L215,95 C220,95 222,98 222,102 C222,106 220,109 215,109 L165,109 C160,109 158,106 158,102 C158,98 160,95 165,95 Z" />
+
+    <!-- Side View Mirror -->
+    <path
+        android:strokeColor="#334155"
+        android:strokeWidth="3"
+        android:fillColor="#111622"
+        android:pathData="M38,75 L15,70 C10,70 8,74 12,80 L28,95 L38,90 Z" />
+
+    <!-- Dynamic Neon Action Arrows: Rolling Down -->
     <path
         android:fillColor="#00E5FF"
-        android:pathData="M100,28 L100,50 L92,50 L100,60 L108,50 L100,50 Z" />
-    <!-- Lock Guard Icon -->
+        android:pathData="M130,36 L130,58 L122,58 L130,70 L138,58 L130,58 Z" />
     <path
+        android:fillColor="#00B4D8"
+        android:pathData="M90,44 L90,62 L84,62 L90,72 L96,62 L90,62 Z" />
+
+    <!-- Anti-Lockout Shield Badge in lower right -->
+    <path
+        android:strokeColor="#06D6A0"
+        android:strokeWidth="2"
         android:fillColor="#06D6A0"
-        android:pathData="M100,75 C95,75 92,79 92,84 L92,88 L88,88 L88,104 L112,104 L112,88 L108,88 L108,84 C108,79 105,75 100,75 Z M100,78 C103,78 105,80 105,84 L105,88 L95,88 L95,84 C95,80 97,78 100,78 Z" />
+        android:pathData="M60,105 C60,125 78,135 78,135 C78,135 96,125 96,105 L96,95 L78,90 L60,95 Z" />
+    <!-- Checkmark inside shield -->
+    <path
+        android:strokeColor="#05070A"
+        android:strokeWidth="3"
+        android:pathData="M70,110 L75,116 L87,102" />
+
 </vector>

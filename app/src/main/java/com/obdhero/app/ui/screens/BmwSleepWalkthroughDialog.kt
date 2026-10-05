@@ -121,17 +121,18 @@ fun BmwSleepWalkthroughDialog(
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(140.dp)
+                        .height(160.dp)
                         .border(1.dp, BorderSubtle, RoundedCornerShape(12.dp))
                 ) {
-                    Box(contentAlignment = Alignment.Center) {
+                    Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(8.dp)) {
                         Image(
                             painter = painterResource(id = step.imageResId),
                             contentDescription = step.title,
-                            modifier = Modifier.size(160.dp, 120.dp)
+                            modifier = Modifier.fillMaxSize()
                         )
                     }
                 }
+
 
                 Spacer(modifier = Modifier.height(14.dp))
 
