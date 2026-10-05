@@ -38,12 +38,23 @@ fun BlackBoxDialog(
     adapterProfile: AdapterProfile,
     recorderState: FlightRecorderState,
     incidentHistory: List<BlackBoxIncidentReport>,
+    currentVin: String = "",
     onTriggerManual: () -> Unit,
     onRearm: () -> Unit,
+    onDeleteIncident: (String) -> Unit = {},
     onDismiss: () -> Unit
 ) {
     val context = LocalContext.current
     var showDecodedJoke by remember { mutableStateOf(false) }
+    var filterCurrentVinOnly by remember { mutableStateOf(false) }
+
+    val displayedIncidents = remember(incidentHistory, currentVin, filterCurrentVinOnly) {
+        if (filterCurrentVinOnly && currentVin.isNotBlank()) {
+            incidentHistory.filter { it.vehicleVin.equals(currentVin, ignoreCase = true) }
+        } else {
+            incidentHistory
+        }
+    }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -111,36 +122,54 @@ fun BlackBoxDialog(
                         )
                     }
 
-                    // 3. Incident History Header
+                    // 3. Incident History Header with VIN Filter
                     item {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "Captured Incidents (${incidentHistory.size})",
-                                color = TextPrimary,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 14.sp
-                            )
-                            if (recorderState == FlightRecorderState.ARMED_LISTENING) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(8.dp)
-                                            .clip(CircleShape)
-                                            .background(EmeraldSuccess)
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Captured Incidents (${displayedIncidents.size})",
+                                    color = TextPrimary,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 14.sp
+                                )
+                                if (recorderState == FlightRecorderState.ARMED_LISTENING) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(8.dp)
+                                                .clip(CircleShape)
+                                                .background(EmeraldSuccess)
+                                        )
+                                        Spacer(Modifier.width(6.dp))
+                                        Text("5s Pre-Buffer Active", color = EmeraldSuccess, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                                    }
+                                }
+                            }
+
+                            if (currentVin.isNotBlank() && incidentHistory.any { !it.vehicleVin.equals(currentVin, ignoreCase = true) }) {
+                                Spacer(Modifier.height(8.dp))
+                                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    FilterChip(
+                                        selected = !filterCurrentVinOnly,
+                                        onClick = { filterCurrentVinOnly = false },
+                                        label = { Text("All Vehicles (${incidentHistory.size})", fontSize = 11.sp) }
                                     )
-                                    Spacer(Modifier.width(6.dp))
-                                    Text("5s Pre-Buffer Active", color = EmeraldSuccess, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                                    FilterChip(
+                                        selected = filterCurrentVinOnly,
+                                        onClick = { filterCurrentVinOnly = true },
+                                        label = { Text("Current VIN (${incidentHistory.count { it.vehicleVin.equals(currentVin, ignoreCase = true) }})", fontSize = 11.sp) }
+                                    )
                                 }
                             }
                         }
                     }
 
                     // 4. Incident Reports
-                    if (incidentHistory.isEmpty()) {
+                    if (displayedIncidents.isEmpty()) {
                         item {
                             Surface(
                                 color = SurfaceCard,
@@ -154,7 +183,7 @@ fun BlackBoxDialog(
                                     modifier = Modifier.padding(24.dp)
                                 ) {
                                     Text(
-                                        text = "No incidents logged yet.\nWhen an engine fault code triggers or you tap 'Mark Incident', a 35-second pre/post dump will be saved here.",
+                                        text = if (filterCurrentVinOnly) "No incidents recorded for VIN: $currentVin." else "No incidents logged yet.\nWhen an engine fault code triggers or you tap 'Mark Incident', a 35-second pre/post dump will be saved here.",
                                         color = TextMuted,
                                         fontSize = 12.sp,
                                         lineHeight = 18.sp
@@ -163,11 +192,12 @@ fun BlackBoxDialog(
                             }
                         }
                     } else {
-                        items(incidentHistory) { incident ->
+                        items(displayedIncidents) { incident ->
                             IncidentCard(
                                 incident = incident,
                                 showDecodedJoke = showDecodedJoke,
                                 onToggleJoke = { showDecodedJoke = !showDecodedJoke },
+                                onDelete = { onDeleteIncident(incident.incidentId) },
                                 onShare = {
                                     val summary = generateIncidentExport(incident)
                                     val sendIntent = Intent().apply {
@@ -339,6 +369,7 @@ private fun IncidentCard(
     incident: BlackBoxIncidentReport,
     showDecodedJoke: Boolean,
     onToggleJoke: () -> Unit,
+    onDelete: () -> Unit,
     onShare: () -> Unit
 ) {
     val dateStr = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).format(Date(incident.recordedAt))
@@ -360,13 +391,51 @@ private fun IncidentCard(
                     Text(text = incident.incidentId, color = RaceRed, fontSize = 13.sp, fontWeight = FontWeight.Bold)
                     Text(text = dateStr, color = TextMuted, fontSize = 10.sp)
                 }
-                IconButton(onClick = onShare, modifier = Modifier.size(32.dp)) {
-                    Icon(Icons.Default.Share, contentDescription = "Share", tint = TextPrimary, modifier = Modifier.size(16.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
+                        Icon(Icons.Default.DeleteOutline, contentDescription = "Delete Incident", tint = TextMuted, modifier = Modifier.size(16.dp))
+                    }
+                    IconButton(onClick = onShare, modifier = Modifier.size(32.dp)) {
+                        Icon(Icons.Default.Share, contentDescription = "Share", tint = TextPrimary, modifier = Modifier.size(16.dp))
+                    }
                 }
             }
 
             Spacer(Modifier.height(6.dp))
-            Text(text = "Trigger: ${incident.triggerReason}", color = TextPrimary, fontSize = 12.sp, fontWeight = FontWeight.Medium)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Trigger: ${incident.triggerReason}",
+                    color = TextPrimary,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.weight(1f)
+                )
+
+                Surface(
+                    color = if (incident.vehicleVin.isNotBlank()) SurfaceCardElevated else CriticalCrimson.copy(alpha = 0.15f),
+                    shape = RoundedCornerShape(4.dp),
+                    modifier = Modifier.border(1.dp, BorderSubtle, RoundedCornerShape(4.dp))
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                    ) {
+                        Icon(Icons.Default.DirectionsCar, contentDescription = null, tint = CyanPulse, modifier = Modifier.size(11.dp))
+                        Spacer(Modifier.width(4.dp))
+                        Text(
+                            text = if (incident.vehicleVin.isNotBlank()) incident.vehicleVin else "NO VIN",
+                            color = TextSecondary,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = FontFamily.Monospace
+                        )
+                    }
+                }
+            }
 
             // Easter egg joke view for cheap clone dongles
             if (incident.booleanAsciiJoke != null) {

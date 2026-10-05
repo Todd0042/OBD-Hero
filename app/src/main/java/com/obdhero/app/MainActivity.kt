@@ -99,7 +99,7 @@ class MainActivity : ComponentActivity() {
                 val focusedMetric by obdManager.focusedMetric.collectAsState()
                 val adapterProfile by obdManager.adapterProfile.collectAsState()
                 val recorderState by obdManager.flightRecorder.recorderState.collectAsState()
-                val incidentHistory by obdManager.flightRecorder.incidentHistory.collectAsState()
+                val incidentHistory by com.obdhero.app.data.BlackBoxRepository.incidents.collectAsState()
 
                 val vehicleProfile = remember(rawVin) {
                     if (rawVin.isNotEmpty()) VinDecoder.decode(rawVin) else null
@@ -131,11 +131,13 @@ class MainActivity : ComponentActivity() {
                         focusedMetric = focusedMetric,
                         vehicleMake = vehicleProfile?.make ?: "",
                         vehicleModel = vehicleProfile?.model ?: "",
+                        vehicleVin = vehicleProfile?.vin ?: "",
                         adapterProfile = adapterProfile,
                         recorderState = recorderState,
                         incidentHistory = incidentHistory,
                         onTriggerBlackBox = { obdManager.triggerBlackBoxManual() },
                         onRearmBlackBox = { obdManager.rearmBlackBox() },
+                        onDeleteBlackBoxIncident = { com.obdhero.app.data.BlackBoxRepository.deleteIncident(it) },
                         onSelectMetric = { obdManager.setFocusedMetric(it) },
                         onBack = { showLiveView = false },
                         modifier = Modifier.statusBarsPadding()

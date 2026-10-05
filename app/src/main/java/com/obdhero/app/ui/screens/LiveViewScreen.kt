@@ -92,11 +92,13 @@ fun LiveViewScreen(
     onSelectMetric: (FocusedMetric?) -> Unit = {},
     vehicleMake: String = "",
     vehicleModel: String = "",
+    vehicleVin: String = "",
     adapterProfile: AdapterProfile? = null,
     recorderState: FlightRecorderState = FlightRecorderState.ARMED_LISTENING,
     incidentHistory: List<BlackBoxIncidentReport> = emptyList(),
     onTriggerBlackBox: () -> Unit = {},
     onRearmBlackBox: () -> Unit = {},
+    onDeleteBlackBoxIncident: (String) -> Unit = {},
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -727,8 +729,10 @@ fun LiveViewScreen(
                 adapterProfile = adapterProfile ?: AdapterDatabase.PROFILES.first { it.name == "Vgate vLinker MS" },
                 recorderState = recorderState,
                 incidentHistory = incidentHistory,
+                currentVin = vehicleVin,
                 onTriggerManual = onTriggerBlackBox,
                 onRearm = onRearmBlackBox,
+                onDeleteIncident = onDeleteBlackBoxIncident,
                 onDismiss = { showBlackBoxDialog = false }
             )
         }

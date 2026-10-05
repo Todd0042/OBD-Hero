@@ -119,4 +119,53 @@ class BlackBoxTest {
         assertEquals(0, incident.preTriggerSamples.size)
         assertEquals(0, incident.postTriggerSamples.size)
     }
+
+    @Test
+    fun testVinAssociationAndRepositoryFiltering() {
+        val repo = com.obdhero.app.data.BlackBoxRepository
+        repo.clearAll()
+
+        val incidentFord = com.obdhero.app.domain.BlackBoxIncidentReport(
+            incidentId = "INC-TEST-FORD",
+            recordedAt = System.currentTimeMillis(),
+            triggerReason = "Misfire Cylinder 1",
+            triggerDtc = "P0301",
+            vehicleVin = "1FA6P8CF0H5111111",
+            adapterProfile = AdapterDatabase.PROFILES.first { it.name == "Vgate vLinker MS" },
+            preTriggerSamples = emptyList(),
+            postTriggerSamples = emptyList(),
+            freezeFrame = null
+        )
+
+        val incidentBmw = com.obdhero.app.domain.BlackBoxIncidentReport(
+            incidentId = "INC-TEST-BMW",
+            recordedAt = System.currentTimeMillis(),
+            triggerReason = "Valvetronic Motor Sluggish",
+            triggerDtc = "2A82",
+            vehicleVin = "WBA3A5C58DF222222",
+            adapterProfile = AdapterDatabase.PROFILES.first { it.name == "Vgate vLinker MS" },
+            preTriggerSamples = emptyList(),
+            postTriggerSamples = emptyList(),
+            freezeFrame = null
+        )
+
+        repo.saveIncident(incidentFord)
+        repo.saveIncident(incidentBmw)
+
+        val fordIncidents = repo.getIncidentsForVin("1FA6P8CF0H5111111")
+        assertEquals(1, fordIncidents.size)
+        assertEquals("INC-TEST-FORD", fordIncidents[0].incidentId)
+
+        val bmwIncidents = repo.getIncidentsForVin("WBA3A5C58DF222222")
+        assertEquals(1, bmwIncidents.size)
+        assertEquals("INC-TEST-BMW", bmwIncidents[0].incidentId)
+
+        val all = repo.getIncidentsForVin("")
+        assertEquals(2, all.size)
+
+        repo.deleteIncident("INC-TEST-FORD")
+        assertEquals(1, repo.incidents.value.size)
+        assertEquals("INC-TEST-BMW", repo.incidents.value[0].incidentId)
+    }
 }
+

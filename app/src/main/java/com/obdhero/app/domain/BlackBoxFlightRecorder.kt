@@ -124,6 +124,7 @@ class BlackBoxFlightRecorder(
             )
             _activeIncident.value = jokeReport
             _incidentHistory.value = listOf(jokeReport) + _incidentHistory.value
+            try { com.obdhero.app.data.BlackBoxRepository.saveIncident(jokeReport) } catch (_: Exception) {}
             _recorderState.value = FlightRecorderState.INCIDENT_SAVED
             return
         }
@@ -173,6 +174,7 @@ class BlackBoxFlightRecorder(
 
         _activeIncident.value = report
         _incidentHistory.value = listOf(report) + _incidentHistory.value
+        try { com.obdhero.app.data.BlackBoxRepository.saveIncident(report) } catch (_: Exception) {}
         _recorderState.value = FlightRecorderState.INCIDENT_SAVED
     }
 
