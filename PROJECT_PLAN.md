@@ -193,12 +193,117 @@ flowchart TD
 
 ---
 
+---
+
+## Testing Hardware & System Bluetooth Architecture
+
+The primary testing adapters for OBD-Hero development are:
+1. **Vgate vLinker MS (or MC/FD series)**:
+   - High-performance multi-protocol adapter (STN/MIC processor).
+   - Paired directly at the Android OS system level (`Settings > Connected devices > Pair new device`).
+   - Supports extended PIDs, UDS multi-frame, and MS-CAN bus architectures.
+2. **OBDLink CX**:
+   - High-reliability diagnostic adapter tailored for universal OBD-II and coding.
+   - Paired at the Android OS system level.
+
+### System-Level Bluetooth Connection Model (No In-App Pairing)
+> [!NOTE]
+> **OS-Managed Pairing Model**:
+> Rather than forcing users through proprietary in-app pairing screens or custom GATT discovery pickers, **OBD-Hero delegates device pairing entirely to the Android Operating System**:
+> - The user pairs their adapter (vLinker MS, OBDLink CX, etc.) in **Android System Settings** (`Settings > Bluetooth`).
+> - OBD-Hero monitors `BluetoothAdapter.getBondedDevices()` and system connection state broadcasts (`ACTION_ACL_CONNECTED`, `ACTION_ACL_DISCONNECTED`).
+> - When OBD-Hero opens, it inspects bonded devices for automotive scanner signatures (`VLINK`, `OBD`, `ELM`, `CARISTA`, etc.) or allows the user to tap their system-paired adapter from a simple list.
+> - The app immediately establishes the RFCOMM/SPP data channel directly with the system-connected device, eliminating app-level pairing drops and handshake failures.
+
+
+---
+
+## Additional Operational Systems Added to Scope
+
+### 1. In-Memory Mock Virtual ECU & Telemetry Simulator
+* **Purpose**: Enable 100% of diagnostic UI, state machine transitions, foldable posture testing, and edge-case error validation directly at a desk without needing a vehicle in the driveway.
+* **Capabilities**:
+  * Emulates full ELM327 / STN AT-command set (`ATZ`, `ATE0`, `ATL0`, `ATSP0`, `ATRV`, `ATH1`).
+  * Responds to SAE Mode 01 standard PIDs (RPM, Coolant Temp, Speed, Fuel Trims, Voltage).
+  * Returns multi-frame ISO 15765-2 simulated VIN for Mode 09 PID 02.
+  * Simulates active DTCs (`P0171`, `P0300`, `U0100`) and clears on Mode 04.
+  * Emulates BMW, Ford, and GM UDS diagnostic sessions (`10 03`) and routine responses (`31 01` -> `71 01`).
+
+### 2. I/M Emissions Readiness Dashboard (Smog Check Protection)
+* **Purpose**: Prevent users from inadvertently failing state emissions inspections.
+* **Features**:
+  * Mode 01 PID 01 parser displaying status of continuous (Misfire, Fuel System, Comprehensive Components) and non-continuous monitors (Catalyst, Evaporative, O2 Sensor, EGR).
+  * **Mode 04 DTC Clear Warning**: When user taps "Clear Codes", OBD-Hero presents a mandatory confirmation dialog:
+    > "Clearing diagnostic codes will immediately reset all engine emissions readiness monitors to 'NOT READY'. Your vehicle will fail state inspection/smog checks until a full drive cycle is completed. Do you wish to proceed?"
+
+### 3. Medium-Speed CAN (MS-CAN) & Security Gateway (SGW) Handling
+* **MS-CAN Switching**:
+  * Ford & GM body computers (where battery parameters and lighting reside) frequently sit on MS-CAN (pins 3 & 11).
+  * For STN/vLinker adapters, the app automatically sends bus-switch commands (`STCS`, `STP 33`) to communicate with the BCM transparently.
+* **2018+ Security Gateway (SGW) Detection**:
+  * 2018+ Stellantis (Chrysler/Dodge/Jeep/Ram) and 2020+ GM Global B architectures lock out unauthorized CAN write commands via an electronic firewall.
+  * OBD-Hero detects these VIN years and gracefully directs the user to either the OEM manual sleep sequence or notifies them if a physical 12+8 SGW bypass harness is required for write routines.
+
+### 4. Room Database & Local Service History Schema
+* **`VehicleProfile` Entity**: `vin` (Primary Key), `year`, `make`, `model`, `engine`, `fuelType`, `nickname`, `createdEpoch`, `lastScanEpoch`.
+* **`DtcRecord` Entity**: `code`, `title`, `category`, `meaning`, `symptoms`, `inspectionSteps`, `verifiedFixes`, `difficulty`.
+* **`ScanSession` Entity**: `id`, `vin`, `timestamp`, `odometerMiles`, `storedCodes`, `pendingCodes`, `permanentCodes`, `freezeFrameJson`.
+* **`BatteryServiceLog` Entity**: `id`, `vin`, `timestamp`, `oldBatteryAgeDays`, `newBatteryAh`, `newBatteryType`, `resetMethod` (UDS vs Manual), `resetStatus` (Success / Failed), `notes`.
+
+---
+
+## Detailed Step-by-Step Implementation Roadmap
+
+### Phase 1: Foundation & OBD Communication Layer
+- [ ] Initialize Android Kotlin project in `OBD-Hero` with Jetpack Compose, Material 3, and Coroutines/Flow.
+- [ ] Implement ELM327 / STN communication abstraction (`ElmConnection`, AT command state machine: `ATZ`, `ATE0`, `ATL0`, `ATSP0`, `ATH1`).
+- [ ] Build transport drivers:
+  - Bluetooth Low Energy (BLE GATT) optimized for **vLinker MS/MC** (`0x18F0`) and **OBDLink CX** (`0xFFF0`).
+  - Bluetooth Classic (RFCOMM / SPP) for legacy adapters.
+  - Wi-Fi TCP Sockets (`192.168.0.10:35000`).
+- [ ] Build in-memory **Mock ECU Simulator** for desk development and automated test runs.
+- [ ] Implement auto-protocol detection and bus keep-alive worker.
+
+### Phase 2: Diagnostic Core (DTCs & Repair Guide)
+- [ ] Implement SAE J1979 Mode 01 (Live Readiness), Mode 03 (Stored), Mode 07 (Pending), Mode 0A (Permanent), Mode 04 (Clear).
+- [ ] Implement I/M Emissions Readiness Dashboard (Mode 01 PID 01) and Mode 04 Smog-Reset warning guardrail.
+- [ ] Implement multi-ECU response handling (Engine `7E8`, Transmission `7E9`, ABS/BCM).
+- [ ] Create embedded Room/SQLite DTC database incorporating SAE definitions + rich actionable repair guides (symptoms, inspections, fixes).
+- [ ] Build Freeze Frame (Mode 02) parser.
+
+### Phase 3: Vehicle Profile & Offline VIN Decryption
+- [ ] Implement Mode 09 PID 02 ISO-TP multi-frame parser to extract 17-character VIN.
+- [ ] Implement offline VIN decoder (NHTSA vPIC cached dataset + checksum validator).
+- [ ] Build Vehicle Profile UI with Room database maintenance tracking and historical scan archives.
+
+### Phase 4: BMS Battery Calibration System
+- [ ] Research and implement OEM BMS reset command templates (Ford, GM, Toyota, VAG, BMW, Stellantis).
+- [ ] Implement safety check engine (KOEO validation, voltage sanity check).
+- [ ] Implement BMW/Mini FRM3 safety hard-gate:
+  - Persistent on-disk anti-bypass timer file (`files/security/bmw_sleep_lock.json`).
+  - 20-minute countdown screen with visual checkpoints ("P" shifter light & red hazard triangle dark).
+  - Post-swap CBS battery registration command (`steuern_batterietausch_registrieren`).
+- [ ] Create step-by-step interactive reset wizard with post-reset verification.
+
+### Phase 5: TPMS Management — CANCELLED (Pending Additional Hardware)
+- [x] ~~Direct 315/433 MHz RF sensor reading: Cancelled due to smartphone hardware radio limits.~~
+- [ ] *Deferred*: Revisit TPMS module if/when a Bluetooth or USB 315/433 MHz RF receiver / LF trigger accessory is added.
+
+### Phase 6: Foldable UI & Polishing (Pixel 9 Pro Fold)
+- [ ] Implement Jetpack WindowManager adaptive layouts (`ListDetailPaneScaffold`).
+- [ ] Support Tabletop posture UI for engine bay and dashboard use.
+- [ ] Full end-to-end testing, error handling, and release readiness.
+
+---
+
 ## Hardware Adapter Compatibility Matrix
 
 | Adapter Family | Connection Type | Protocol Support | Speed & Reliability | Recommendation Tier |
 |---|---|---|---|---|
-| **OBDLink LX / MX+** | BT Classic / BLE / STN | Full SAE + SW-CAN + MS-CAN | Ultra-Fast / Highest | ⭐⭐⭐⭐⭐ Primary Target |
-| **vLinker MC+ / FD+** | BT 4.0 / BLE / STN | Full SAE + SW-CAN + MS-CAN | High Speed / Rock Solid | ⭐⭐⭐⭐⭐ Recommended |
+| **vgate vLinker MS / MC / FD** | BLE 4.2/5.0 / STN | Full SAE + SW-CAN + MS-CAN | High Speed / Rock Solid | ⭐⭐⭐⭐⭐ **Primary Test Hardware** |
+| **OBDLink CX** | BLE 5.0 (BimmerCode spec) | Full SAE CAN (11/29-bit) | Ultra-Fast / Low Latency | ⭐⭐⭐⭐⭐ **Primary Test Hardware** |
+| **OBDLink LX / MX+** | BT Classic / BLE / STN | Full SAE + SW-CAN + MS-CAN | Ultra-Fast / Highest | ⭐⭐⭐⭐⭐ Highly Recommended |
 | **Veepeak OBDCheck BLE+** | BLE (CC2541) | Standard 11-bit / 29-bit CAN | Moderate / Reliable | ⭐⭐⭐⭐ Recommended Consumer |
 | **Generic ELM327 v1.5** | BT Classic / Wi-Fi | Standard CAN (ISO 15765-4) | Variable / Basic | ⭐⭐⭐ Supported Basic |
 | **Generic ELM327 v2.1** | BT Classic | Often buggy clones | Poor / High Packet Drop | ⚠️ Warn User |
+
