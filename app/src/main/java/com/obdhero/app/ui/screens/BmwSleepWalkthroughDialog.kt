@@ -45,44 +45,45 @@ fun BmwSleepWalkthroughDialog(
                 title = "Roll Down Driver Window",
                 description = "Before turning off ignition, roll down the driver's window completely. This prevents accidental lockout if the vehicle locks itself while the battery is disconnected.",
                 warning = "Critical Safety Step",
-                imageResId = R.drawable.ic_guide_window_down
+                imageResId = R.drawable.img_bmw_window_down
             ),
             WalkthroughStep(
                 stepNumber = 2,
                 title = "Latch Trunk Lock Mechanism",
                 description = "Open the trunk/tailgate to access the battery. Using a screwdriver or pen, manually trip the trunk latch claw into its closed position. This tricks the Body Computer (CAS/FRM) into believing the trunk is shut so it can sleep.",
                 warning = "Tricks vehicle into sleep while keeping trunk accessible",
-                imageResId = R.drawable.ic_guide_trunk_latch
+                imageResId = R.drawable.img_bmw_trunk_latch
             ),
             WalkthroughStep(
                 stepNumber = 3,
                 title = "Move Key Fobs 25+ Feet Away",
                 description = "Turn ignition completely OFF. Take all key fobs and Comfort Access transponders at least 25 feet (8 meters) away from the car so it stops pinging for keys and can power down.",
                 warning = "Key fobs inside or near car will reset the sleep timer",
-                imageResId = R.drawable.ic_guide_keys_away
+                imageResId = R.drawable.img_bmw_keys_away
             ),
             WalkthroughStep(
                 stepNumber = 4,
                 title = "Verify Gear Shifter 'P' Light OFF",
                 description = "After 16 to 20 minutes, inspect the automatic gear selector without opening doors or touching handles. The orange 'P' LED indicator next to Park must be completely dark.",
                 warning = "If 'P' light is still lit, DO NOT touch battery terminals",
-                imageResId = R.drawable.ic_guide_shifter_p_off
+                imageResId = R.drawable.img_bmw_shifter_dark
             ),
             WalkthroughStep(
                 stepNumber = 5,
                 title = "Verify Hazard Triangle Light OFF",
                 description = "Confirm the red triangle Hazard switch on the center dashboard is completely dark. When both 'P' and Hazard lights are extinguished, the CAN bus and FRM are in deep sleep.",
                 warning = "Guarantees zero active EEPROM writes to FRM3",
-                imageResId = R.drawable.ic_guide_hazard_off
+                imageResId = R.drawable.img_bmw_hazard_dark
             ),
             WalkthroughStep(
                 stepNumber = 6,
                 title = "Disconnect Negative Terminal 1st",
                 description = "Disconnect the negative terminal (-) first using a 10mm socket. Install the new battery, connect the positive terminal (+) first, then connect the negative terminal firmly with zero bouncing/arcing.",
                 warning = "Firm single-motion connection prevents voltage spike",
-                imageResId = R.drawable.ic_guide_battery_disconnect
+                imageResId = R.drawable.img_bmw_battery_swap
             )
         )
+
     }
 
     var currentStepIndex by remember { mutableStateOf(0) }
@@ -121,17 +122,20 @@ fun BmwSleepWalkthroughDialog(
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(160.dp)
+                        .height(180.dp)
                         .border(1.dp, BorderSubtle, RoundedCornerShape(12.dp))
                 ) {
-                    Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(8.dp)) {
-                        Image(
-                            painter = painterResource(id = step.imageResId),
-                            contentDescription = step.title,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
+                    Image(
+                        painter = painterResource(id = step.imageResId),
+                        contentDescription = step.title,
+                        contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(12.dp))
+                    )
                 }
+
+
 
 
                 Spacer(modifier = Modifier.height(14.dp))
