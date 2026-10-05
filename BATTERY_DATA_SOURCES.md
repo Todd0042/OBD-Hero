@@ -88,17 +88,37 @@ To construct a universal database of battery reset routines without starting fro
   - OBD2 Service: "Battery Current Sensor Initialization" executed via Toyota Enhanced Diagnostic PID sequence.
   - Initialization confirmation: Verifying voltage curve stabilizes between 13.8V and 14.4V after startup.
 
-### 4. BMW / Mini (3-Series, 5-Series, X3, X5)
-* **Target Module**: Digital Motor Electronics (`DME` / `DDE` @ CAN ID `0x7E0` / `0x6F1` or Power Management Module).
-* **Protocol**:
-  - BMW requires strict battery registration through the IBS (Intelligent Battery Sensor).
-  - Two distinct tiers:
-    1. **Registration (Same Ah / Same Chemistry)**: Resets the odometer reading in the DME at battery replacement and wipes historical charging histograms.
+### 4. BMW / Mini (3-Series, 5-Series, X1, X3, X5, X6, Z4, Mini R55-R61)
+* **Critical Vehicle Safety Gate: Footwell Module (FRM / FRM3) Corruption Risk**:
+  > [!CAUTION]
+  > **FATAL MODULE CORRUPTION RISK (BMW FRM / FRM3 BRICKING)**
+  > On BMW E-Series (E81, E82, E87, E88, E90, E91, E92, E93, E70, E71, E84, E89) and Mini R-Series (R55-R61), the Footwell Module 3 (FRM3) uses a Freescale/NXP MC9S12XEQ384 processor. When a 12V battery is disconnected or reconnected while the car is awake or processing memory, transient voltage dips corrupt the processor's emulated EEPROM partition in D-Flash.
+  >
+  > **Consequence of Corruption**: Complete module bricking. Windows become permanently stuck, headlights/low beams stay permanently on, turn signals/hazards fail completely, and OBD-II diagnostics lose all communication with the FRM. Dealer replacement costs \$1,000–\$1,800.
+  >
+  > **OBD-Hero Gating Requirement**: On all affected BMW chassis, **the battery calibration / installation wizard is strictly hard-gated behind a mandatory pre-disconnect deep sleep workflow**, including an active 20-minute countdown timer and verification checkpoints before physical battery disconnect is permitted.
+
+* **Mandatory BMW Pre-Disconnect Deep Sleep Workflow**:
+  1. **Preparation**: Roll down driver's window (safety precaution so keys cannot be locked inside), open trunk/tailgate to access battery compartment, and latch the trunk lock mechanism manually using a screwdriver (tricking the CAS/BCM into believing the trunk is latched closed).
+  2. **Turn Off All Ignition / Electronics**: Remove key fob / comfort access transmitter from vehicle, place keys at least 25 feet away so the vehicle does not detect Comfort Access pings.
+  3. **Initiate 20-Minute Deep Sleep Countdown**:
+     - OBD-Hero launches an on-screen **20-Minute Sleep Timer**.
+     - Vehicle must remain undisturbed: no touching door handles, opening doors, or pressing buttons.
+  4. **Sleep Verification Checkpoints**:
+     - *Visual Checkpoint 1*: The orange LED next to "P" on the automatic gear selector shifter goes completely dark (typically 16–18 minutes).
+     - *Visual Checkpoint 2*: The Start/Stop engine button backlight completely extinguishes.
+     - *Alternative Safety Option (FRM Fuse Pull)*: App provides fuse box diagram to pull FRM supply fuses (F41, F81, F84, F86 depending on chassis) before battery disconnect to physically isolate the module from inrush spikes.
+  5. **Proceed with Battery Replacement**: Disconnect Negative terminal first, then Positive. Install new battery, connect Positive, connect Negative firmly in a single positive motion without arcing/bouncing terminals.
+  6. **Release Trunk Latch & Wake Vehicle**: Press trunk release handle to restore normal latch state, turn ignition ON (KOEO).
+
+* **Software Registration Protocol (Post-Installation)**:
+  - **Target Module**: Digital Motor Electronics (`DME` / `DDE` @ CAN ID `0x7E0` / `0x6F1` or Power Management Module via IBS).
+  - **Two Distinct Tiers**:
+    1. **Registration (Same Ah / Same Chemistry)**: Resets the odometer reading in the DME at battery replacement and wipes historical charging histograms using EDIABAS-compatible job structure adapted from `uholeschak/ediabaslib`:
+       - Job: `steuern_batterietausch_registrieren` (executed via UDS Routine / KWP2000 sequence).
     2. **Coding (Changed Ah or Flooded -> AGM)**: Adjusts charging voltage ceiling from standard Flooded (14.4V) to AGM (14.8V).
-* **Implementation**:
-  - Utilizes EDIABAS-compatible job structure adapted from `uholeschak/ediabaslib`:
-    - Job: `steuern_batterietausch_registrieren` (executed via UDS Routine / KWP2000 sequence).
-  - Validation: Reads DME memory register for last recorded battery replacement mileage.
+  - **Validation**: Reads DME memory register for last recorded battery replacement mileage to confirm successful reset.
+
 
 ### 5. Volkswagen / Audi / VAG Group (Jetta, Golf, Passat, Tiguan, Atlas, A4, Q5)
 * **Target Module**: CAN Gateway Module `19` (`J533` @ CAN ID `0x711` or `0x7E0`).

@@ -127,10 +127,13 @@ flowchart TD
   * **Toyota / Lexus**: Smart Key / Current Sensor memory clear.
   * **VAG Group (VW / Audi)**: Adaptation 19 (Gateway) battery parameter coding (Capacity Ah, Brand, Serial Number, AGM vs EFB).
   * **BMW / Mini**: CBS Battery Registration trigger (resets mileage at replacement and resets charge histograms).
+    * **Mandatory Safety Hard-Gate (Footwell Module FRM3 Protection)**: On BMW E-Series (E8x, E9x, E7x, E84, E89) and Mini R-Series, the FRM3 MC9S12XEQ384 processor's D-Flash/EEPROM corrupts and permanently bricks the module upon battery disconnect if the car is awake. The app strictly gates battery procedures on these models behind an interactive deep sleep sequence with a mandatory 20-minute sleep timer, trunk latch override trick, and gear shifter/start button visual confirmation checkpoints.
 * **Safety Guardrails**:
   * Engine RPM verification (must be 0 RPM / Key-ON Engine-OFF).
   * Battery voltage check prior to routine execution (must be >= 11.9V to avoid bricking modules).
+  * Mandatory pre-disconnect deep-sleep timer and checkpoint confirmation for vulnerable BMW/Mini chassis.
   * Pre-and-post status verification readback.
+
 
 ---
 
