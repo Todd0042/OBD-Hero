@@ -83,6 +83,18 @@ fun VehicleProfileScreen(
                         ProfileDetailRow("Model Classification", profile.model)
                         ProfileDetailRow("Decoded Year", profile.year?.toString() ?: "Undetermined")
 
+                        val activeDef = com.obdhero.app.data.VehicleProfileRepository.resolveProfile(
+                            vin = profile.vin,
+                            make = profile.make,
+                            model = profile.model,
+                            year = profile.year
+                        )
+                        ProfileDetailRow("CAN Profile", activeDef.profileId)
+                        ProfileDetailRow("ECM Header", activeDef.ecmHeader)
+                        if (activeDef.bcmHeader != null) {
+                            ProfileDetailRow("BCM Header", activeDef.bcmHeader)
+                        }
+
                         if (profile.isSgwLocked) {
                             Spacer(Modifier.height(8.dp))
                             Surface(

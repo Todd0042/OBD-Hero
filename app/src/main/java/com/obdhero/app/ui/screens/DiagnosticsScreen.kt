@@ -32,6 +32,7 @@ fun DiagnosticsScreen(
     onSelectDtc: (DtcInfo) -> Unit,
     onClearCodes: () -> Unit,
     onOpenLiveView: () -> Unit = {},
+    vehicleMake: String = "",
     isDualPane: Boolean = false,
     modifier: Modifier = Modifier
 ) {
@@ -86,7 +87,7 @@ fun DiagnosticsScreen(
                     storedCodes = storedCodes,
                     pendingCodes = pendingCodes,
                     selectedCode = selectedDtc?.code,
-                    onSelectCode = { code -> onSelectDtc(DtcRepository.get(code)) },
+                    onSelectCode = { code -> onSelectDtc(DtcRepository.get(code, vehicleMake)) },
                     onOpenClearDialog = { showClearWarningDialog = true }
                 )
             }
@@ -109,7 +110,7 @@ fun DiagnosticsScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    TextButton(onClick = { onSelectDtc(DtcRepository.get("")) }) {
+                    TextButton(onClick = { onSelectDtc(DtcRepository.get("", vehicleMake)) }) {
                         Text("← Back to Fault List", color = RaceRed)
                     }
                 }
@@ -121,7 +122,7 @@ fun DiagnosticsScreen(
                     storedCodes = storedCodes,
                     pendingCodes = pendingCodes,
                     selectedCode = null,
-                    onSelectCode = { code -> onSelectDtc(DtcRepository.get(code)) },
+                    onSelectCode = { code -> onSelectDtc(DtcRepository.get(code, vehicleMake)) },
                     onOpenClearDialog = { showClearWarningDialog = true }
                 )
             }

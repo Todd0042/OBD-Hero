@@ -1,0 +1,182 @@
+[
+  {
+    "code": "P0010",
+    "title": "Camshaft Position Actuator Circuit (Bank 1)",
+    "category": "Powertrain - Valve Timing",
+    "meaning": "The PCM detected an open or short circuit in the Bank 1 Intake VVT/VCT solenoid control circuit.",
+    "symptoms": ["Check Engine Light on", "Rough idle", "Engine rattle on cold start", "Reduced power"],
+    "inspectionSteps": ["Check VVT solenoid connector for oil contamination.", "Measure solenoid internal coil resistance (typically 6-12 ohms).", "Inspect engine oil level and viscosity."],
+    "verifiedFixes": ["Replace Bank 1 VVT Solenoid", "Clean or replace VVT oil control filter screen", "Fresh engine oil and filter change"],
+    "difficulty": "Beginner"
+  },
+  {
+    "code": "P0101",
+    "title": "Mass Air Flow (MAF) Circuit Range/Performance",
+    "category": "Fuel & Air Metering",
+    "meaning": "The MAF sensor output voltage or frequency does not match calculated airflow based on engine RPM and throttle position.",
+    "symptoms": ["Engine hesitation or stalling", "Black smoke from exhaust", "Rough idle", "Poor fuel economy"],
+    "inspectionSteps": ["Inspect intake ductwork for leaks downstream of MAF.", "Check air filter condition.", "Clean MAF sensing wire with dedicated cleaner."],
+    "verifiedFixes": ["Clean MAF sensor with MAF cleaner spray", "Replace dirty air filter", "Replace MAF sensor"],
+    "difficulty": "Beginner"
+  },
+  {
+    "code": "P0113",
+    "title": "Intake Air Temperature Sensor 1 Circuit High",
+    "category": "Fuel & Air Metering",
+    "meaning": "IAT sensor voltage reading is stuck high (typically indicates open circuit or disconnected sensor, reading -40°).",
+    "symptoms": ["Check Engine Light on", "Hard starting in cold weather", "Slightly rich fuel mixture"],
+    "inspectionSteps": ["Verify IAT/MAF connector is firmly plugged in.", "Check wiring harness for chafing or broken wires.", "Measure IAT sensor thermistor resistance."],
+    "verifiedFixes": ["Reconnect unplugged IAT sensor", "Repair wiring harness break", "Replace IAT sensor / MAF assembly"],
+    "difficulty": "Beginner"
+  },
+  {
+    "code": "P0128",
+    "title": "Coolant Temp Below Thermostat Regulating Temp",
+    "category": "Cooling & Thermal",
+    "meaning": "Engine takes abnormally long to reach closed-loop operating temperature (typically 180°F / 82°C).",
+    "symptoms": ["Cabin heater blows lukewarm air in winter", "Temperature gauge sits below center", "Decreased fuel economy"],
+    "inspectionSteps": ["Check upper radiator hose warmth immediately after cold start.", "Inspect coolant level in expansion tank.", "Verify ECT live telemetry reading."],
+    "verifiedFixes": ["Replace stuck-open engine thermostat assembly", "Replace faulty Coolant Temperature Sensor (ECT)"],
+    "difficulty": "Beginner"
+  },
+  {
+    "code": "P0171",
+    "title": "System Too Lean (Bank 1)",
+    "category": "Fuel & Air Metering",
+    "meaning": "ECU detects excess unmetered oxygen; positive fuel trim is maxed out (+20% to +25%).",
+    "symptoms": ["Rough idle", "Hesitation under throttle", "Lean misfire codes (P0300)", "Decreased MPG"],
+    "inspectionSteps": ["Inspect intake bellows accordion boot for cracks.", "Inspect PCV vacuum hoses.", "Clean MAF sensor wire.", "Check fuel rail pressure under load."],
+    "verifiedFixes": ["Clean dirty MAF sensor", "Replace cracked intake air boot or PCV hose", "Replace failing Upstream O2 / A/F sensor"],
+    "difficulty": "Beginner"
+  },
+  {
+    "code": "P0172",
+    "title": "System Too Rich (Bank 1)",
+    "category": "Fuel & Air Metering",
+    "meaning": "ECU detects excess unburnt fuel; negative fuel trim is maxed out (-20% to -25%).",
+    "symptoms": ["Raw gasoline smell in exhaust", "Sooty spark plugs", "Rough idle", "Smog test failure"],
+    "inspectionSteps": ["Sniff oil dipstick for fuel dilution.", "Check EVAP purge valve for vacuum leak.", "Inspect air filter.", "Check for leaking fuel injector."],
+    "verifiedFixes": ["Replace stuck-open EVAP purge solenoid", "Replace leaking direct/port fuel injector", "Clean dirty MAF sensor"],
+    "difficulty": "Moderate"
+  },
+  {
+    "code": "P0300",
+    "title": "Random / Multiple Cylinder Misfire Detected",
+    "category": "Ignition & Combustion",
+    "meaning": "Crankshaft speed fluctuations indicate incomplete combustion across multiple cylinders.",
+    "symptoms": ["Flashing Check Engine Light (Catalyst damage risk)", "Severe engine shuddering", "Loss of power"],
+    "inspectionSteps": ["Inspect spark plugs for wear or fouling.", "Check ignition coil boots for oil soaking or carbon tracking.", "Inspect intake manifold for vacuum leaks."],
+    "verifiedFixes": ["Replace spark plugs and ignition coils", "Repair intake manifold vacuum leak", "Clean fuel injectors / intake valves"],
+    "difficulty": "Beginner"
+  },
+  {
+    "code": "P0301",
+    "title": "Cylinder 1 Misfire Detected",
+    "category": "Ignition & Combustion",
+    "meaning": "Crankshaft position sensor detected combustion failure specifically on Cylinder 1.",
+    "symptoms": ["Engine shudder on idle and load", "Flashing Check Engine Light", "Raw fuel odor"],
+    "inspectionSteps": ["Swap Ignition Coil #1 with Coil #2 to see if misfire follows.", "Inspect Spark Plug #1 electrode and gap.", "Perform compression test on Cylinder 1."],
+    "verifiedFixes": ["Replace Cylinder 1 ignition coil", "Replace Cylinder 1 spark plug", "Replace failing Cylinder 1 fuel injector"],
+    "difficulty": "Beginner"
+  },
+  {
+    "code": "P0302",
+    "title": "Cylinder 2 Misfire Detected",
+    "category": "Ignition & Combustion",
+    "meaning": "Crankshaft position sensor detected combustion failure specifically on Cylinder 2.",
+    "symptoms": ["Engine shudder on idle and load", "Flashing Check Engine Light", "Raw fuel odor"],
+    "inspectionSteps": ["Swap Ignition Coil #2 with Coil #1.", "Inspect Spark Plug #2.", "Inspect fuel injector harness."],
+    "verifiedFixes": ["Replace Cylinder 2 ignition coil", "Replace Cylinder 2 spark plug"],
+    "difficulty": "Beginner"
+  },
+  {
+    "code": "P0303",
+    "title": "Cylinder 3 Misfire Detected",
+    "category": "Ignition & Combustion",
+    "meaning": "Crankshaft position sensor detected combustion failure specifically on Cylinder 3.",
+    "symptoms": ["Engine shudder on idle and load", "Flashing Check Engine Light", "Raw fuel odor"],
+    "inspectionSteps": ["Swap Ignition Coil #3 with Coil #1.", "Inspect Spark Plug #3."],
+    "verifiedFixes": ["Replace Cylinder 3 ignition coil", "Replace Cylinder 3 spark plug"],
+    "difficulty": "Beginner"
+  },
+  {
+    "code": "P0304",
+    "title": "Cylinder 4 Misfire Detected",
+    "category": "Ignition & Combustion",
+    "meaning": "Crankshaft position sensor detected combustion failure specifically on Cylinder 4.",
+    "symptoms": ["Engine shudder on idle and load", "Flashing Check Engine Light", "Raw fuel odor"],
+    "inspectionSteps": ["Swap Ignition Coil #4 with Coil #1.", "Inspect Spark Plug #4."],
+    "verifiedFixes": ["Replace Cylinder 4 ignition coil", "Replace Cylinder 4 spark plug"],
+    "difficulty": "Beginner"
+  },
+  {
+    "code": "P0420",
+    "title": "Catalyst System Efficiency Below Threshold (Bank 1)",
+    "category": "Emissions Control",
+    "meaning": "Downstream oxygen sensor waveform mirrors upstream sensor, indicating catalytic converter oxygen storage loss.",
+    "symptoms": ["Check Engine Light on", "Rotten egg / sulfur smell from exhaust", "Failed emissions inspection"],
+    "inspectionSteps": ["Confirm no exhaust manifold leaks before converter.", "Verify upstream and downstream O2 sensor response in live data.", "Check for misfire history."],
+    "verifiedFixes": ["Replace Bank 1 Catalytic Converter", "Replace faulty Downstream O2 sensor", "Repair exhaust flange leak"],
+    "difficulty": "Moderate"
+  },
+  {
+    "code": "P0442",
+    "title": "EVAP System Small Leak Detected (.040\")",
+    "category": "Evaporative Emissions",
+    "meaning": "The fuel tank evaporative control system cannot hold vacuum during self-test due to a small pinhole leak.",
+    "symptoms": ["Check Engine Light on", "Faint fuel smell near rear quarter panel"],
+    "inspectionSteps": ["Inspect gas cap rubber O-ring seal for dry rot or dirt.", "Inspect EVAP vent and purge lines under chassis.", "Perform smoke test on EVAP system."],
+    "verifiedFixes": ["Clean or replace gas cap (OEM replacement)", "Replace cracked EVAP canister vapor line", "Replace sticking EVAP vent solenoid valve"],
+    "difficulty": "Beginner"
+  },
+  {
+    "code": "P0455",
+    "title": "EVAP System Gross Leak Detected",
+    "category": "Evaporative Emissions",
+    "meaning": "EVAP system detected large loss of tank vacuum, usually indicating loose or missing gas cap.",
+    "symptoms": ["Check Engine Light on", "Check Gas Cap warning light illuminated"],
+    "inspectionSteps": ["Check if gas cap is securely tightened or missing.", "Inspect filler neck for rust or physical dents.", "Check EVAP purge line disconnects."],
+    "verifiedFixes": ["Tighten or replace gas cap", "Reconnect disconnected EVAP vapor hose", "Replace failed EVAP purge valve"],
+    "difficulty": "Beginner"
+  },
+  {
+    "code": "P0500",
+    "title": "Vehicle Speed Sensor (VSS) Malfunction",
+    "category": "Speed & Drivetrain",
+    "meaning": "The PCM lost signal from the Vehicle Speed Sensor or wheel speed input.",
+    "symptoms": ["Speedometer inoperative or jumping", "Harsh transmission shifts", "ABS/TCS lights on"],
+    "inspectionSteps": ["Check VSS sensor connector and wiring harness.", "Verify wheel speed sensor signals in live telemetry.", "Inspect sensor reluctor ring teeth."],
+    "verifiedFixes": ["Replace failed Vehicle Speed Sensor", "Clean metallic debris from wheel speed sensor"],
+    "difficulty": "Moderate"
+  },
+  {
+    "code": "U0100",
+    "title": "Lost Communication with ECM / PCM 'A'",
+    "category": "CAN Bus & Network",
+    "meaning": "Modules on the CAN bus stopped receiving periodic status heartbeat broadcasts from Engine Control Module.",
+    "symptoms": ["Multiple warning lights (ABS, Traction, CEL, Trans)", "Limp mode or no-crank condition", "Loss of instrument cluster gauges"],
+    "inspectionSteps": ["Measure 12V battery voltage under load.", "Inspect PCM ground straps in engine bay.", "Inspect CAN high and low bus wiring resistance (should be 60 ohms)."],
+    "verifiedFixes": ["Clean/tighten battery terminals and main chassis ground straps", "Replace weak or degraded 12V battery", "Repair broken CAN bus twisted pair wiring"],
+    "difficulty": "Moderate"
+  },
+  {
+    "code": "U0101",
+    "title": "Lost Communication with Transmission Control Module (TCM)",
+    "category": "CAN Bus & Network",
+    "meaning": "ECM and other modules lost communication with the TCM over High-Speed CAN.",
+    "symptoms": ["Transmission stuck in limp home gear (usually 3rd)", "Check Engine and AT lights on", "Hard gear engagement"],
+    "inspectionSteps": ["Check TCM fuse in engine bay fuse box.", "Inspect TCM wiring harness connector for corrosion.", "Verify battery voltage."],
+    "verifiedFixes": ["Replace blown TCM fuse", "Clean corroded TCM wiring plug pins", "Replace faulty TCM module"],
+    "difficulty": "Moderate"
+  },
+  {
+    "code": "U0121",
+    "title": "Lost Communication with Anti-Lock Brake System (ABS) Module",
+    "category": "CAN Bus & Network",
+    "meaning": "ECM or BCM failed to receive expected CAN communication packets from ABS/ESP module.",
+    "symptoms": ["ABS and Traction Control lights illuminated", "Speedometer may drop to zero", "Power steering warning"],
+    "inspectionSteps": ["Inspect ABS module main multi-pin plug for water intrusion.", "Check ABS fuse in power distribution box.", "Test ground wire to ABS pump."],
+    "verifiedFixes": ["Clean and reseat ABS module connector", "Replace blown ABS power fuse", "Replace faulty ABS module assembly"],
+    "difficulty": "Moderate"
+  }
+]

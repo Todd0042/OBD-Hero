@@ -1,0 +1,81 @@
+{
+  "profileId": "GENERIC_SAE_J1979",
+  "make": "Generic",
+  "model": "Standard OBD-II",
+  "generations": ["All"],
+  "yearMin": 1996,
+  "yearMax": 2030,
+  "vinWmis": [],
+  "preferredProtocol": "ATSP0",
+  "ecmHeader": "7DF",
+  "tcmHeader": null,
+  "bcmHeader": null,
+  "absHeader": null,
+  "supportedFeatures": ["BASIC_TELEMETRY", "READINESS", "DTCS"],
+  "metrics": {
+    "RPM": {
+      "id": "RPM",
+      "displayName": "Engine RPM",
+      "ecuHeader": "7DF",
+      "command": "010C",
+      "formulaType": "RAW_RPM",
+      "unit": "RPM"
+    },
+    "SPEED": {
+      "id": "SPEED",
+      "displayName": "Ground Speed",
+      "ecuHeader": "7DF",
+      "command": "010D",
+      "formulaType": "RAW_SPEED_KMH",
+      "unit": "MPH"
+    },
+    "COOLANT": {
+      "id": "COOLANT",
+      "displayName": "Coolant Temp",
+      "ecuHeader": "7DF",
+      "command": "0105",
+      "formulaType": "RAW_TEMP_C",
+      "unit": "°F"
+    },
+    "INTAKE_AIR": {
+      "id": "INTAKE_AIR",
+      "displayName": "Intake Temp",
+      "ecuHeader": "7DF",
+      "command": "010F",
+      "formulaType": "RAW_TEMP_C",
+      "unit": "°F"
+    },
+    "BOOST": {
+      "id": "BOOST",
+      "displayName": "Manifold Absolute Pressure",
+      "ecuHeader": "7DF",
+      "command": "010B",
+      "formulaType": "RAW_MAP_KPA",
+      "unit": "PSI"
+    },
+    "SPARK": {
+      "id": "SPARK",
+      "displayName": "Timing Advance",
+      "ecuHeader": "7DF",
+      "command": "010E",
+      "formulaType": "RAW_SPARK_DEG",
+      "unit": "°"
+    },
+    "FUEL_ECONOMY": {
+      "id": "FUEL_ECONOMY",
+      "displayName": "Mass Air Flow / Fuel",
+      "ecuHeader": "7DF",
+      "command": "0110",
+      "formulaType": "RAW_MAF_GPS",
+      "unit": "MPG"
+    },
+    "BATTERY": {
+      "id": "BATTERY",
+      "displayName": "Control Module Voltage",
+      "ecuHeader": "7DF",
+      "command": "0142",
+      "formulaType": "RAW_MODULE_VOLTS",
+      "unit": "V"
+    }
+  }
+}

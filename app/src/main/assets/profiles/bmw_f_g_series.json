@@ -1,0 +1,65 @@
+{
+  "profileId": "BMW_F_G_SERIES",
+  "make": "BMW",
+  "model": "F & G Series (N55/B58/S58)",
+  "generations": ["F22", "F30", "F80", "G20", "G80"],
+  "yearMin": 2012,
+  "yearMax": 2025,
+  "vinWmis": ["WBA", "WBS", "5UX"],
+  "preferredProtocol": "ATSP6",
+  "ecmHeader": "6F1",
+  "tcmHeader": "6F4",
+  "bcmHeader": "6F1",
+  "absHeader": "6F1",
+  "supportedFeatures": ["BASIC_TELEMETRY", "READINESS", "DTCS", "OIL_TEMP", "TORQUE"],
+  "metrics": {
+    "RPM": {
+      "id": "RPM",
+      "displayName": "Engine RPM",
+      "ecuHeader": "7E0",
+      "command": "010C",
+      "formulaType": "RAW_RPM",
+      "unit": "RPM"
+    },
+    "SPEED": {
+      "id": "SPEED",
+      "displayName": "Ground Speed",
+      "ecuHeader": "7E0",
+      "command": "010D",
+      "formulaType": "RAW_SPEED_KMH",
+      "unit": "MPH"
+    },
+    "COOLANT": {
+      "id": "COOLANT",
+      "displayName": "Coolant Temp",
+      "ecuHeader": "7E0",
+      "command": "0105",
+      "formulaType": "RAW_TEMP_C",
+      "unit": "°F"
+    },
+    "OIL_TEMP": {
+      "id": "OIL_TEMP",
+      "displayName": "Engine Oil Temp",
+      "ecuHeader": "7E0",
+      "command": "22D001",
+      "formulaType": "RAW_TEMP_C",
+      "unit": "°F"
+    },
+    "BOOST": {
+      "id": "BOOST",
+      "displayName": "Charge Pipe / Boost",
+      "ecuHeader": "7E0",
+      "command": "010B",
+      "formulaType": "RAW_MAP_KPA",
+      "unit": "PSI"
+    },
+    "BATTERY": {
+      "id": "BATTERY",
+      "displayName": "IBS Battery Voltage",
+      "ecuHeader": "7E0",
+      "command": "0142",
+      "formulaType": "RAW_MODULE_VOLTS",
+      "unit": "V"
+    }
+  }
+}

@@ -200,6 +200,7 @@ class MainActivity : ComponentActivity() {
                                         onSelectDtc = { selectedDtc = it },
                                         onClearCodes = { obdManager.clearCodes() },
                                         onOpenLiveView = { showLiveView = true },
+                                        vehicleMake = vehicleProfile?.make ?: "",
                                         isDualPane = isDualPane
                                     )
                                 }

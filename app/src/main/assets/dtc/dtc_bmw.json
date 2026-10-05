@@ -1,0 +1,32 @@
+[
+  {
+    "code": "P1014",
+    "title": "Valvetronic Eccentric Shaft Sensor Reference Plausibility",
+    "category": "BMW Valvetronic System",
+    "meaning": "DME detected inconsistent angular position comparison between eccentric shaft magnetic sensors.",
+    "symptoms": ["Drivetrain Malfunction warning", "Limp home mode", "Engine operates on emergency throttle valve control"],
+    "inspectionSteps": ["Inspect eccentric shaft sensor connector for oil soaking from valve cover.", "Check Valvetronic servomotor supply fuse.", "Test servomotor resistance."],
+    "verifiedFixes": ["Replace oil-soaked Eccentric Shaft Sensor", "Replace valve cover gasket and eccentric shaft seal", "Relearn Valvetronic stops via ISTA / tool"],
+    "difficulty": "Advanced"
+  },
+  {
+    "code": "P1083",
+    "title": "Fuel Control Mixture Lean (Bank 1 Sensor 1)",
+    "category": "BMW Fuel & Air Metering",
+    "meaning": "BMW DME short-term and long-term fuel trim adaption limit reached on Bank 1.",
+    "symptoms": ["Engine idle surge / stall on cold morning", "Service Engine Soon light"],
+    "inspectionSteps": ["Smoke test intake system (common DISA valve O-ring, upper/lower intake boots, CCV oil separator hoses).", "Check fuel pressure at Schrader rail test port."],
+    "verifiedFixes": ["Replace torn lower intake boot / DISA valve O-ring", "Replace failing CCV oil separator crankcase breather hoses"],
+    "difficulty": "Moderate"
+  },
+  {
+    "code": "P1421",
+    "title": "Secondary Air Injection System Bank 1 Flow Fault",
+    "category": "BMW Emissions Control",
+    "meaning": "Pre-cat O2 sensor did not register expected lean shift during cold-start secondary air injection pump operation.",
+    "symptoms": ["Check Engine Light illuminated", "No perceptible driveability change"],
+    "inspectionSteps": ["Listen for vacuum cleaner sound from electric air pump on cold start.", "Inspect secondary air check valve for carbon clogging.", "Check vacuum line to combi-valve."],
+    "verifiedFixes": ["Replace secondary air non-return valve", "Replace dry-rotted vacuum lines to secondary air valve", "Replace seized air pump"],
+    "difficulty": "Moderate"
+  }
+]

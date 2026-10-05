@@ -1,0 +1,129 @@
+{
+  "profileId": "MAZDA_SKYACTIV_ND2",
+  "make": "Mazda",
+  "model": "MX-5 Miata",
+  "generations": ["ND", "ND2", "ND3"],
+  "yearMin": 2016,
+  "yearMax": 2025,
+  "vinWmis": ["JM1"],
+  "preferredProtocol": "ATSP6",
+  "ecmHeader": "7E0",
+  "tcmHeader": "7E1",
+  "bcmHeader": "720",
+  "absHeader": "7E2",
+  "supportedFeatures": ["BASIC_TELEMETRY", "READINESS", "DTCS", "TPMS", "OIL_TEMP", "TORQUE", "TRANSMISSION_GEAR", "DYNAMICS_G"],
+  "metrics": {
+    "RPM": {
+      "id": "RPM",
+      "displayName": "Engine Speed",
+      "ecuHeader": "7E0",
+      "command": "010C",
+      "formulaType": "RAW_RPM",
+      "unit": "RPM"
+    },
+    "SPEED": {
+      "id": "SPEED",
+      "displayName": "Ground Speed",
+      "ecuHeader": "7E0",
+      "command": "010D",
+      "formulaType": "RAW_SPEED_KMH",
+      "unit": "MPH"
+    },
+    "TORQUE": {
+      "id": "TORQUE",
+      "displayName": "Engine Torque",
+      "ecuHeader": "7E0",
+      "command": "221303",
+      "formulaType": "MAZDA_TORQUE",
+      "unit": "LB-FT"
+    },
+    "COOLANT": {
+      "id": "COOLANT",
+      "displayName": "Coolant Temp",
+      "ecuHeader": "7E0",
+      "command": "0105",
+      "formulaType": "RAW_TEMP_C",
+      "unit": "°F"
+    },
+    "OIL_TEMP": {
+      "id": "OIL_TEMP",
+      "displayName": "Engine Oil Temp",
+      "ecuHeader": "7E0",
+      "command": "221310",
+      "formulaType": "RAW_TEMP_C",
+      "unit": "°F"
+    },
+    "INTAKE_AIR": {
+      "id": "INTAKE_AIR",
+      "displayName": "Intake Air Temp",
+      "ecuHeader": "7E0",
+      "command": "010F",
+      "formulaType": "RAW_TEMP_C",
+      "unit": "°F"
+    },
+    "BOOST": {
+      "id": "BOOST",
+      "displayName": "Manifold Absolute Pressure",
+      "ecuHeader": "7E0",
+      "command": "010B",
+      "formulaType": "RAW_MAP_KPA",
+      "unit": "PSI"
+    },
+    "SPARK": {
+      "id": "SPARK",
+      "displayName": "Spark Advance",
+      "ecuHeader": "7E0",
+      "command": "010E",
+      "formulaType": "RAW_SPARK_DEG",
+      "unit": "°"
+    },
+    "BATTERY": {
+      "id": "BATTERY",
+      "displayName": "Battery Voltage",
+      "ecuHeader": "7E0",
+      "command": "0142",
+      "formulaType": "RAW_MODULE_VOLTS",
+      "unit": "V"
+    },
+    "TRANSMISSION_GEAR": {
+      "id": "TRANSMISSION_GEAR",
+      "displayName": "Transmission Gear",
+      "ecuHeader": "7E1",
+      "command": "221E01",
+      "formulaType": "MAZDA_GEAR",
+      "unit": "Gear"
+    },
+    "TRANSMISSION_TEMP": {
+      "id": "TRANSMISSION_TEMP",
+      "displayName": "Transmission Fluid Temp",
+      "ecuHeader": "7E1",
+      "command": "221E02",
+      "formulaType": "RAW_TEMP_C",
+      "unit": "°F"
+    },
+    "FUEL_ECONOMY": {
+      "id": "FUEL_ECONOMY",
+      "displayName": "Fuel & Lambda",
+      "ecuHeader": "7E0",
+      "command": "0110",
+      "formulaType": "RAW_MAF_GPS",
+      "unit": "MPG"
+    },
+    "DYNAMICS_G": {
+      "id": "DYNAMICS_G",
+      "displayName": "Steering & Lateral G",
+      "ecuHeader": "7E2",
+      "command": "224380",
+      "formulaType": "MAZDA_STEERING_G",
+      "unit": "G"
+    },
+    "TPMS": {
+      "id": "TPMS",
+      "displayName": "BCM Tire Pressures & Temps",
+      "ecuHeader": "720",
+      "command": "222A05",
+      "formulaType": "MAZDA_TPMS_PSI",
+      "unit": "PSI"
+    }
+  }
+}

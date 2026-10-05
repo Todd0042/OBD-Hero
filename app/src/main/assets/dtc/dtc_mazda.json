@@ -1,0 +1,42 @@
+[
+  {
+    "code": "P1170",
+    "title": "Front O2 Sensor Inversion / Slow Response",
+    "category": "Mazda Powertrain",
+    "meaning": "Mazda SkyActiv / MZR PCM detected that the upstream Air/Fuel ratio sensor output did not invert or respond within the target feedback period during closed-loop operation.",
+    "symptoms": ["Check Engine Light on", "Slight hesitation on tip-in throttle", "Reduced fuel economy"],
+    "inspectionSteps": ["Inspect upstream A/F sensor wiring harness near exhaust heat shield.", "Check for exhaust manifold crack near sensor bung.", "Monitor live A/F lambda equivalence ratio."],
+    "verifiedFixes": ["Replace Upstream Air/Fuel Ratio Sensor (Mazda OEM recommended)", "Clean throttle body and perform idle relearn"],
+    "difficulty": "Beginner"
+  },
+  {
+    "code": "P2096",
+    "title": "Post-Catalyst Fuel Trim System Too Lean (Bank 1)",
+    "category": "Mazda Powertrain",
+    "meaning": "Downstream heated O2 sensor fuel trim correction has reached maximum lean limit on Mazda SkyActiv-G powertrain.",
+    "symptoms": ["Check Engine Light on", "Usually no noticeable driveability change"],
+    "inspectionSteps": ["Check for exhaust leak between catalytic converter and rear O2 sensor.", "Inspect intake boots for minor unmetered air.", "Verify rear O2 sensor heater circuit resistance."],
+    "verifiedFixes": ["Tighten exhaust flange bolts / replace midpipe gasket", "Update PCM calibration software (Mazda TSB)", "Replace downstream heated O2 sensor"],
+    "difficulty": "Moderate"
+  },
+  {
+    "code": "U0073",
+    "title": "Control Module Communication Bus 'A' Off",
+    "category": "Mazda CAN Network",
+    "meaning": "Mazda HS-CAN or MS-CAN network controller entered bus-off state due to excessive transmission error frames.",
+    "symptoms": ["Multiple dashboard warning lights", "i-ELOOP / i-STOP warning message", "Loss of cruise control"],
+    "inspectionSteps": ["Inspect OBD-II port wiring and any attached accessories/dongles.", "Check battery state of charge (SkyActiv requires >12.4V resting).", "Inspect CAN terminal resistance at DLC pins 6 & 14."],
+    "verifiedFixes": ["Remove incompatible or shorting OBD-II accessories", "Charge or replace aged 12V battery", "Inspect harness near front bumper / radar sensor"],
+    "difficulty": "Moderate"
+  },
+  {
+    "code": "B11D8",
+    "title": "TPMS Event Information / Sensor Missing",
+    "category": "Mazda Body & Chassis",
+    "meaning": "Mazda BCM/TPMS module failed to receive RF radio packet from one or more direct wheel tire pressure sensors within timeout.",
+    "symptoms": ["TPMS light solid or flashing for 1 minute on startup"],
+    "inspectionSteps": ["Check tire pressures on all four wheels with manual gauge.", "Check if aftermarket wheels without TPMS sensors are mounted.", "Use 315MHz/433MHz TPMS tool to check wheel sensor battery life."],
+    "verifiedFixes": ["Perform Mazda TPMS relearn procedure (drive >15 mph for 10 mins)", "Replace dead internal coin battery in tire sensor / replace sensor"],
+    "difficulty": "Beginner"
+  }
+]

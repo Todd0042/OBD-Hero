@@ -1,6 +1,8 @@
 package com.obdhero.app
 
 import android.app.Application
+import com.obdhero.app.data.DtcRepository
+import com.obdhero.app.data.VehicleProfileRepository
 import com.obdhero.app.domain.BmwSleepLockManager
 import com.obdhero.app.obd.ObdConnectionManager
 
@@ -14,6 +16,8 @@ class ObdHeroApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        DtcRepository.init(this)
+        VehicleProfileRepository.init(this)
         obdConnectionManager = ObdConnectionManager()
         bmwSleepLockManager = BmwSleepLockManager(this)
     }
