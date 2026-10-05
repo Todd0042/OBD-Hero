@@ -32,6 +32,7 @@ import com.obdhero.app.ui.screens.ShopServiceScreen
 import com.obdhero.app.ui.screens.VehicleProfileScreen
 import com.obdhero.app.ui.theme.*
 import android.os.Build
+import androidx.activity.compose.BackHandler
 import androidx.activity.result.contract.ActivityResultContracts
 import kotlinx.coroutines.flow.collectLatest
 
@@ -126,6 +127,22 @@ class MainActivity : ComponentActivity() {
 
                 var selectedDtc by remember { mutableStateOf<DtcInfo?>(null) }
                 var showLiveView by remember { mutableStateOf(false) }
+
+                // System Back button / gesture interceptors:
+                // 1. If Live Telemetry screen is open, back takes user back to main dashboard
+                BackHandler(enabled = showLiveView) {
+                    showLiveView = false
+                }
+
+                // 2. If a fault code detail guide is open in Diagnostics, back returns to the fault list
+                BackHandler(enabled = !showLiveView && activeTab == AppTab.DIAGNOSTICS && selectedDtc != null && !isDualPane) {
+                    selectedDtc = null
+                }
+
+                // 3. If on another tab (Service, Battery, Emissions, Vehicle), back returns to Diagnostics
+                BackHandler(enabled = !showLiveView && activeTab != AppTab.DIAGNOSTICS) {
+                    activeTab = AppTab.DIAGNOSTICS
+                }
 
                 if (showLiveView) {
                     LiveViewScreen(

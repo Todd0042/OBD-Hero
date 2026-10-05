@@ -1,5 +1,6 @@
 package com.obdhero.app.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -33,6 +34,20 @@ fun ShopServiceScreen(
     var activeExecutingTool by remember { mutableStateOf<ShopMaintenanceTool?>(null) }
     var executionState by remember { mutableStateOf<ServiceExecutionState>(ServiceExecutionState.Idle) }
     var manualGuideTool by remember { mutableStateOf<ShopMaintenanceTool?>(null) }
+
+    // Intercept back gesture for active dialogs or active category filter
+    if (activeExecutingTool != null || manualGuideTool != null || selectedCategory != null) {
+        BackHandler {
+            when {
+                manualGuideTool != null -> manualGuideTool = null
+                activeExecutingTool != null -> {
+                    activeExecutingTool = null
+                    executionState = ServiceExecutionState.Idle
+                }
+                selectedCategory != null -> selectedCategory = null
+            }
+        }
+    }
 
     val filteredTools = remember(selectedCategory, tools) {
         if (selectedCategory == null) tools else tools.filter { it.category == selectedCategory }

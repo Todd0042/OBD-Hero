@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.activity.compose.BackHandler
 import android.app.Activity
 import android.view.WindowManager
 import androidx.compose.runtime.DisposableEffect
@@ -136,6 +137,18 @@ fun LiveViewScreen(
     var configuringSlot by remember { mutableStateOf<PodSlot?>(null) }
     var showBlackBoxDialog by remember { mutableStateOf(false) }
     var showDragyDialog by remember { mutableStateOf(false) }
+
+    // Intercept back gesture in Live View:
+    // 1. If any dialog/sheet is open, close it first
+    // 2. Otherwise, exit Live View back to dashboard
+    BackHandler {
+        when {
+            configuringSlot != null -> configuringSlot = null
+            showBlackBoxDialog -> showBlackBoxDialog = false
+            showDragyDialog -> showDragyDialog = false
+            else -> onBack()
+        }
+    }
 
     // Keep the screen awake while Live Telemetry cockpit is displayed
     val context = LocalContext.current

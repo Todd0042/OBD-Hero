@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.activity.compose.BackHandler
 import com.obdhero.app.data.DtcRepository
 import com.obdhero.app.domain.DtcInfo
 import com.obdhero.app.domain.FreezeFrameData
@@ -40,7 +41,7 @@ fun DiagnosticsScreen(
     storedCodes: List<String>,
     pendingCodes: List<String>,
     selectedDtc: DtcInfo?,
-    onSelectDtc: (DtcInfo) -> Unit,
+    onSelectDtc: (DtcInfo?) -> Unit,
     onClearCodes: () -> Unit,
     onOpenLiveView: () -> Unit = {},
     vehicleMake: String = "",
@@ -51,6 +52,13 @@ fun DiagnosticsScreen(
     freezeFrame: FreezeFrameData? = null,
     modifier: Modifier = Modifier
 ) {
+    // Intercept system back gesture if viewing a fault code detail in single-pane mode
+    if (!isDualPane && selectedDtc != null) {
+        BackHandler {
+            onSelectDtc(null)
+        }
+    }
+
     var showClearWarningDialog by remember { mutableStateOf(false) }
 
     if (showClearWarningDialog) {
@@ -130,7 +138,7 @@ fun DiagnosticsScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    TextButton(onClick = { onSelectDtc(DtcRepository.get("", vehicleMake)) }) {
+                    TextButton(onClick = { onSelectDtc(null) }) {
                         Text("← Back to Fault List", color = RaceRed)
                     }
                 }
