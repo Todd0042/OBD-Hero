@@ -1,0 +1,122 @@
+{
+  "profileId": "CHRYSLER_FCA_CAN",
+  "make": "Chrysler",
+  "model": "FCA / Stellantis (Jeep, Dodge, Ram, Chrysler)",
+  "generations": ["Pentastar 3.6L", "HEMI 5.7L/6.4L", "ZF 8HP"],
+  "yearMin": 2011,
+  "yearMax": 2026,
+  "vinWmis": ["1C3", "1C4", "1C6", "2C3", "2C4", "3C4", "3C6"],
+  "preferredProtocol": "ATSP6",
+  "ecmHeader": "7E0",
+  "tcmHeader": "7E1",
+  "bcmHeader": "720",
+  "absHeader": "7E2",
+  "supportedFeatures": [
+    "BASIC_TELEMETRY",
+    "READINESS",
+    "DTCS",
+    "OIL_PRESSURE",
+    "OIL_TEMP",
+    "TRANSMISSION_GEAR",
+    "TRANSMISSION_TEMP",
+    "TORQUE"
+  ],
+  "metrics": {
+    "RPM": {
+      "id": "RPM",
+      "displayName": "Engine Speed",
+      "ecuHeader": "7E0",
+      "command": "010C",
+      "formulaType": "RAW_RPM",
+      "unit": "RPM"
+    },
+    "SPEED": {
+      "id": "SPEED",
+      "displayName": "Vehicle Speed",
+      "ecuHeader": "7E0",
+      "command": "010D",
+      "formulaType": "RAW_SPEED_KMH",
+      "unit": "MPH"
+    },
+    "TORQUE": {
+      "id": "TORQUE",
+      "displayName": "Engine Output Torque",
+      "ecuHeader": "7E0",
+      "command": "0162",
+      "formulaType": "RAW_SPARK_DEG",
+      "unit": "LB-FT"
+    },
+    "COOLANT": {
+      "id": "COOLANT",
+      "displayName": "Engine Coolant Temp",
+      "ecuHeader": "7E0",
+      "command": "0105",
+      "formulaType": "RAW_TEMP_C",
+      "unit": "°F"
+    },
+    "OIL_TEMP": {
+      "id": "OIL_TEMP",
+      "displayName": "Engine Oil Temp",
+      "ecuHeader": "7E0",
+      "command": "015C",
+      "formulaType": "RAW_TEMP_C",
+      "unit": "°F"
+    },
+    "INTAKE_AIR": {
+      "id": "INTAKE_AIR",
+      "displayName": "Intake Air Temp",
+      "ecuHeader": "7E0",
+      "command": "010F",
+      "formulaType": "RAW_TEMP_C",
+      "unit": "°F"
+    },
+    "BOOST": {
+      "id": "BOOST",
+      "displayName": "Manifold Pressure (MAP)",
+      "ecuHeader": "7E0",
+      "command": "010B",
+      "formulaType": "RAW_MAP_KPA",
+      "unit": "PSI"
+    },
+    "SPARK": {
+      "id": "SPARK",
+      "displayName": "Ignition Timing Advance",
+      "ecuHeader": "7E0",
+      "command": "010E",
+      "formulaType": "RAW_SPARK_DEG",
+      "unit": "°"
+    },
+    "BATTERY": {
+      "id": "BATTERY",
+      "displayName": "IBS System Voltage",
+      "ecuHeader": "7E0",
+      "command": "0142",
+      "formulaType": "RAW_MODULE_VOLTS",
+      "unit": "V"
+    },
+    "TRANSMISSION_GEAR": {
+      "id": "TRANSMISSION_GEAR",
+      "displayName": "ZF Transmission Gear",
+      "ecuHeader": "7E1",
+      "command": "221E01",
+      "formulaType": "MAZDA_GEAR",
+      "unit": "Gear"
+    },
+    "TRANSMISSION_TEMP": {
+      "id": "TRANSMISSION_TEMP",
+      "displayName": "ZF Transmission Fluid Temp",
+      "ecuHeader": "7E1",
+      "command": "221E1C",
+      "formulaType": "RAW_TEMP_C",
+      "unit": "°F"
+    },
+    "FUEL_ECONOMY": {
+      "id": "FUEL_ECONOMY",
+      "displayName": "Mass Air Flow / Fuel",
+      "ecuHeader": "7E0",
+      "command": "0110",
+      "formulaType": "RAW_MAF_GPS",
+      "unit": "MPG"
+    }
+  }
+}

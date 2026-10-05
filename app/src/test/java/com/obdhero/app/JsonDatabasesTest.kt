@@ -85,4 +85,38 @@ class JsonDatabasesTest {
         assertTrue(profile.metrics.containsKey("TORQUE"))
         assertTrue(profile.metrics.containsKey("TRANSMISSION_GEAR"))
     }
+
+    @Test
+    fun testChryslerProfileJsonLoadsAndValidates() {
+        val file = File("src/main/assets/profiles/chrysler_fca_can.json")
+        assertTrue("Chrysler profile file must exist", file.exists())
+
+        val profile = gson.fromJson(FileReader(file), VehicleProfileDefinition::class.java)
+        assertEquals("CHRYSLER_FCA_CAN", profile.profileId)
+        assertEquals("Chrysler", profile.make)
+        assertEquals("7E0", profile.ecmHeader)
+        assertEquals("7E1", profile.tcmHeader)
+        assertTrue(profile.vinWmis.contains("1C4"))
+        assertTrue(profile.metrics.containsKey("OIL_TEMP"))
+        assertTrue(profile.metrics.containsKey("TRANSMISSION_TEMP"))
+        assertTrue(profile.metrics.containsKey("TRANSMISSION_GEAR"))
+    }
+
+    @Test
+    fun testChryslerDtcJsonLoadsAndValidates() {
+        val file = File("src/main/assets/dtc/dtc_chrysler.json")
+        assertTrue("Chrysler DTC file must exist", file.exists())
+
+        val type = object : TypeToken<List<DtcInfo>>() {}.type
+        val dtcs: List<DtcInfo> = gson.fromJson(FileReader(file), type)
+        assertTrue(dtcs.isNotEmpty())
+
+        val p0520 = dtcs.find { it.code == "P0520" }
+        assertNotNull("P0520 oil pressure switch code must be present", p0520)
+        assertTrue(p0520!!.meaning.contains("Pentastar"))
+
+        val p0456 = dtcs.find { it.code == "P0456" }
+        assertNotNull("P0456 EVAP ESIM code must be present", p0456)
+        assertTrue(p0456!!.meaning.contains("ESIM"))
+    }
 }

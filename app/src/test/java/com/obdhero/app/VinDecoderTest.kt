@@ -22,6 +22,7 @@ class VinDecoderTest {
         val profile = VinDecoder.decode("1C4HJXDG8MW123456")
         assertEquals("Chrysler/Jeep", profile.make)
         assertEquals(2021, profile.year)
+        assertEquals("Jeep Wrangler (JL)", profile.model)
         assertTrue("2021 Jeep should be flagged as SGW locked", profile.isSgwLocked)
         assertFalse("Jeep does not have BMW FRM", profile.isBmwFrmVulnerable)
     }

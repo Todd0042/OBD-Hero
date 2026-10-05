@@ -76,6 +76,18 @@ object VinDecoder {
                 cleanVin.contains("KF") || cleanVin.startsWith("JM3KF") -> "CX-5"
                 else -> "Mazda Vehicle"
             }
+            "Chrysler", "Chrysler/Jeep", "Dodge", "Ram" -> when {
+                cleanVin.contains("JL") || cleanVin.startsWith("1C4HJ") -> "Jeep Wrangler (JL)"
+                cleanVin.contains("JK") || cleanVin.startsWith("1C4BJ") -> "Jeep Wrangler (JK)"
+                cleanVin.contains("JT") || cleanVin.startsWith("1C4JJ") -> "Jeep Gladiator (JT)"
+                cleanVin.contains("WK") || cleanVin.startsWith("1C4RJ") -> "Jeep Grand Cherokee (WK2)"
+                cleanVin.contains("WL") || cleanVin.startsWith("1C4RH") -> "Jeep Grand Cherokee (WL)"
+                cleanVin.startsWith("1C6") || cleanVin.startsWith("3C6") -> "Ram 1500/2500"
+                cleanVin.startsWith("2C3CD") -> "Dodge Charger"
+                cleanVin.startsWith("2C3CDZ") || cleanVin.contains("CHALLENGER") -> "Dodge Challenger"
+                cleanVin.startsWith("2C4RC") -> "Chrysler Pacifica"
+                else -> "FCA / Stellantis Vehicle"
+            }
             else -> "Standard Model"
         }
 

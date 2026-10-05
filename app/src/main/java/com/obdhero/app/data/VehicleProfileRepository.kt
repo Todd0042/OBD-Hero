@@ -64,6 +64,16 @@ object VehicleProfileRepository {
             if (profile.make.equals("BMW", ignoreCase = true) && profile.vinWmis.any { cleanVin.startsWith(it) }) {
                 return profile
             }
+
+            if (profile.profileId == "CHRYSLER_FCA_CAN" && (
+                profile.vinWmis.any { cleanVin.startsWith(it) } ||
+                make.contains("Chrysler", ignoreCase = true) ||
+                make.contains("Jeep", ignoreCase = true) ||
+                make.contains("Dodge", ignoreCase = true) ||
+                make.contains("Ram", ignoreCase = true)
+            )) {
+                return profile
+            }
         }
 
         // 2. Make match

@@ -38,6 +38,12 @@ object DtcRepository {
             // 3. Load BMW Codes
             loadManufacturerFile(context, "bmw", "dtc/dtc_bmw.json")
 
+            // 4. Load Chrysler / Jeep / Dodge / Ram Codes
+            loadManufacturerFile(context, "chrysler", "dtc/dtc_chrysler.json")
+            loadManufacturerFile(context, "jeep", "dtc/dtc_chrysler.json")
+            loadManufacturerFile(context, "dodge", "dtc/dtc_chrysler.json")
+            loadManufacturerFile(context, "ram", "dtc/dtc_chrysler.json")
+
             isInitialized = true
             Log.i(TAG, "DTC repository initialized with ${genericCodes.size} generic codes and ${manufacturerCodes.size} OEM packs.")
         } catch (e: Exception) {

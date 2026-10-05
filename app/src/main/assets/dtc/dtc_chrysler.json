@@ -1,0 +1,72 @@
+[
+  {
+    "code": "P0520",
+    "title": "Engine Oil Pressure Sensor / Switch Circuit Malfunction",
+    "category": "Chrysler / Pentastar Powertrain",
+    "meaning": "PCM detected out-of-range voltage on the dual-stage engine oil pressure sensor circuit. Very common on 3.2L/3.6L Pentastar V6 and 5.7L HEMI engines.",
+    "symptoms": ["Check Engine Light on", "EVIC displays 'Oil Pressure Sensor Error' or pegged 99 PSI / 0 PSI", "Remote start inoperative"],
+    "inspectionSteps": ["Check live engine oil pressure telemetry with ignition on / engine off (should read 0 PSI; failing sensors read 40-90 PSI key-off).", "Inspect oil filter housing valley under lower intake manifold for oil puddling.", "Inspect wiring harness to sensor at rear of oil cooler adapter."],
+    "verifiedFixes": ["Replace faulty Engine Oil Pressure Sensor on rear of oil cooler assembly", "Replace complete plastic Pentastar oil filter adapter assembly with upgraded aluminum unit if leaking"],
+    "difficulty": "Moderate"
+  },
+  {
+    "code": "P0522",
+    "title": "Engine Oil Pressure Sensor / Switch Low Voltage",
+    "category": "Chrysler / Pentastar Powertrain",
+    "meaning": "Oil pressure signal wire voltage dropped below 0.2V (indicating internal sensor diaphragm rupture or open ground).",
+    "symptoms": ["Oil can warning icon on instrument cluster", "Check Engine Light on", "Low oil pressure chime"],
+    "inspectionSteps": ["Verify engine oil level on dipstick immediately before cranking.", "Listen for valvetrain clicking / ticking (confirms mechanical oil pressure).", "Measure sensor reference voltage (5V) and signal return."],
+    "verifiedFixes": ["Replace oil pressure sensor (OEM Mopar recommended to avoid calibration drift)", "Check oil filter cap bypass valve spring"],
+    "difficulty": "Moderate"
+  },
+  {
+    "code": "P0456",
+    "title": "EVAP System Very Small Leak (.020\")",
+    "category": "Chrysler Evaporative Emissions",
+    "meaning": "PCM failed evaporative system natural vacuum leak detection test (NVLD / ESIM switch did not close during cool-down).",
+    "symptoms": ["Check Engine Light on", "'gascap' warning illuminated on odometer display"],
+    "inspectionSteps": ["Inspect gas cap rubber O-ring seal for dirt or cracks.", "Locate Evaporative System Integrity Module (ESIM) mounted on charcoal canister near fuel tank.", "Lightly tap ESIM switch body or inspect its rubber connecting boot for dry-rot."],
+    "verifiedFixes": ["Replace ESIM / NVLD switch assembly on charcoal canister (80% common fix)", "Replace gas cap with OEM Mopar cap", "Replace cracked EVAP vapor line near purge solenoid"],
+    "difficulty": "Beginner"
+  },
+  {
+    "code": "P3400",
+    "title": "MDS (Multi-Displacement System) Deactivation / Plausibility",
+    "category": "Chrysler / HEMI Powertrain",
+    "meaning": "PCM detected failure in the 4-cylinder MDS eco mode transition on 5.7L/6.4L HEMI V8 engines.",
+    "symptoms": ["Check Engine Light on", "ECO light does not illuminate on highway", "Slight shudder during 4-cylinder deactivation"],
+    "inspectionSteps": ["Check engine oil viscosity: MDS strictly requires 5W-20 (5.7L) or 0W-40 (6.4L); incorrect viscosity prevents hydraulic lifters from locking.", "Inspect oil level (low oil pressure prevents MDS solenoid operation).", "Test resistance of MDS solenoids under intake manifold (approx 12 ohms)."],
+    "verifiedFixes": ["Change engine oil with correct factory viscosity 5W-20 oil", "Replace failing MDS Solenoid under intake manifold"],
+    "difficulty": "Moderate"
+  },
+  {
+    "code": "P0300",
+    "title": "Multiple Cylinder Misfire / Pentastar Camshaft Wear",
+    "category": "Chrysler Ignition & Valvetrain",
+    "meaning": "Crankshaft speed fluctuations indicate combustion failure. On 3.6L Pentastar engines, frequently caused by failed rocker arm needle bearings wearing down the camshaft lobe.",
+    "symptoms": ["Audible rapid metallic ticking / sewing machine sound from cylinder head", "Flashing Check Engine Light under acceleration", "Rough idle"],
+    "inspectionSteps": ["Remove valve cover and inspect camshaft lobes for grooving or gouges.", "Inspect rocker arm roller bearings for excessive play or seized needle bearings.", "Inspect spark plugs and ignition coil boots."],
+    "verifiedFixes": ["Replace worn camshaft and rocker arm assembly on affected bank (Pentastar common failure)", "Replace spark plugs and ignition coils"],
+    "difficulty": "Advanced"
+  },
+  {
+    "code": "U0100",
+    "title": "Lost Communication with ECM/PCM / Dual Battery Variance",
+    "category": "Chrysler CAN Network",
+    "meaning": "TCM, BCM, or ABS lost CAN bus heartbeat from Powertrain Control Module. Very common on 2018+ Jeep Wrangler/Gladiator and Ram with dual ESS (Engine Stop-Start) batteries.",
+    "symptoms": ["Start-Stop warning message on dash", "Random cluster lights blinking", "Intermittent no-crank / no-start"],
+    "inspectionSteps": ["Test AUX auxiliary battery health (small 12V battery under main battery tray or fender). A weak AUX battery drags down main CAN bus voltage.", "Inspect TIPM / PDC fuse box connectors for corrosion.", "Verify main chassis ground stud next to battery."],
+    "verifiedFixes": ["Replace failed AUX Start-Stop auxiliary battery", "Clean and reseat TIPM power distribution block connectors", "Replace aging main AGM battery"],
+    "difficulty": "Moderate"
+  },
+  {
+    "code": "P0128",
+    "title": "Thermostat Rationality / Coolant Temp Low",
+    "category": "Chrysler Cooling System",
+    "meaning": "Engine coolant does not reach target operating temperature within calculated engine run time (typically due to stuck-open plastic thermostat).",
+    "symptoms": ["Cabin heater warm but not hot", "Check Engine Light on", "Temperature gauge stays in lower third"],
+    "inspectionSteps": ["Feel upper radiator hose warmth immediately upon starting cold engine.", "Inspect plastic thermostat housing neck for hairline cracks or pink coolant crust.", "Read live Coolant Temp Telemetry."],
+    "verifiedFixes": ["Replace complete Thermostat and Housing assembly (OEM Mopar with integrated gasket)", "Bleed air from cooling system via bleeder screw on Pentastar housing"],
+    "difficulty": "Beginner"
+  }
+]
