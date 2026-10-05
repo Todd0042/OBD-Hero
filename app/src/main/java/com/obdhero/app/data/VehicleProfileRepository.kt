@@ -103,6 +103,30 @@ object VehicleProfileRepository {
             )) {
                 return profile
             }
+
+            if (profile.profileId == "TOYOTA_LEXUS_TNGA" && (
+                profile.vinWmis.any { cleanVin.startsWith(it) } ||
+                make.contains("Toyota", ignoreCase = true) ||
+                make.contains("Lexus", ignoreCase = true) ||
+                make.contains("Scion", ignoreCase = true)
+            )) {
+                return profile
+            }
+
+            if (profile.profileId == "HONDA_ACURA_CAN" && (
+                profile.vinWmis.any { cleanVin.startsWith(it) } ||
+                make.contains("Honda", ignoreCase = true) ||
+                make.contains("Acura", ignoreCase = true)
+            )) {
+                return profile
+            }
+
+            if (profile.profileId == "SUBARU_GLOBAL_CAN" && (
+                profile.vinWmis.any { cleanVin.startsWith(it) } ||
+                make.contains("Subaru", ignoreCase = true)
+            )) {
+                return profile
+            }
         }
 
         // 2. Make match

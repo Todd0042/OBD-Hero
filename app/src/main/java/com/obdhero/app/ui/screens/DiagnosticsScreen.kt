@@ -1,5 +1,6 @@
 package com.obdhero.app.ui.screens
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -17,12 +18,14 @@ import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Hub
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -102,6 +105,7 @@ fun DiagnosticsScreen(
                     moduleReports = moduleReports,
                     isScanning = isScanning,
                     vehicleMake = vehicleMake,
+                    freezeFrame = freezeFrame,
                     onScanAllModules = onScanAllModules,
                     onSelectCode = { code -> onSelectDtc(DtcRepository.get(code, vehicleMake)) },
                     onOpenClearDialog = { showClearWarningDialog = true }
@@ -141,6 +145,7 @@ fun DiagnosticsScreen(
                     moduleReports = moduleReports,
                     isScanning = isScanning,
                     vehicleMake = vehicleMake,
+                    freezeFrame = freezeFrame,
                     onScanAllModules = onScanAllModules,
                     onSelectCode = { code -> onSelectDtc(DtcRepository.get(code, vehicleMake)) },
                     onOpenClearDialog = { showClearWarningDialog = true }
@@ -188,10 +193,13 @@ private fun DtcListSection(
     moduleReports: List<ModuleDtcReport> = emptyList(),
     isScanning: Boolean = false,
     vehicleMake: String? = null,
+    freezeFrame: FreezeFrameData? = null,
     onScanAllModules: () -> Unit = {},
     onSelectCode: (String) -> Unit,
     onOpenClearDialog: () -> Unit
 ) {
+    val context = LocalContext.current
+
     Column(modifier = Modifier.fillMaxSize()) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -226,6 +234,38 @@ private fun DtcListSection(
                 }
 
                 if (storedCodes.isNotEmpty() || pendingCodes.isNotEmpty()) {
+                    // Export / Share Workshop Diagnostic Report
+                    IconButton(
+                        onClick = {
+                            val report = generateDiagnosticReport(
+                                vehicleMake = vehicleMake,
+                                storedCodes = storedCodes,
+                                pendingCodes = pendingCodes,
+                                moduleReports = moduleReports,
+                                freezeFrame = freezeFrame
+                            )
+                            val sendIntent = Intent().apply {
+                                action = Intent.ACTION_SEND
+                                putExtra(Intent.EXTRA_TEXT, report)
+                                putExtra(Intent.EXTRA_SUBJECT, "OBD-Hero Diagnostic Report - ${vehicleMake ?: "Vehicle"}")
+                                type = "text/plain"
+                            }
+                            context.startActivity(Intent.createChooser(sendIntent, "Share Diagnostic Report"))
+                        },
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(SurfaceCardElevated)
+                            .border(1.dp, BorderSubtle, RoundedCornerShape(8.dp))
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Share,
+                            contentDescription = "Share Diagnostic Report",
+                            tint = TextPrimary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+
                     Button(
                         onClick = onOpenClearDialog,
                         colors = ButtonDefaults.buttonColors(containerColor = CriticalCrimson.copy(alpha = 0.2f)),
@@ -616,3 +656,73 @@ private fun EmptyDtcGuideCard() {
         }
     }
 }
+
+fun generateDiagnosticReport(
+    vehicleMake: String?,
+    storedCodes: List<String>,
+    pendingCodes: List<String>,
+    moduleReports: List<ModuleDtcReport>,
+    freezeFrame: FreezeFrameData?
+): String {
+    val sb = StringBuilder()
+    val timeStr = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US).format(java.util.Date())
+    val makeStr = vehicleMake ?: ""
+    sb.appendLine("========================================")
+    sb.appendLine("     OBD-HERO DIAGNOSTIC HEALTH REPORT  ")
+    sb.appendLine("========================================")
+    sb.appendLine("Timestamp: $timeStr")
+    sb.appendLine("Vehicle Profile: ${if (makeStr.isNotEmpty()) makeStr.uppercase() else "GENERIC OBD2"}")
+    sb.appendLine("Total Stored DTCs: ${storedCodes.size}")
+    sb.appendLine("Total Pending DTCs: ${pendingCodes.size}")
+    sb.appendLine("----------------------------------------")
+
+    if (storedCodes.isNotEmpty()) {
+        sb.appendLine("\n[STORED / CONFIRMED DTCs]")
+        for (code in storedCodes) {
+            val dtc = DtcRepository.get(code, makeStr)
+            sb.appendLine("• $code: ${dtc.meaning}")
+            if (dtc.verifiedFixes.isNotEmpty()) {
+                sb.appendLine("   Verified Fixes: ${dtc.verifiedFixes.joinToString("; ")}")
+            }
+        }
+    }
+
+    if (pendingCodes.isNotEmpty()) {
+        sb.appendLine("\n[PENDING DTCs]")
+        for (code in pendingCodes) {
+            val dtc = DtcRepository.get(code, makeStr)
+            sb.appendLine("• $code: ${dtc.meaning}")
+        }
+    }
+
+    if (moduleReports.isNotEmpty()) {
+        sb.appendLine("\n[MODULE DIAGNOSTIC STATUS (${moduleReports.size} ECUs)]")
+        for (report in moduleReports) {
+            val status = if (report.totalFaults == 0) {
+                if (report.isResponding) "PASSED / NO FAULTS" else "NO RESPONSE"
+            } else {
+                "${report.totalFaults} FAULT(S): ${(report.storedCodes + report.pendingCodes).joinToString(", ")}"
+            }
+            sb.appendLine("• ${report.module.displayName} (${report.header}): $status")
+        }
+    }
+
+    if (freezeFrame != null) {
+        sb.appendLine("\n[ECU FREEZE FRAME AT FAULT TRIGGER]")
+        sb.appendLine("• Trigger DTC: ${freezeFrame.dtc}")
+        freezeFrame.rpm?.let { sb.appendLine("• Engine RPM: $it RPM") }
+        freezeFrame.speedMph?.let { sb.appendLine("• Vehicle Speed: $it mph") }
+        freezeFrame.coolantTempF?.let { sb.appendLine("• Coolant Temp: $it °F") }
+        freezeFrame.engineLoadPct?.let { sb.appendLine("• Engine Load: $it %") }
+        freezeFrame.shortTermFuelTrim?.let { sb.appendLine("• STFT: $it %") }
+        freezeFrame.longTermFuelTrim?.let { sb.appendLine("• LTFT: $it %") }
+    }
+
+    sb.appendLine("\n========================================")
+    sb.appendLine("Generated by OBD-Hero Workshop Edition")
+    sb.appendLine("https://github.com/theuser/OBD-Hero")
+    sb.appendLine("========================================")
+
+    return sb.toString()
+}
+

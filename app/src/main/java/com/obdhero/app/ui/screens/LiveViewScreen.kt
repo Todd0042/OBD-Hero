@@ -14,8 +14,9 @@ import androidx.compose.material.icons.filled.Hub
 import androidx.compose.material.icons.filled.LocalGasStation
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.TireRepair
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,6 +41,45 @@ import com.obdhero.app.domain.FocusedMetric
 import com.obdhero.app.domain.LiveTelemetry
 import com.obdhero.app.ui.theme.*
 
+enum class PodSlot(val title: String) {
+    HERO_1("Hero Pod 1 (Top Left)"),
+    HERO_2("Hero Pod 2 (Top Center)"),
+    HERO_3("Hero Pod 3 (Top Right)"),
+    SUB_1("System Tile 1 (Bottom Left)"),
+    SUB_2("System Tile 2 (Bottom Center)"),
+    SUB_3("System Tile 3 (Bottom Right)")
+}
+
+data class MetricDisplayData(
+    val label: String,
+    val ecuBadge: String,
+    val value: String,
+    val unit: String,
+    val progressPct: Float,
+    val accentColor: Color,
+    val subText: String = ""
+)
+
+fun getMetricDisplayData(metric: FocusedMetric, telemetry: LiveTelemetry): MetricDisplayData {
+    return when (metric) {
+        FocusedMetric.RPM -> MetricDisplayData("ENGINE SPEED", "ECM 7E0", "${telemetry.rpm}", "RPM", (telemetry.rpm.toFloat() / 7000f).coerceIn(0f, 1f), RaceRed, "Crankshaft Tach")
+        FocusedMetric.SPEED -> MetricDisplayData("GROUND SPEED", "ECM 7E0", "${telemetry.speedMph}", "MPH", (telemetry.speedMph.toFloat() / 140f).coerceIn(0f, 1f), RubyGlow, "${telemetry.speedKmh} km/h")
+        FocusedMetric.TORQUE -> MetricDisplayData("ENGINE TORQUE", "ECM 7E0", "${telemetry.torqueLbFt}", "LB-FT", (telemetry.torqueLbFt.toFloat() / 400f).coerceIn(0f, 1f), RaceRed, "${telemetry.torqueNm} Nm")
+        FocusedMetric.BOOST -> MetricDisplayData("BOOST / VACUUM", "ECM 7E0", "%.1f".format(telemetry.boostPsi), "PSI", (telemetry.boostPsi / 25f).coerceIn(0f, 1f), AlertAmber, "MAP / Boost Pressure")
+        FocusedMetric.OIL_PRESSURE -> MetricDisplayData("OIL PRESSURE", "ECM 7E0", "${telemetry.oilPressurePsi}", "PSI", (telemetry.oilPressurePsi / 80f).coerceIn(0f, 1f), EmeraldSuccess, "Main Oil Gallery")
+        FocusedMetric.OIL_TEMP -> MetricDisplayData("ENGINE OIL TEMP", "ECM 7E0", "${telemetry.oilTempF}", "°F", ((telemetry.oilTempF - 100f) / 180f).coerceIn(0f, 1f), AlertAmber, "Sump / Gallery")
+        FocusedMetric.COOLANT -> MetricDisplayData("COOLANT TEMP", "ECM 7E0", "${telemetry.coolantTempF}", "°F", ((telemetry.coolantTempF - 100f) / 150f).coerceIn(0f, 1f), RubyGlow, "${telemetry.coolantTempC}°C")
+        FocusedMetric.INTAKE_AIR -> MetricDisplayData("INTAKE AIR TEMP", "ECM 7E0", "${telemetry.intakeTempF}", "°F", ((telemetry.intakeTempF - 40f) / 120f).coerceIn(0f, 1f), EmeraldSuccess, "IAT Sensor")
+        FocusedMetric.BATTERY -> MetricDisplayData("12V BATTERY", "ECM 7E0", "%.1f".format(telemetry.batteryVolts), "VOLTS", ((telemetry.batteryVolts - 11f) / 4f).coerceIn(0f, 1f), EmeraldSuccess, "Alternator Charge")
+        FocusedMetric.SPARK -> MetricDisplayData("SPARK TIMING", "ECM 7E0", "%.1f".format(telemetry.sparkAdvanceDeg), "DEG", (telemetry.sparkAdvanceDeg / 40f).coerceIn(0f, 1f), RubyGlow, "Cyl 1 Timing")
+        FocusedMetric.TRANSMISSION_GEAR -> MetricDisplayData("TRANSMISSION", "TCM 7E1", telemetry.transGear, "GEAR", ((telemetry.transTempF - 100f) / 160f).coerceIn(0f, 1f), AlertAmber, "${telemetry.transTempF}°F Fluid")
+        FocusedMetric.TRANSMISSION_TEMP -> MetricDisplayData("ATF TEMP", "TCM 7E1", "${telemetry.transTempF}", "°F", ((telemetry.transTempF - 100f) / 160f).coerceIn(0f, 1f), AlertAmber, "Valve Body Temp")
+        FocusedMetric.FUEL_ECONOMY -> MetricDisplayData("FUEL / AFR", "ECM 7E0", "%.1f".format(telemetry.instantMpg), "MPG", (telemetry.instantMpg / 50f).coerceIn(0f, 1f), EmeraldSuccess, "${telemetry.airFuelRatio}:1 AFR • ${telemetry.fuelLevelPct}%")
+        FocusedMetric.DYNAMICS_G -> MetricDisplayData("DYNAMICS G", "ABS 7E2", "%.2f".format(telemetry.lateralG), "G LAT", (Math.abs(telemetry.lateralG.toDouble()).toFloat() / 1.2f).coerceIn(0f, 1f), RubyGlow, "%.0f° Steer • %.2f Gx".format(telemetry.steeringAngleDeg, telemetry.longitudinalG))
+        FocusedMetric.TPMS -> MetricDisplayData("TIRE SYSTEM", "BCM 720", "%.1f".format(telemetry.flPsi), "PSI FL", 0.5f, RaceRed, "4-Wheel Monitoring")
+    }
+}
+
 @Composable
 fun LiveViewScreen(
     telemetry: LiveTelemetry,
@@ -51,6 +91,21 @@ fun LiveViewScreen(
     modifier: Modifier = Modifier
 ) {
     val isMiata = vehicleMake.equals("Mazda", ignoreCase = true) && (vehicleModel.contains("MX-5", ignoreCase = true) || vehicleModel.contains("Miata", ignoreCase = true))
+
+    var hero1Metric by remember { mutableStateOf(FocusedMetric.RPM) }
+    var hero2Metric by remember { mutableStateOf(FocusedMetric.SPEED) }
+    var hero3Metric by remember {
+        mutableStateOf(
+            if (vehicleMake.contains("Ford", ignoreCase = true)) FocusedMetric.BOOST
+            else if (vehicleMake.contains("Chevy", ignoreCase = true) || vehicleMake.contains("GMC", ignoreCase = true)) FocusedMetric.OIL_PRESSURE
+            else FocusedMetric.TORQUE
+        )
+    }
+    var sub1Metric by remember { mutableStateOf(FocusedMetric.TRANSMISSION_GEAR) }
+    var sub2Metric by remember { mutableStateOf(FocusedMetric.FUEL_ECONOMY) }
+    var sub3Metric by remember { mutableStateOf(FocusedMetric.DYNAMICS_G) }
+
+    var configuringSlot by remember { mutableStateOf<PodSlot?>(null) }
 
     // Keep the screen awake while Live Telemetry cockpit is displayed
     val context = LocalContext.current
@@ -133,75 +188,96 @@ fun LiveViewScreen(
                             fontWeight = FontWeight.Bold
                         )
                     }
-                    Button(
-                        onClick = onBack,
-                        colors = ButtonDefaults.buttonColors(containerColor = SurfaceCardElevated),
-                        shape = RoundedCornerShape(8.dp),
-                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)
-                    ) {
-                        Text("← Exit Live", color = TextPrimary, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Button(
+                            onClick = { configuringSlot = PodSlot.HERO_3 },
+                            colors = ButtonDefaults.buttonColors(containerColor = SurfaceCardElevated),
+                            shape = RoundedCornerShape(8.dp),
+                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp),
+                            modifier = Modifier.border(1.dp, BorderSubtle, RoundedCornerShape(8.dp))
+                        ) {
+                            Icon(Icons.Default.Tune, contentDescription = null, tint = RaceRed, modifier = Modifier.size(14.dp))
+                            Spacer(Modifier.width(4.dp))
+                            Text("Gauges", color = TextPrimary, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                        }
+                        Button(
+                            onClick = onBack,
+                            colors = ButtonDefaults.buttonColors(containerColor = SurfaceCardElevated),
+                            shape = RoundedCornerShape(8.dp),
+                            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)
+                        ) {
+                            Text("← Exit Live", color = TextPrimary, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                        }
                     }
                 }
             }
 
-            // PRIMARY HERO TRIO: Engine Speed (RPM), Ground Speed (MPH), and Engine Torque (LB-FT)
+            // PRIMARY HERO TRIO: Fully Customizable Pods
             item {
+                val hero1Data = getMetricDisplayData(hero1Metric, telemetry)
+                val hero2Data = getMetricDisplayData(hero2Metric, telemetry)
+                val hero3Data = getMetricDisplayData(hero3Metric, telemetry)
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // RPM (ECM - 0x7E0)
                     HeroMetricPod(
-                        label = "ENGINE SPEED",
-                        ecuBadge = "ECM 7E0",
-                        value = "${telemetry.rpm}",
-                        unit = "RPM",
-                        progressPct = (telemetry.rpm.toFloat() / 7000f).coerceIn(0f, 1f),
-                        accentColor = RaceRed,
+                        label = hero1Data.label,
+                        ecuBadge = hero1Data.ecuBadge,
+                        value = hero1Data.value,
+                        unit = hero1Data.unit,
+                        progressPct = hero1Data.progressPct,
+                        accentColor = hero1Data.accentColor,
                         valSize = heroValSize,
                         labelSize = heroLabelSize,
                         cardPadding = cardPadding,
-                        isFocused = (focusedMetric == FocusedMetric.RPM),
-                        onClick = { onSelectMetric(if (focusedMetric == FocusedMetric.RPM) null else FocusedMetric.RPM) },
+                        isFocused = (focusedMetric == hero1Metric),
+                        onConfigure = { configuringSlot = PodSlot.HERO_1 },
+                        onClick = { onSelectMetric(if (focusedMetric == hero1Metric) null else hero1Metric) },
                         modifier = Modifier.weight(1f)
                     )
 
-                    // Ground Speed MPH (ECM / ABS Wheel Average)
                     HeroMetricPod(
-                        label = "GROUND SPEED",
-                        ecuBadge = "ECM 7E0",
-                        value = "${telemetry.speedMph}",
-                        unit = "MPH",
-                        progressPct = (telemetry.speedMph.toFloat() / 140f).coerceIn(0f, 1f),
-                        accentColor = RubyGlow,
+                        label = hero2Data.label,
+                        ecuBadge = hero2Data.ecuBadge,
+                        value = hero2Data.value,
+                        unit = hero2Data.unit,
+                        progressPct = hero2Data.progressPct,
+                        accentColor = hero2Data.accentColor,
                         valSize = heroValSize,
                         labelSize = heroLabelSize,
                         cardPadding = cardPadding,
-                        isFocused = (focusedMetric == FocusedMetric.SPEED),
-                        onClick = { onSelectMetric(if (focusedMetric == FocusedMetric.SPEED) null else FocusedMetric.SPEED) },
+                        isFocused = (focusedMetric == hero2Metric),
+                        onConfigure = { configuringSlot = PodSlot.HERO_2 },
+                        onClick = { onSelectMetric(if (focusedMetric == hero2Metric) null else hero2Metric) },
                         modifier = Modifier.weight(1f)
                     )
 
-                    // Instantaneous Torque (LB-FT & Nm) (ECM / TCM Computed)
                     HeroMetricPod(
-                        label = "ENGINE TORQUE",
-                        ecuBadge = "ECM 7E0",
-                        value = "${telemetry.torqueLbFt}",
-                        unit = "LB-FT (${telemetry.torqueNm} Nm)",
-                        progressPct = (telemetry.torqueLbFt.toFloat() / 400f).coerceIn(0f, 1f),
-                        accentColor = RaceRed,
+                        label = hero3Data.label,
+                        ecuBadge = hero3Data.ecuBadge,
+                        value = hero3Data.value,
+                        unit = hero3Data.unit,
+                        progressPct = hero3Data.progressPct,
+                        accentColor = hero3Data.accentColor,
                         valSize = heroValSize,
                         labelSize = heroLabelSize,
                         cardPadding = cardPadding,
-                        isFocused = (focusedMetric == FocusedMetric.TORQUE),
-                        onClick = { onSelectMetric(if (focusedMetric == FocusedMetric.TORQUE) null else FocusedMetric.TORQUE) },
+                        isFocused = (focusedMetric == hero3Metric),
+                        onConfigure = { configuringSlot = PodSlot.HERO_3 },
+                        onClick = { onSelectMetric(if (focusedMetric == hero3Metric) null else hero3Metric) },
                         modifier = Modifier.weight(1f)
                     )
                 }
             }
 
-            // TRANSMISSION, FUEL & CHASSIS G-FORCE POD (MULTI-COMPUTER AGGREGATION)
+            // TRANSMISSION, FUEL & CHASSIS G-FORCE POD (MULTI-COMPUTER AGGREGATION - FULLY CUSTOMIZABLE)
             item {
+                val sub1Data = getMetricDisplayData(sub1Metric, telemetry)
+                val sub2Data = getMetricDisplayData(sub2Metric, telemetry)
+                val sub3Data = getMetricDisplayData(sub3Metric, telemetry)
+
                 Surface(
                     color = SurfaceCard,
                     shape = RoundedCornerShape(14.dp),
@@ -216,39 +292,39 @@ fun LiveViewScreen(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // Gear & Transmission Fluid Temp (TCM - 0x7E1)
                         SubSystemTile(
-                            category = "TRANSMISSION",
-                            ecuSource = "TCM 7E1",
-                            mainText = telemetry.transGear,
-                            subText = "${telemetry.transTempF}°F Fluid",
-                            accentColor = AlertAmber,
-                            isFocused = (focusedMetric == FocusedMetric.TRANSMISSION_GEAR),
-                            onClick = { onSelectMetric(if (focusedMetric == FocusedMetric.TRANSMISSION_GEAR) null else FocusedMetric.TRANSMISSION_GEAR) },
+                            category = sub1Data.label,
+                            ecuSource = sub1Data.ecuBadge,
+                            mainText = sub1Data.value,
+                            subText = sub1Data.subText.ifEmpty { sub1Data.unit },
+                            accentColor = sub1Data.accentColor,
+                            isFocused = (focusedMetric == sub1Metric),
+                            onConfigure = { configuringSlot = PodSlot.SUB_1 },
+                            onClick = { onSelectMetric(if (focusedMetric == sub1Metric) null else sub1Metric) },
                             modifier = Modifier.weight(1f)
                         )
 
-                        // Fuel Economy & Lambda (ECM - Mode 01)
                         SubSystemTile(
-                            category = "FUEL / AFR",
-                            ecuSource = "ECM 7E0",
-                            mainText = "%.1f MPG".format(telemetry.instantMpg),
-                            subText = "${telemetry.airFuelRatio}:1 AFR • ${telemetry.fuelLevelPct}%",
-                            accentColor = EmeraldSuccess,
-                            isFocused = (focusedMetric == FocusedMetric.FUEL_ECONOMY),
-                            onClick = { onSelectMetric(if (focusedMetric == FocusedMetric.FUEL_ECONOMY) null else FocusedMetric.FUEL_ECONOMY) },
+                            category = sub2Data.label,
+                            ecuSource = sub2Data.ecuBadge,
+                            mainText = sub2Data.value,
+                            subText = sub2Data.subText.ifEmpty { sub2Data.unit },
+                            accentColor = sub2Data.accentColor,
+                            isFocused = (focusedMetric == sub2Metric),
+                            onConfigure = { configuringSlot = PodSlot.SUB_2 },
+                            onClick = { onSelectMetric(if (focusedMetric == sub2Metric) null else sub2Metric) },
                             modifier = Modifier.weight(1f)
                         )
 
-                        // Dynamic Steering & Lateral G (ABS/ESP - 0x7E2)
                         SubSystemTile(
-                            category = "DYNAMICS",
-                            ecuSource = "ABS 7E2",
-                            mainText = "%.2f G".format(telemetry.lateralG),
-                            subText = "%.0f° Steer • %.2f Gx".format(telemetry.steeringAngleDeg, telemetry.longitudinalG),
-                            accentColor = RubyGlow,
-                            isFocused = (focusedMetric == FocusedMetric.DYNAMICS_G),
-                            onClick = { onSelectMetric(if (focusedMetric == FocusedMetric.DYNAMICS_G) null else FocusedMetric.DYNAMICS_G) },
+                            category = sub3Data.label,
+                            ecuSource = sub3Data.ecuBadge,
+                            mainText = sub3Data.value,
+                            subText = sub3Data.subText.ifEmpty { sub3Data.unit },
+                            accentColor = sub3Data.accentColor,
+                            isFocused = (focusedMetric == sub3Metric),
+                            onConfigure = { configuringSlot = PodSlot.SUB_3 },
+                            onClick = { onSelectMetric(if (focusedMetric == sub3Metric) null else sub3Metric) },
                             modifier = Modifier.weight(1f)
                         )
                     }
@@ -482,6 +558,128 @@ fun LiveViewScreen(
                     }
                 }
             }
+        }
+
+        // CUSTOMIZE GAUGE POD MODAL DIALOG
+        if (configuringSlot != null) {
+            val slot = configuringSlot!!
+            AlertDialog(
+                onDismissRequest = { configuringSlot = null },
+                containerColor = SurfaceCard,
+                title = {
+                    Column {
+                        Text(
+                            text = "CUSTOMIZE COCKPIT POD",
+                            color = RaceRed,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 1.sp
+                        )
+                        Spacer(Modifier.height(2.dp))
+                        Text(
+                            text = slot.title,
+                            color = TextPrimary,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                },
+                text = {
+                    val availableMetrics = listOf(
+                        FocusedMetric.RPM,
+                        FocusedMetric.SPEED,
+                        FocusedMetric.TORQUE,
+                        FocusedMetric.BOOST,
+                        FocusedMetric.OIL_PRESSURE,
+                        FocusedMetric.OIL_TEMP,
+                        FocusedMetric.COOLANT,
+                        FocusedMetric.INTAKE_AIR,
+                        FocusedMetric.BATTERY,
+                        FocusedMetric.SPARK,
+                        FocusedMetric.TRANSMISSION_GEAR,
+                        FocusedMetric.TRANSMISSION_TEMP,
+                        FocusedMetric.FUEL_ECONOMY,
+                        FocusedMetric.DYNAMICS_G,
+                        FocusedMetric.TPMS
+                    )
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 380.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        items(availableMetrics.size) { index ->
+                            val metric = availableMetrics[index]
+                            val data = getMetricDisplayData(metric, telemetry)
+                            val isCurrentlySelected = when (slot) {
+                                PodSlot.HERO_1 -> hero1Metric == metric
+                                PodSlot.HERO_2 -> hero2Metric == metric
+                                PodSlot.HERO_3 -> hero3Metric == metric
+                                PodSlot.SUB_1 -> sub1Metric == metric
+                                PodSlot.SUB_2 -> sub2Metric == metric
+                                PodSlot.SUB_3 -> sub3Metric == metric
+                            }
+
+                            Surface(
+                                color = if (isCurrentlySelected) SurfaceCardElevated else SurfaceCard,
+                                shape = RoundedCornerShape(8.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .border(
+                                        1.dp,
+                                        if (isCurrentlySelected) RaceRed else BorderSubtle,
+                                        RoundedCornerShape(8.dp)
+                                    )
+                                    .clickable {
+                                        when (slot) {
+                                            PodSlot.HERO_1 -> hero1Metric = metric
+                                            PodSlot.HERO_2 -> hero2Metric = metric
+                                            PodSlot.HERO_3 -> hero3Metric = metric
+                                            PodSlot.SUB_1 -> sub1Metric = metric
+                                            PodSlot.SUB_2 -> sub2Metric = metric
+                                            PodSlot.SUB_3 -> sub3Metric = metric
+                                        }
+                                        configuringSlot = null
+                                    }
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(10.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Text(
+                                                text = data.label,
+                                                color = if (isCurrentlySelected) RaceRed else TextPrimary,
+                                                fontSize = 12.sp,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                            Spacer(Modifier.width(6.dp))
+                                            EcuBadge(data.ecuBadge, isFocused = isCurrentlySelected)
+                                        }
+                                        if (data.subText.isNotEmpty()) {
+                                            Spacer(Modifier.height(2.dp))
+                                            Text(text = data.subText, color = TextMuted, fontSize = 10.sp)
+                                        }
+                                    }
+                                    Text(
+                                        text = "${data.value} ${data.unit}",
+                                        color = data.accentColor,
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                        }
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { configuringSlot = null }) {
+                        Text("Close", color = TextMuted)
+                    }
+                }
+            )
         }
     }
 }
@@ -905,6 +1103,7 @@ private fun HeroMetricPod(
     labelSize: TextUnit,
     cardPadding: Dp,
     isFocused: Boolean = false,
+    onConfigure: () -> Unit = {},
     onClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -932,9 +1131,24 @@ private fun HeroMetricPod(
                     color = if (isFocused) RaceRed else TextMuted,
                     fontSize = labelSize,
                     fontWeight = FontWeight.Bold,
-                    maxLines = 1
+                    maxLines = 1,
+                    modifier = Modifier.weight(1f)
                 )
-                EcuBadge(ecuBadge, isFocused = isFocused)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    EcuBadge(ecuBadge, isFocused = isFocused)
+                    Spacer(Modifier.width(4.dp))
+                    IconButton(
+                        onClick = onConfigure,
+                        modifier = Modifier.size(20.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Tune,
+                            contentDescription = "Customize Gauge",
+                            tint = if (isFocused) RaceRed else TextMuted,
+                            modifier = Modifier.size(13.dp)
+                        )
+                    }
+                }
             }
             Spacer(Modifier.height(2.dp))
             Text(
@@ -967,6 +1181,7 @@ private fun SubSystemTile(
     subText: String,
     accentColor: Color,
     isFocused: Boolean = false,
+    onConfigure: () -> Unit = {},
     onClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -986,8 +1201,29 @@ private fun SubSystemTile(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(category, color = if (isFocused) RaceRed else TextMuted, fontSize = 9.sp, fontWeight = FontWeight.Bold)
-                EcuBadge(ecuSource, isFocused = isFocused)
+                Text(
+                    text = category,
+                    color = if (isFocused) RaceRed else TextMuted,
+                    fontSize = 9.sp,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    modifier = Modifier.weight(1f)
+                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    EcuBadge(ecuSource, isFocused = isFocused)
+                    Spacer(Modifier.width(4.dp))
+                    IconButton(
+                        onClick = onConfigure,
+                        modifier = Modifier.size(18.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Tune,
+                            contentDescription = "Customize Tile",
+                            tint = if (isFocused) RaceRed else TextMuted,
+                            modifier = Modifier.size(12.dp)
+                        )
+                    }
+                }
             }
             Spacer(Modifier.height(4.dp))
             Text(mainText, color = accentColor, fontSize = 16.sp, fontWeight = FontWeight.Bold)

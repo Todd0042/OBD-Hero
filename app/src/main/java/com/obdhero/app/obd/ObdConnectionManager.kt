@@ -299,6 +299,7 @@ class ObdConnectionManager {
             var currentCoolantC = 88
             var currentIntakeC = 25
             var currentOilF = 195
+            var currentOilPressurePsi = 42
             var currentVolts = 13.8f
             var currentFuelLevelPct = 50
             var currentAfr = 14.7f
@@ -369,6 +370,11 @@ class ObdConnectionManager {
                                     ensureHeader("7E0")
                                     val o = parseMazdaOilTemp(sendRaw("221310"))
                                     if (o > 0) currentOilF = o
+                                }
+                                FocusedMetric.OIL_PRESSURE -> {
+                                    ensureHeader("7E0")
+                                    val op = parseOilPressure(sendRaw("22115C"))
+                                    if (op > 0) currentOilPressurePsi = op
                                 }
                                 FocusedMetric.INTAKE_AIR -> {
                                     ensureHeader("7E0")
@@ -561,6 +567,7 @@ class ObdConnectionManager {
                         coolantTempC = currentCoolantC,
                         coolantTempF = coolantF,
                         oilTempF = currentOilF,
+                        oilPressurePsi = currentOilPressurePsi,
                         intakeTempF = intakeF,
                         batteryVolts = currentVolts,
                         boostPsi = currentBoostPsi,
@@ -916,6 +923,18 @@ class ObdConnectionManager {
             return ((a - 128) * 100.0f) / 128.0f
         }
         return null
+    }
+
+    fun parseOilPressure(raw: String): Int {
+        val clean = raw.replace(" ", "").replace("\r", "").replace("\n", "").uppercase()
+        val idx = clean.indexOf("62115C")
+        if (idx != -1 && clean.length >= idx + 10) {
+            val a = clean.substring(idx + 6, idx + 8).toIntOrNull(16) ?: 0
+            val b = clean.substring(idx + 8, idx + 10).toIntOrNull(16) ?: 0
+            val kpa = (a * 256 + b) / 4
+            return (kpa * 0.145038f).toInt().coerceAtLeast(0)
+        }
+        return 42
     }
 
     private fun sendRaw(command: String): String {

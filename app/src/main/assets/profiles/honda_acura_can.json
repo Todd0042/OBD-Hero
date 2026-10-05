@@ -1,0 +1,138 @@
+{
+  "profileId": "HONDA_ACURA_CAN",
+  "make": "Honda",
+  "model": "Honda & Acura CAN / Earth Dreams Platform",
+  "generations": [
+    "Civic (10th & 11th Gen - FC/FK/FE/FL)",
+    "Accord (9th, 10th & 11th Gen - CR/CV/CY)",
+    "CR-V / HR-V / Pilot / Passport / Ridgeline / Odyssey",
+    "Acura Integra / TLX / RDX / MDX / NSX (Type-S & Earth Dreams)",
+    "VTEC Turbo (1.5T L15, 2.0T K20C) & J-Series 3.5L V6"
+  ],
+  "yearMin": 2008,
+  "yearMax": 2026,
+  "vinWmis": [
+    "1HG",
+    "2HG",
+    "3HG",
+    "5J6",
+    "JHM",
+    "SHH",
+    "7FA",
+    "19U",
+    "2HN",
+    "5J8",
+    "JH4"
+  ],
+  "preferredProtocol": "ATSP6",
+  "ecmHeader": "7E0",
+  "tcmHeader": "7E1",
+  "bcmHeader": "7A0",
+  "absHeader": "7D0",
+  "supportedFeatures": [
+    "BASIC_TELEMETRY",
+    "READINESS",
+    "DTCS",
+    "OIL_TEMP",
+    "TRANSMISSION_TEMP",
+    "TRANSMISSION_GEAR",
+    "TORQUE",
+    "TPMS"
+  ],
+  "metrics": {
+    "RPM": {
+      "id": "RPM",
+      "displayName": "Engine Speed",
+      "ecuHeader": "7E0",
+      "command": "010C",
+      "formulaType": "RAW_RPM",
+      "unit": "RPM"
+    },
+    "SPEED": {
+      "id": "SPEED",
+      "displayName": "Vehicle Speed",
+      "ecuHeader": "7E0",
+      "command": "010D",
+      "formulaType": "RAW_SPEED_KMH",
+      "unit": "MPH"
+    },
+    "TORQUE": {
+      "id": "TORQUE",
+      "displayName": "Calculated Engine Torque",
+      "ecuHeader": "7E0",
+      "command": "0162",
+      "formulaType": "LINEAR_2BYTE",
+      "factor": 1.0,
+      "offset": -125.0,
+      "unit": "LB-FT"
+    },
+    "COOLANT": {
+      "id": "COOLANT",
+      "displayName": "Engine Coolant Temp",
+      "ecuHeader": "7E0",
+      "command": "0105",
+      "formulaType": "TEMP_C",
+      "unit": "°F"
+    },
+    "OIL_TEMP": {
+      "id": "OIL_TEMP",
+      "displayName": "Engine Oil Temperature",
+      "ecuHeader": "7E0",
+      "command": "222010",
+      "formulaType": "TEMP_C",
+      "unit": "°F"
+    },
+    "INTAKE_AIR": {
+      "id": "INTAKE_AIR",
+      "displayName": "Intake Air Temperature",
+      "ecuHeader": "7E0",
+      "command": "010F",
+      "formulaType": "TEMP_C",
+      "unit": "°F"
+    },
+    "BOOST": {
+      "id": "BOOST",
+      "displayName": "MAP / Turbo Boost",
+      "ecuHeader": "7E0",
+      "command": "010B",
+      "formulaType": "BOOST_PSI",
+      "unit": "PSI"
+    },
+    "BATTERY": {
+      "id": "BATTERY",
+      "displayName": "12V Battery Voltage",
+      "ecuHeader": "7E0",
+      "command": "0142",
+      "formulaType": "LINEAR_2BYTE",
+      "factor": 0.001,
+      "offset": 0.0,
+      "unit": "V"
+    },
+    "TRANSMISSION_TEMP": {
+      "id": "TRANSMISSION_TEMP",
+      "displayName": "ATF / CVT Fluid Temp",
+      "ecuHeader": "7E1",
+      "command": "221146",
+      "formulaType": "TEMP_C",
+      "unit": "°F"
+    },
+    "TRANSMISSION_GEAR": {
+      "id": "TRANSMISSION_GEAR",
+      "displayName": "Live Gear",
+      "ecuHeader": "7E1",
+      "command": "221146",
+      "formulaType": "DIRECT_GEAR_BYTE",
+      "unit": "Gear"
+    },
+    "TPMS": {
+      "id": "TPMS",
+      "displayName": "Direct TPMS Pressures",
+      "ecuHeader": "7A0",
+      "command": "222006",
+      "formulaType": "LINEAR_1BYTE",
+      "factor": 0.145,
+      "offset": 0.0,
+      "unit": "PSI"
+    }
+  }
+}

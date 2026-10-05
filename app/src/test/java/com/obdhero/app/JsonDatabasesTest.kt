@@ -312,5 +312,135 @@ class JsonDatabasesTest {
         val p011a = mazdaDtcs.find { it.code == "P011A" }
         assertNotNull("Mazda P011A must exist", p011a)
         assertTrue("Mazda P011A must be marked community sourced", p011a!!.isCommunitySourced)
+
+        // 8. Toyota / Lexus Community Codes
+        val toyotaFile = File("src/main/assets/dtc/dtc_toyota.json")
+        val toyotaDtcs: List<DtcInfo> = gson.fromJson(FileReader(toyotaFile), type)
+        val p0018 = toyotaDtcs.find { it.code == "P0018" }
+        assertNotNull("Toyota P0018 must exist", p0018)
+        assertTrue("Toyota P0018 must be marked community sourced", p0018!!.isCommunitySourced)
+        val p1604 = toyotaDtcs.find { it.code == "P1604" }
+        assertNotNull("Toyota P1604 must exist", p1604)
+        assertTrue("Toyota P1604 must be marked community sourced", p1604!!.isCommunitySourced)
+    }
+
+    @Test
+    fun testToyotaLexusProfileAndDtcJson() {
+        val profFile = File("src/main/assets/profiles/toyota_lexus_tnga.json")
+        assertTrue("Toyota TNGA profile must exist", profFile.exists())
+
+        val profile = gson.fromJson(FileReader(profFile), VehicleProfileDefinition::class.java)
+        assertEquals("TOYOTA_LEXUS_TNGA", profile.profileId)
+        assertEquals("Toyota", profile.make)
+        assertEquals("7E0", profile.ecmHeader)
+        assertEquals("7E1", profile.tcmHeader)
+        assertEquals("7B0", profile.absHeader)
+        assertEquals("750", profile.bcmHeader)
+        assertTrue(profile.vinWmis.contains("4T1"))
+        assertTrue(profile.vinWmis.contains("JTJ"))
+        assertTrue(profile.metrics.containsKey("OIL_TEMP"))
+        assertTrue(profile.metrics.containsKey("TRANSMISSION_TEMP"))
+
+        val dtcFile = File("src/main/assets/dtc/dtc_toyota.json")
+        assertTrue("Toyota DTC file must exist", dtcFile.exists())
+
+        val type = object : TypeToken<List<DtcInfo>>() {}.type
+        val dtcs: List<DtcInfo> = gson.fromJson(FileReader(dtcFile), type)
+        assertTrue("Toyota DTC database must have 400+ codes", dtcs.size >= 400)
+
+        val c1201 = dtcs.find { it.code == "C1201" }
+        assertNotNull("C1201 VSC disabled code must be present", c1201)
+        assertTrue(c1201!!.meaning.contains("VSC") || c1201.meaning.contains("Engine"))
+
+        val p0a80 = dtcs.find { it.code == "P0A80" }
+        assertNotNull("P0A80 Hybrid battery code must be present", p0a80)
+        assertTrue(p0a80!!.title.contains("Hybrid Battery") || p0a80.meaning.contains("Hybrid"))
+    }
+
+    @Test
+    fun testHondaAcuraProfileAndDtcJson() {
+        val profFile = File("src/main/assets/profiles/honda_acura_can.json")
+        assertTrue("Honda CAN profile must exist", profFile.exists())
+
+        val profile = gson.fromJson(FileReader(profFile), VehicleProfileDefinition::class.java)
+        assertEquals("HONDA_ACURA_CAN", profile.profileId)
+        assertEquals("Honda", profile.make)
+        assertEquals("7E0", profile.ecmHeader)
+        assertEquals("7E1", profile.tcmHeader)
+        assertEquals("7D0", profile.absHeader)
+        assertEquals("7A0", profile.bcmHeader)
+        assertTrue(profile.vinWmis.contains("1HG"))
+        assertTrue(profile.vinWmis.contains("19U"))
+        assertTrue(profile.metrics.containsKey("TRANSMISSION_TEMP"))
+        assertTrue(profile.metrics.containsKey("TPMS"))
+
+        val dtcFile = File("src/main/assets/dtc/dtc_honda.json")
+        assertTrue("Honda DTC file must exist", dtcFile.exists())
+
+        val type = object : TypeToken<List<DtcInfo>>() {}.type
+        val dtcs: List<DtcInfo> = gson.fromJson(FileReader(dtcFile), type)
+        assertTrue("Honda DTC database must have 400+ codes", dtcs.size >= 400)
+
+        val p1259 = dtcs.find { it.code == "P1259" }
+        assertNotNull("P1259 VTEC spool valve code must be present", p1259)
+        assertTrue(p1259!!.title.contains("VTEC"))
+        assertFalse("P1259 must be factory verified", p1259.isCommunitySourced)
+
+        val p1457 = dtcs.find { it.code == "P1457" }
+        assertNotNull("P1457 EVAP canister code must be present", p1457)
+        assertTrue(p1457!!.title.contains("EVAP"))
+
+        val p2646 = dtcs.find { it.code == "P2646" }
+        assertNotNull("P2646 VTEC rocker arm actuator code must be present", p2646)
+        assertTrue(p2646!!.isCommunitySourced)
+
+        val p0847 = dtcs.find { it.code == "P0847" }
+        assertNotNull("P0847 3rd clutch pressure switch must be present", p0847)
+        assertTrue(p0847!!.title.contains("Pressure"))
+    }
+
+    @Test
+    fun testSubaruProfileAndDtcJson() {
+        val profFile = File("src/main/assets/profiles/subaru_can.json")
+        assertTrue("Subaru CAN profile must exist", profFile.exists())
+
+        val profile = gson.fromJson(FileReader(profFile), VehicleProfileDefinition::class.java)
+        assertEquals("SUBARU_GLOBAL_CAN", profile.profileId)
+        assertEquals("Subaru", profile.make)
+        assertEquals("7E0", profile.ecmHeader)
+        assertEquals("7E1", profile.tcmHeader)
+        assertEquals("7D0", profile.absHeader)
+        assertEquals("750", profile.bcmHeader)
+        assertTrue(profile.vinWmis.contains("4S3"))
+        assertTrue(profile.vinWmis.contains("JF1"))
+        assertTrue(profile.metrics.containsKey("OIL_TEMP"))
+        assertTrue(profile.metrics.containsKey("TRANSMISSION_TEMP"))
+        assertTrue(profile.metrics.containsKey("BOOST"))
+
+        val dtcFile = File("src/main/assets/dtc/dtc_subaru.json")
+        assertTrue("Subaru DTC file must exist", dtcFile.exists())
+
+        val type = object : TypeToken<List<DtcInfo>>() {}.type
+        val dtcs: List<DtcInfo> = gson.fromJson(FileReader(dtcFile), type)
+        assertTrue("Subaru DTC database must have 400+ codes", dtcs.size >= 400)
+
+        val p0011 = dtcs.find { it.code == "P0011" }
+        assertNotNull("P0011 AVCS intake cam code must be present", p0011)
+        assertTrue(p0011!!.title.contains("Intake Camshaft"))
+        assertFalse("P0011 must be factory verified", p0011.isCommunitySourced)
+
+        val p2764 = dtcs.find { it.code == "P2764" }
+        assertNotNull("P2764 CVT lockup solenoid code must be present", p2764)
+        assertTrue(p2764!!.title.contains("Lock-Up"))
+        assertTrue("P2764 must be community sourced", p2764.isCommunitySourced)
+
+        val p0325 = dtcs.find { it.code == "P0325" }
+        assertNotNull("P0325 Boxer knock sensor must be present", p0325)
+        assertTrue(p0325!!.title.contains("Knock"))
+
+        val c0057 = dtcs.find { it.code == "C0057" }
+        assertNotNull("C0057 VDC code must be present", c0057)
+        assertTrue(c0057!!.title.contains("VDC"))
     }
 }
+
