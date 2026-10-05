@@ -33,6 +33,16 @@ data class EmissionsReadiness(
 }
 
 /**
+ * ECU Module identifiers for multi-computer vehicle polling & focus targeting.
+ */
+enum class EcuModule(val header: String, val displayName: String, val badge: String) {
+    ECM("7E0", "Engine Control Module", "ECM 7E0"),
+    TCM("7E1", "Transmission Control Module", "TCM 7E1"),
+    ABS("7E2", "Anti-Lock Braking / Dynamics", "ABS 7E2"),
+    BCM("720", "Body Control Module / TPMS", "BCM 720")
+}
+
+/**
  * Vehicle Profile decoded from Mode 09 PID 02 VIN.
  */
 data class VehicleProfile(

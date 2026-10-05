@@ -20,13 +20,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.obdhero.app.domain.VehicleProfile
+import com.obdhero.app.obd.ConnectionState
 import com.obdhero.app.ui.theme.*
 
 @Composable
 fun VehicleProfileScreen(
     profile: VehicleProfile?,
+    connectionState: ConnectionState,
     pairedDevices: List<BluetoothDevice>,
     onConnectDevice: (BluetoothDevice) -> Unit,
+    onDisconnect: () -> Unit,
     onStartSimulator: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -152,14 +155,29 @@ fun VehicleProfileScreen(
             }
         } else {
             items(pairedDevices) { device ->
+                val isThisConnected = connectionState is ConnectionState.Connected &&
+                        ((connectionState.deviceName == device.name) || (device.name != null && connectionState.deviceName.contains(device.name!!)))
+                val isThisConnecting = connectionState is ConnectionState.Connecting &&
+                        ((connectionState.deviceName == device.name) || (device.name != null && connectionState.deviceName.contains(device.name!!)))
+
                 Surface(
-                    color = SurfaceCard,
+                    color = if (isThisConnected) SurfaceCardElevated else SurfaceCard,
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 4.dp)
-                        .border(1.dp, BorderSubtle, RoundedCornerShape(12.dp))
-                        .clickable { onConnectDevice(device) }
+                        .border(
+                            1.dp,
+                            if (isThisConnected) EmeraldSuccess.copy(alpha = 0.6f) else BorderSubtle,
+                            RoundedCornerShape(12.dp)
+                        )
+                        .clickable {
+                            if (isThisConnected) {
+                                onDisconnect()
+                            } else {
+                                onConnectDevice(device)
+                            }
+                        }
                 ) {
                     Row(
                         modifier = Modifier.padding(14.dp),
@@ -167,14 +185,43 @@ fun VehicleProfileScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Bluetooth, contentDescription = null, tint = RaceRed)
+                            Icon(
+                                Icons.Default.Bluetooth,
+                                contentDescription = null,
+                                tint = if (isThisConnected) EmeraldSuccess else RaceRed
+                            )
                             Spacer(Modifier.width(10.dp))
                             Column {
                                 Text(device.name ?: "Unknown OBD Tool", color = TextPrimary, fontWeight = FontWeight.Medium, fontSize = 14.sp)
                                 Text(device.address, color = TextMuted, fontSize = 11.sp)
                             }
                         }
-                        Text("CONNECT", color = RaceRed, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                        when {
+                            isThisConnected -> {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Surface(
+                                        color = EmeraldSuccess.copy(alpha = 0.2f),
+                                        shape = RoundedCornerShape(4.dp)
+                                    ) {
+                                        Text(
+                                            "CONNECTED",
+                                            color = EmeraldSuccess,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 11.sp,
+                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                        )
+                                    }
+                                    Spacer(Modifier.width(8.dp))
+                                    Text("DISCONNECT", color = CriticalCrimson, fontWeight = FontWeight.Bold, fontSize = 11.sp)
+                                }
+                            }
+                            isThisConnecting -> {
+                                Text("CONNECTING…", color = AlertAmber, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                            }
+                            else -> {
+                                Text("CONNECT", color = RaceRed, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                            }
+                        }
                     }
                 }
             }

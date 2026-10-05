@@ -35,4 +35,28 @@ class VinDecoderTest {
         assertEquals("F-150", profile.model)
         assertFalse("Ford does not have BMW FRM", profile.isBmwFrmVulnerable)
     }
+
+    @Test
+    fun testMazdaMx5VinDecodesProperly() {
+        // 2022 Mazda MX-5 Miata ND2 (JM1ND...)
+        val profile = VinDecoder.decode("JM1NDAM76N0123456")
+        assertEquals("Mazda", profile.make)
+        assertEquals(2022, profile.year)
+        assertEquals("MX-5 Miata", profile.model)
+        assertFalse("Mazda does not have BMW FRM", profile.isBmwFrmVulnerable)
+        assertFalse("Mazda is not SGW locked", profile.isSgwLocked)
+    }
+
+    @Test
+    fun testParseVinMultiFrameResponse() {
+        val manager = com.obdhero.app.obd.ObdConnectionManager()
+        // ELM327 Mode 09 PID 02 response with multi-frame ISO-TP formatting
+        val sampleElmResponse = """
+            0: 49 02 01 4A 4D 31
+            1: 4E 44 41 4D 37 36 4E
+            2: 30 31 32 33 34 35 36
+        """.trimIndent()
+        val decodedVin = manager.parseVin(sampleElmResponse)
+        assertEquals("JM1NDAM76N0123456", decodedVin)
+    }
 }
