@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.clickable
 import androidx.compose.ui.unit.Dp
@@ -41,6 +42,8 @@ import com.obdhero.app.R
 import com.obdhero.app.data.AdapterDatabase
 import com.obdhero.app.domain.AdapterProfile
 import com.obdhero.app.domain.BlackBoxIncidentReport
+import com.obdhero.app.domain.DragyTelemetrySnapshot
+import com.obdhero.app.domain.VehiclePerformanceHighScores
 import com.obdhero.app.domain.FlightRecorderState
 import com.obdhero.app.domain.FocusedMetric
 import com.obdhero.app.domain.LiveTelemetry
@@ -65,6 +68,15 @@ data class MetricDisplayData(
     val subText: String = ""
 )
 
+fun getHighScoreForMetric(metric: FocusedMetric, highScores: VehiclePerformanceHighScores): String? {
+    return when (metric) {
+        FocusedMetric.TORQUE -> if (highScores.peakTorqueLbFt > 0) "★ ${highScores.peakTorqueLbFt} LB-FT" else null
+        FocusedMetric.HORSEPOWER -> if (highScores.peakHorsepower > 0) "★ ${highScores.peakHorsepower} HP" else null
+        FocusedMetric.SPEED -> if (highScores.best0To60Seconds != null) "★ 0-60: %.1fs".format(highScores.best0To60Seconds) else null
+        else -> null
+    }
+}
+
 fun getMetricDisplayData(metric: FocusedMetric, telemetry: LiveTelemetry): MetricDisplayData {
     return when (metric) {
         FocusedMetric.RPM -> MetricDisplayData("ENGINE SPEED", "ECM 7E0", "${telemetry.rpm}", "RPM", (telemetry.rpm.toFloat() / 7000f).coerceIn(0f, 1f), RaceRed, "Crankshaft Tach")
@@ -80,6 +92,7 @@ fun getMetricDisplayData(metric: FocusedMetric, telemetry: LiveTelemetry): Metri
         FocusedMetric.TRANSMISSION_GEAR -> MetricDisplayData("TRANSMISSION", "TCM 7E1", telemetry.transGear, "GEAR", ((telemetry.transTempF - 100f) / 160f).coerceIn(0f, 1f), AlertAmber, "${telemetry.transTempF}°F Fluid")
         FocusedMetric.TRANSMISSION_TEMP -> MetricDisplayData("ATF TEMP", "TCM 7E1", "${telemetry.transTempF}", "°F", ((telemetry.transTempF - 100f) / 160f).coerceIn(0f, 1f), AlertAmber, "Valve Body Temp")
         FocusedMetric.FUEL_ECONOMY -> MetricDisplayData("FUEL / AFR", "ECM 7E0", "%.1f".format(telemetry.instantMpg), "MPG", (telemetry.instantMpg / 50f).coerceIn(0f, 1f), EmeraldSuccess, "${telemetry.airFuelRatio}:1 AFR • ${telemetry.fuelLevelPct}%")
+        FocusedMetric.HORSEPOWER -> MetricDisplayData("HORSEPOWER", "ECM 7E0", "${telemetry.horsepower}", "HP", (telemetry.horsepower.toFloat() / 500f).coerceIn(0f, 1f), CyanPulse, "(Torque x RPM) / 5252")
         FocusedMetric.DYNAMICS_G -> MetricDisplayData("DYNAMICS G", "ABS 7E2", "%.2f".format(telemetry.lateralG), "G LAT", (Math.abs(telemetry.lateralG.toDouble()).toFloat() / 1.2f).coerceIn(0f, 1f), RubyGlow, "%.0f° Steer • %.2f Gx".format(telemetry.steeringAngleDeg, telemetry.longitudinalG))
         FocusedMetric.TPMS -> MetricDisplayData("TIRE SYSTEM", "BCM 720", "%.1f".format(telemetry.flPsi), "PSI FL", 0.5f, RaceRed, "4-Wheel Monitoring")
     }
@@ -96,9 +109,12 @@ fun LiveViewScreen(
     adapterProfile: AdapterProfile? = null,
     recorderState: FlightRecorderState = FlightRecorderState.ARMED_LISTENING,
     incidentHistory: List<BlackBoxIncidentReport> = emptyList(),
+    dragySnapshot: DragyTelemetrySnapshot = DragyTelemetrySnapshot(),
+    highScores: VehiclePerformanceHighScores = VehiclePerformanceHighScores(),
     onTriggerBlackBox: () -> Unit = {},
     onRearmBlackBox: () -> Unit = {},
     onDeleteBlackBoxIncident: (String) -> Unit = {},
+    onResetDragyRun: () -> Unit = {},
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -119,6 +135,7 @@ fun LiveViewScreen(
 
     var configuringSlot by remember { mutableStateOf<PodSlot?>(null) }
     var showBlackBoxDialog by remember { mutableStateOf(false) }
+    var showDragyDialog by remember { mutableStateOf(false) }
 
     // Keep the screen awake while Live Telemetry cockpit is displayed
     val context = LocalContext.current
@@ -203,6 +220,18 @@ fun LiveViewScreen(
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                         Button(
+                            onClick = { showDragyDialog = true },
+                            colors = ButtonDefaults.buttonColors(containerColor = SurfaceCardElevated),
+                            shape = RoundedCornerShape(8.dp),
+                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp),
+                            modifier = Modifier.border(1.dp, BorderSubtle, RoundedCornerShape(8.dp))
+                        ) {
+                            Icon(Icons.Default.Speed, contentDescription = null, tint = CyanPulse, modifier = Modifier.size(14.dp))
+                            Spacer(Modifier.width(4.dp))
+                            Text("Dyno & Dragy", color = TextPrimary, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                        }
+
+                        Button(
                             onClick = { showBlackBoxDialog = true },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = if (recorderState == FlightRecorderState.TRIGGERED_RECORDING) CriticalCrimson else SurfaceCardElevated
@@ -273,6 +302,7 @@ fun LiveViewScreen(
                         valSize = heroValSize,
                         labelSize = heroLabelSize,
                         cardPadding = cardPadding,
+                        highScoreBadge = getHighScoreForMetric(hero1Metric, highScores),
                         isFocused = (focusedMetric == hero1Metric),
                         onConfigure = { configuringSlot = PodSlot.HERO_1 },
                         onClick = { onSelectMetric(if (focusedMetric == hero1Metric) null else hero1Metric) },
@@ -289,6 +319,7 @@ fun LiveViewScreen(
                         valSize = heroValSize,
                         labelSize = heroLabelSize,
                         cardPadding = cardPadding,
+                        highScoreBadge = getHighScoreForMetric(hero2Metric, highScores),
                         isFocused = (focusedMetric == hero2Metric),
                         onConfigure = { configuringSlot = PodSlot.HERO_2 },
                         onClick = { onSelectMetric(if (focusedMetric == hero2Metric) null else hero2Metric) },
@@ -305,6 +336,7 @@ fun LiveViewScreen(
                         valSize = heroValSize,
                         labelSize = heroLabelSize,
                         cardPadding = cardPadding,
+                        highScoreBadge = getHighScoreForMetric(hero3Metric, highScores),
                         isFocused = (focusedMetric == hero3Metric),
                         onConfigure = { configuringSlot = PodSlot.HERO_3 },
                         onClick = { onSelectMetric(if (focusedMetric == hero3Metric) null else hero3Metric) },
@@ -736,6 +768,17 @@ fun LiveViewScreen(
                 onDismiss = { showBlackBoxDialog = false }
             )
         }
+
+        // VIRTUAL ROAD DYNO & DRAGY MODAL DIALOG
+        if (showDragyDialog) {
+            DragyDynoDialog(
+                dragySnapshot = dragySnapshot,
+                highScores = highScores,
+                vehicleVin = vehicleVin,
+                onResetRun = onResetDragyRun,
+                onDismiss = { showDragyDialog = false }
+            )
+        }
     }
 }
 
@@ -1157,6 +1200,7 @@ private fun HeroMetricPod(
     valSize: TextUnit,
     labelSize: TextUnit,
     cardPadding: Dp,
+    highScoreBadge: String? = null,
     isFocused: Boolean = false,
     onConfigure: () -> Unit = {},
     onClick: () -> Unit = {},
@@ -1190,6 +1234,23 @@ private fun HeroMetricPod(
                     modifier = Modifier.weight(1f)
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (highScoreBadge != null) {
+                        Surface(
+                            color = AlertAmber.copy(alpha = 0.15f),
+                            shape = RoundedCornerShape(4.dp),
+                            modifier = Modifier.border(1.dp, AlertAmber.copy(alpha = 0.4f), RoundedCornerShape(4.dp))
+                        ) {
+                            Text(
+                                text = highScoreBadge,
+                                color = AlertAmber,
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                fontFamily = FontFamily.Monospace,
+                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
+                            )
+                        }
+                        Spacer(Modifier.width(4.dp))
+                    }
                     EcuBadge(ecuBadge, isFocused = isFocused)
                     Spacer(Modifier.width(4.dp))
                     IconButton(

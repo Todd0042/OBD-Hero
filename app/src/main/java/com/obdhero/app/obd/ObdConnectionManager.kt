@@ -76,6 +76,7 @@ class ObdConnectionManager {
     val adapterProfile: StateFlow<AdapterProfile> = _adapterProfile.asStateFlow()
 
     val flightRecorder = BlackBoxFlightRecorder(_adapterProfile.value)
+    val dragyTracker = com.obdhero.app.domain.DragyAccelerationTracker()
 
     private var socket: BluetoothSocket? = null
     private var outputStream: OutputStream? = null
@@ -153,6 +154,8 @@ class ObdConnectionManager {
         _adapterProfile.value = simProfile
         flightRecorder.updateAdapterProfile(simProfile)
         flightRecorder.setVehicleVin(_vin.value)
+        dragyTracker.setVehicleVin(_vin.value)
+        com.obdhero.app.data.PerformanceHighScoresRepository.setVehicleVin(_vin.value)
         _storedDtcs.value = listOf("P0171", "P0300", "B1200")
         _pendingDtcs.value = listOf("P0420")
         _moduleReports.value = listOf(
@@ -270,6 +273,7 @@ class ObdConnectionManager {
                     bcmLatencyMs = 48 + (step % 18)
                 )
                 flightRecorder.onTelemetryTick(_telemetry.value)
+                dragyTracker.onTelemetryTick(_telemetry.value)
                 delay(200)
             }
         }
@@ -315,6 +319,8 @@ class ObdConnectionManager {
         if (parsedVin.isNotEmpty()) {
             _vin.value = parsedVin
             flightRecorder.setVehicleVin(parsedVin)
+            dragyTracker.setVehicleVin(parsedVin)
+            com.obdhero.app.data.PerformanceHighScoresRepository.setVehicleVin(parsedVin)
             Log.i(TAG, "Successfully read VIN: $parsedVin")
         }
     }
@@ -391,7 +397,7 @@ class ObdConnectionManager {
                                     ensureHeader("7E0")
                                     currentSpeedKmh = parseSpeed(sendRaw("010D"))
                                 }
-                                FocusedMetric.TORQUE -> {
+                                FocusedMetric.TORQUE, FocusedMetric.HORSEPOWER -> {
                                     ensureHeader("7E0")
                                     val r = parseRpm(sendRaw("010C"))
                                     val l = parseLoad(sendRaw("0104"))
@@ -636,6 +642,7 @@ class ObdConnectionManager {
                         bcmLatencyMs = bcmLatency
                     )
                     flightRecorder.onTelemetryTick(_telemetry.value)
+                    dragyTracker.onTelemetryTick(_telemetry.value)
 
                     delay(40) // Brief pacing between frames
                 } catch (e: Exception) {

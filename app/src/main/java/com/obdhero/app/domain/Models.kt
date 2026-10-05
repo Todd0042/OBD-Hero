@@ -88,6 +88,7 @@ enum class FocusedMetric(val module: EcuModule, val displayName: String) {
     TRANSMISSION_GEAR(EcuModule.TCM, "Trans Gear"),
     TRANSMISSION_TEMP(EcuModule.TCM, "ATF Temp"),
     FUEL_ECONOMY(EcuModule.ECM, "Fuel & AFR"),
+    HORSEPOWER(EcuModule.ECM, "Calculated HP"),
     DYNAMICS_G(EcuModule.ABS, "G-Force & Steer"),
     TPMS(EcuModule.BCM, "Tire Pressures & Temps")
 }
@@ -151,5 +152,8 @@ data class LiveTelemetry(
     val ecmLatencyMs: Int = 38,
     val tcmLatencyMs: Int = 45,
     val bcmLatencyMs: Int = 52
-)
+) {
+    val horsepower: Int
+        get() = if (rpm > 0 && torqueLbFt > 0) ((torqueLbFt * rpm) / 5252).coerceAtLeast(0) else 0
+}
 

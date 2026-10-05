@@ -19,6 +19,7 @@ class ObdHeroApp : Application() {
         DtcRepository.init(this)
         VehicleProfileRepository.init(this)
         com.obdhero.app.data.BlackBoxRepository.init(this)
+        com.obdhero.app.data.PerformanceHighScoresRepository.init(this)
         obdConnectionManager = ObdConnectionManager()
         bmwSleepLockManager = BmwSleepLockManager(this)
     }
