@@ -128,11 +128,14 @@ flowchart TD
   * **VAG Group (VW / Audi)**: Adaptation 19 (Gateway) battery parameter coding (Capacity Ah, Brand, Serial Number, AGM vs EFB).
   * **BMW / Mini**: CBS Battery Registration trigger (resets mileage at replacement and resets charge histograms).
     * **Mandatory Safety Hard-Gate (Footwell Module FRM3 Protection)**: On BMW E-Series (E8x, E9x, E7x, E84, E89) and Mini R-Series, the FRM3 MC9S12XEQ384 processor's D-Flash/EEPROM corrupts and permanently bricks the module upon battery disconnect if the car is awake. The app strictly gates battery procedures on these models behind an interactive deep sleep sequence with a mandatory 20-minute sleep timer, trunk latch override trick, and gear shifter/start button visual confirmation checkpoints.
+    * **Persistent Anti-Bypass Sleep Lock**: When initiated, the app saves an atomic timestamp file (`files/security/bmw_sleep_lock.json`) to device storage. If the user force-closes, clears the app from recents, or reboots, reopening the app automatically reads this file and locks navigation back onto the 20-minute timer screen for the remaining duration. Once $\ge 20$ minutes have elapsed, the timestamp file is deleted, unlocking the next steps.
 * **Safety Guardrails**:
   * Engine RPM verification (must be 0 RPM / Key-ON Engine-OFF).
   * Battery voltage check prior to routine execution (must be >= 11.9V to avoid bricking modules).
   * Mandatory pre-disconnect deep-sleep timer and checkpoint confirmation for vulnerable BMW/Mini chassis.
+  * Persistent disk-backed sleep lock file preventing app force-close bypasses.
   * Pre-and-post status verification readback.
+
 
 
 ---

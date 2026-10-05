@@ -101,13 +101,22 @@ To construct a universal database of battery reset routines without starting fro
 * **Mandatory BMW Pre-Disconnect Deep Sleep Workflow**:
   1. **Preparation**: Roll down driver's window (safety precaution so keys cannot be locked inside), open trunk/tailgate to access battery compartment, and latch the trunk lock mechanism manually using a screwdriver (tricking the CAS/BCM into believing the trunk is latched closed).
   2. **Turn Off All Ignition / Electronics**: Remove key fob / comfort access transmitter from vehicle, place keys at least 25 feet away so the vehicle does not detect Comfort Access pings.
-  3. **Initiate 20-Minute Deep Sleep Countdown**:
-     - OBD-Hero launches an on-screen **20-Minute Sleep Timer**.
-     - Vehicle must remain undisturbed: no touching door handles, opening doors, or pressing buttons.
+  3. **Initiate 20-Minute Deep Sleep Countdown (Anti-Bypass Tamper Protection)**:
+     - When the user starts the deep sleep procedure, OBD-Hero immediately writes an atomic JSON state file to device internal storage (e.g. `files/security/bmw_sleep_lock.json` via EncryptedSharedPreferences / atomic file writer) containing:
+       - `vin`: Vehicle identification number.
+       - `session_start_epoch_ms`: Wall-clock UTC timestamp when sleep sequence was initiated.
+       - `elapsed_monotonic_baseline_ms`: `SystemClock.elapsedRealtime()` baseline to detect user tampering with device system time.
+       - `required_duration_seconds`: `1200` (20 minutes).
+     - **Force-Close & Reboot Anti-Bypass Guard**:
+       - On application startup (`Application.onCreate` and `MainActivity.onResume`), OBD-Hero checks for the presence of this active sleep lock file.
+       - If the file exists and less than 20 minutes (1,200,000 ms) have elapsed, the application **automatically intercepts navigation and locks into the 20-Minute Deep Sleep screen**, showing the accurate remaining time. Force closing, clearing app from recents, or rebooting the phone cannot skip the timer.
+       - If the user manually advances their device clock forward, the monotonic delta verification detects clock drift and resets the 20-minute countdown to prevent user error.
+       - **Automatic Clearance**: Once the current time reaches or exceeds 20 minutes from the recorded timestamp, the lock file is automatically deleted from storage, and the screen unlocks the subsequent visual inspection checkpoints and battery registration tools.
   4. **Sleep Verification Checkpoints**:
      - *Visual Checkpoint 1*: The orange LED next to "P" on the automatic gear selector shifter goes completely dark (typically 16–18 minutes).
      - *Visual Checkpoint 2*: The Start/Stop engine button backlight completely extinguishes.
      - *Alternative Safety Option (FRM Fuse Pull)*: App provides fuse box diagram to pull FRM supply fuses (F41, F81, F84, F86 depending on chassis) before battery disconnect to physically isolate the module from inrush spikes.
+
   5. **Proceed with Battery Replacement**: Disconnect Negative terminal first, then Positive. Install new battery, connect Positive, connect Negative firmly in a single positive motion without arcing/bouncing terminals.
   6. **Release Trunk Latch & Wake Vehicle**: Press trunk release handle to restore normal latch state, turn ignition ON (KOEO).
 
