@@ -60,7 +60,7 @@ fun VehicleProfileScreen(
             ) {
                 Column(modifier = Modifier.padding(18.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.DirectionsCar, contentDescription = null, tint = NeonCyan)
+                        Icon(Icons.Default.DirectionsCar, contentDescription = null, tint = RaceRed)
                         Spacer(Modifier.width(8.dp))
                         Text(
                             text = if (profile != null && profile.make != "Unknown")
@@ -110,7 +110,7 @@ fun VehicleProfileScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 12.dp)
-                    .border(1.dp, ElectricTeal.copy(alpha = 0.4f), RoundedCornerShape(12.dp))
+                    .border(1.dp, RaceRed.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
                     .clickable { onStartSimulator() }
             ) {
                 Row(
@@ -119,14 +119,14 @@ fun VehicleProfileScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.PlayArrow, contentDescription = null, tint = ElectricTeal)
+                        Icon(Icons.Default.PlayArrow, contentDescription = null, tint = RaceRed)
                         Spacer(Modifier.width(10.dp))
                         Column {
                             Text("Launch Virtual ECU Simulator", color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
                             Text("Test telemetry, BMW FRM3 gating, & DTCs at your desk", color = TextSecondary, fontSize = 12.sp)
                         }
                     }
-                    Text("START →", color = ElectricTeal, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                    Text("START →", color = RaceRed, fontWeight = FontWeight.Bold, fontSize = 12.sp)
                 }
             }
         }
@@ -167,14 +167,14 @@ fun VehicleProfileScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Bluetooth, contentDescription = null, tint = NeonCyan)
+                            Icon(Icons.Default.Bluetooth, contentDescription = null, tint = RaceRed)
                             Spacer(Modifier.width(10.dp))
                             Column {
                                 Text(device.name ?: "Unknown OBD Tool", color = TextPrimary, fontWeight = FontWeight.Medium, fontSize = 14.sp)
                                 Text(device.address, color = TextMuted, fontSize = 11.sp)
                             }
                         }
-                        Text("CONNECT", color = NeonCyan, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                        Text("CONNECT", color = RaceRed, fontWeight = FontWeight.Bold, fontSize = 12.sp)
                     }
                 }
             }

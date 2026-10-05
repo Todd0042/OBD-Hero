@@ -24,6 +24,7 @@ import com.obdhero.app.ui.components.TopStatusBar
 import com.obdhero.app.ui.screens.BatteryCalibrationScreen
 import com.obdhero.app.ui.screens.DiagnosticsScreen
 import com.obdhero.app.ui.screens.EmissionsScreen
+import com.obdhero.app.ui.screens.LiveViewScreen
 import com.obdhero.app.ui.screens.VehicleProfileScreen
 import com.obdhero.app.ui.theme.*
 import android.os.Build
@@ -98,116 +99,125 @@ class MainActivity : ComponentActivity() {
                 }
 
                 var selectedDtc by remember { mutableStateOf<DtcInfo?>(null) }
+                var showLiveView by remember { mutableStateOf(false) }
 
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    containerColor = CanvasBg,
-                    topBar = {
-                        TopStatusBar(
-                            connectionState = connectionState,
-                            profile = vehicleProfile,
-                            telemetry = telemetry
-                        )
-                    },
-                    bottomBar = {
-                        NavigationBar(
-                            containerColor = SurfaceCard,
-                            tonalElevation = 8.dp
-                        ) {
-                            NavigationBarItem(
-                                selected = (activeTab == AppTab.DIAGNOSTICS),
-                                onClick = { activeTab = AppTab.DIAGNOSTICS },
-                                icon = { Icon(Icons.Default.Build, contentDescription = null) },
-                                label = { Text(AppTab.DIAGNOSTICS.title, fontSize = 11.sp) },
-                                colors = NavigationBarItemDefaults.colors(
-                                    selectedIconColor = Color.Black,
-                                    selectedTextColor = NeonCyan,
-                                    indicatorColor = NeonCyan,
-                                    unselectedIconColor = TextMuted,
-                                    unselectedTextColor = TextMuted
-                                )
+                if (showLiveView) {
+                    LiveViewScreen(
+                        telemetry = telemetry,
+                        onBack = { showLiveView = false }
+                    )
+                } else {
+                    Scaffold(
+                        modifier = Modifier.fillMaxSize(),
+                        containerColor = CanvasBg,
+                        topBar = {
+                            TopStatusBar(
+                                connectionState = connectionState,
+                                profile = vehicleProfile,
+                                telemetry = telemetry
                             )
-                            NavigationBarItem(
-                                selected = (activeTab == AppTab.BATTERY),
-                                onClick = { activeTab = AppTab.BATTERY },
-                                icon = { Icon(Icons.Default.BatteryChargingFull, contentDescription = null) },
-                                label = { Text(AppTab.BATTERY.title, fontSize = 11.sp) },
-                                colors = NavigationBarItemDefaults.colors(
-                                    selectedIconColor = Color.Black,
-                                    selectedTextColor = AlertAmber,
-                                    indicatorColor = AlertAmber,
-                                    unselectedIconColor = TextMuted,
-                                    unselectedTextColor = TextMuted
+                        },
+                        bottomBar = {
+                            NavigationBar(
+                                containerColor = SurfaceCard,
+                                tonalElevation = 8.dp
+                            ) {
+                                NavigationBarItem(
+                                    selected = (activeTab == AppTab.DIAGNOSTICS),
+                                    onClick = { activeTab = AppTab.DIAGNOSTICS },
+                                    icon = { Icon(Icons.Default.Build, contentDescription = null) },
+                                    label = { Text(AppTab.DIAGNOSTICS.title, fontSize = 11.sp) },
+                                    colors = NavigationBarItemDefaults.colors(
+                                        selectedIconColor = Color.White,
+                                        selectedTextColor = RaceRed,
+                                        indicatorColor = RaceRed,
+                                        unselectedIconColor = TextMuted,
+                                        unselectedTextColor = TextMuted
+                                    )
                                 )
-                            )
-                            NavigationBarItem(
-                                selected = (activeTab == AppTab.EMISSIONS),
-                                onClick = { activeTab = AppTab.EMISSIONS },
-                                icon = { Icon(Icons.Default.Speed, contentDescription = null) },
-                                label = { Text(AppTab.EMISSIONS.title, fontSize = 11.sp) },
-                                colors = NavigationBarItemDefaults.colors(
-                                    selectedIconColor = Color.Black,
-                                    selectedTextColor = EmeraldSuccess,
-                                    indicatorColor = EmeraldSuccess,
-                                    unselectedIconColor = TextMuted,
-                                    unselectedTextColor = TextMuted
+                                NavigationBarItem(
+                                    selected = (activeTab == AppTab.BATTERY),
+                                    onClick = { activeTab = AppTab.BATTERY },
+                                    icon = { Icon(Icons.Default.BatteryChargingFull, contentDescription = null) },
+                                    label = { Text(AppTab.BATTERY.title, fontSize = 11.sp) },
+                                    colors = NavigationBarItemDefaults.colors(
+                                        selectedIconColor = Color.White,
+                                        selectedTextColor = AlertAmber,
+                                        indicatorColor = AlertAmber,
+                                        unselectedIconColor = TextMuted,
+                                        unselectedTextColor = TextMuted
+                                    )
                                 )
-                            )
-                            NavigationBarItem(
-                                selected = (activeTab == AppTab.VEHICLE),
-                                onClick = { activeTab = AppTab.VEHICLE },
-                                icon = { Icon(Icons.Default.DirectionsCar, contentDescription = null) },
-                                label = { Text(AppTab.VEHICLE.title, fontSize = 11.sp) },
-                                colors = NavigationBarItemDefaults.colors(
-                                    selectedIconColor = Color.Black,
-                                    selectedTextColor = ElectricTeal,
-                                    indicatorColor = ElectricTeal,
-                                    unselectedIconColor = TextMuted,
-                                    unselectedTextColor = TextMuted
+                                NavigationBarItem(
+                                    selected = (activeTab == AppTab.EMISSIONS),
+                                    onClick = { activeTab = AppTab.EMISSIONS },
+                                    icon = { Icon(Icons.Default.Speed, contentDescription = null) },
+                                    label = { Text(AppTab.EMISSIONS.title, fontSize = 11.sp) },
+                                    colors = NavigationBarItemDefaults.colors(
+                                        selectedIconColor = Color.White,
+                                        selectedTextColor = EmeraldSuccess,
+                                        indicatorColor = EmeraldSuccess,
+                                        unselectedIconColor = TextMuted,
+                                        unselectedTextColor = TextMuted
+                                    )
                                 )
-                            )
+                                NavigationBarItem(
+                                    selected = (activeTab == AppTab.VEHICLE),
+                                    onClick = { activeTab = AppTab.VEHICLE },
+                                    icon = { Icon(Icons.Default.DirectionsCar, contentDescription = null) },
+                                    label = { Text(AppTab.VEHICLE.title, fontSize = 11.sp) },
+                                    colors = NavigationBarItemDefaults.colors(
+                                        selectedIconColor = Color.White,
+                                        selectedTextColor = RubyGlow,
+                                        indicatorColor = RubyGlow,
+                                        unselectedIconColor = TextMuted,
+                                        unselectedTextColor = TextMuted
+                                    )
+                                )
+                            }
                         }
-                    }
-                ) { innerPadding ->
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(innerPadding)
-                            .background(CanvasBg)
-                    ) {
-                        when (activeTab) {
-                            AppTab.DIAGNOSTICS -> {
-                                DiagnosticsScreen(
-                                    storedCodes = storedCodes,
-                                    pendingCodes = pendingCodes,
-                                    selectedDtc = selectedDtc,
-                                    onSelectDtc = { selectedDtc = it },
-                                    onClearCodes = { obdManager.clearCodes() },
-                                    isDualPane = isDualPane
-                                )
-                            }
-                            AppTab.BATTERY -> {
-                                BatteryCalibrationScreen(
-                                    profile = vehicleProfile,
-                                    lockManager = lockManager,
-                                    onExecuteReset = {
-                                        vehicleProfile?.let { obdManager.executeBatteryReset(it.vin) }
-                                    },
-                                    isDualPane = isDualPane
-                                )
-                            }
-                            AppTab.EMISSIONS -> {
-                                EmissionsScreen(
-                                    readiness = emissionsReadiness
-                                )
-                            }
-                            AppTab.VEHICLE -> {
-                                VehicleProfileScreen(
-                                    profile = vehicleProfile,
-                                    pairedDevices = obdManager.getPairedScanners(),
-                                    onConnectDevice = { obdManager.connectToDevice(it) },
-                                    onStartSimulator = { obdManager.startSimulator() }
-                                )
+                    ) { innerPadding ->
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(innerPadding)
+                                .background(CanvasBg)
+                        ) {
+                            when (activeTab) {
+                                AppTab.DIAGNOSTICS -> {
+                                    DiagnosticsScreen(
+                                        storedCodes = storedCodes,
+                                        pendingCodes = pendingCodes,
+                                        selectedDtc = selectedDtc,
+                                        onSelectDtc = { selectedDtc = it },
+                                        onClearCodes = { obdManager.clearCodes() },
+                                        onOpenLiveView = { showLiveView = true },
+                                        isDualPane = isDualPane
+                                    )
+                                }
+                                AppTab.BATTERY -> {
+                                    BatteryCalibrationScreen(
+                                        profile = vehicleProfile,
+                                        lockManager = lockManager,
+                                        onExecuteReset = {
+                                            vehicleProfile?.let { obdManager.executeBatteryReset(it.vin) }
+                                        },
+                                        isDualPane = isDualPane
+                                    )
+                                }
+                                AppTab.EMISSIONS -> {
+                                    EmissionsScreen(
+                                        readiness = emissionsReadiness
+                                    )
+                                }
+                                AppTab.VEHICLE -> {
+                                    VehicleProfileScreen(
+                                        profile = vehicleProfile,
+                                        pairedDevices = obdManager.getPairedScanners(),
+                                        onConnectDevice = { obdManager.connectToDevice(it) },
+                                        onStartSimulator = { obdManager.startSimulator() }
+                                    )
+                                }
                             }
                         }
                     }

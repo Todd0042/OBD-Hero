@@ -141,20 +141,40 @@ class ObdConnectionManager {
             var step = 0
             while (isActive) {
                 step++
-                val simulatedRpm = 750 + (Math.sin(step * 0.1) * 150).toInt()
-                val simulatedCoolant = (88 + (Math.sin(step * 0.05) * 4)).toInt()
+                val simulatedRpm = 750 + (Math.sin(step * 0.1) * 320).toInt() + ((step % 15) * 80)
+                val simulatedSpeed = ((step % 60) * 1.2f).toInt()
+                val simulatedCoolantC = (88 + (Math.sin(step * 0.05) * 4)).toInt()
                 val simulatedVolts = (14.1f + (Math.sin(step * 0.08) * 0.2f)).toFloat()
+                val simulatedCoolantF = (simulatedCoolantC * 9 / 5) + 32
+                val simulatedOilF = simulatedCoolantF + 15
+                val simulatedIntakeF = 78 + (Math.sin(step * 0.02) * 5).toInt()
+                val simulatedBoost = ((Math.sin(step * 0.2) + 1.0) * 7.5).toFloat()
+                val simulatedSpark = 12.0f + (Math.sin(step * 0.15) * 6.0).toFloat()
 
                 _telemetry.value = LiveTelemetry(
                     rpm = simulatedRpm,
-                    speedKmh = 0,
-                    coolantTempC = simulatedCoolant,
+                    speedKmh = (simulatedSpeed * 1.60934f).toInt(),
+                    speedMph = simulatedSpeed,
+                    coolantTempC = simulatedCoolantC,
+                    coolantTempF = simulatedCoolantF,
+                    oilTempF = simulatedOilF,
+                    intakeTempF = simulatedIntakeF,
+                    boostPsi = simulatedBoost,
+                    sparkAdvanceDeg = simulatedSpark,
                     batteryVolts = simulatedVolts,
-                    engineLoadPct = 18,
-                    shortTermFuelTrim = 14.5f,
-                    longTermFuelTrim = 19.8f
+                    engineLoadPct = 18 + (step % 25),
+                    shortTermFuelTrim = 2.5f,
+                    longTermFuelTrim = 4.8f,
+                    flPsi = 32.8f,
+                    frPsi = 32.6f,
+                    rlPsi = 35.1f,
+                    rrPsi = 35.0f,
+                    flTempF = 84,
+                    frTempF = 83,
+                    rlTempF = 87,
+                    rrTempF = 86
                 )
-                delay(300)
+                delay(200)
             }
         }
     }

@@ -31,6 +31,7 @@ fun DiagnosticsScreen(
     selectedDtc: DtcInfo?,
     onSelectDtc: (DtcInfo) -> Unit,
     onClearCodes: () -> Unit,
+    onOpenLiveView: () -> Unit = {},
     isDualPane: Boolean = false,
     modifier: Modifier = Modifier
 ) {
@@ -77,8 +78,10 @@ fun DiagnosticsScreen(
     if (isDualPane) {
         // Dual-Pane Layout for Pixel 9 Pro Fold Unfolded
         Row(modifier = modifier.fillMaxSize().padding(16.dp)) {
-            // Left pane: Code List
+            // Left pane: Live View Button & Code List
             Column(modifier = Modifier.weight(0.42f).fillMaxHeight()) {
+                LiveViewLauncherButton(onClick = onOpenLiveView)
+                Spacer(modifier = Modifier.height(14.dp))
                 DtcListSection(
                     storedCodes = storedCodes,
                     pendingCodes = pendingCodes,
@@ -107,11 +110,13 @@ fun DiagnosticsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     TextButton(onClick = { onSelectDtc(DtcRepository.get("")) }) {
-                        Text("← Back to Fault List", color = NeonCyan)
+                        Text("← Back to Fault List", color = RaceRed)
                     }
                 }
                 DtcDetailGuideCard(dtcInfo = selectedDtc)
             } else {
+                LiveViewLauncherButton(onClick = onOpenLiveView)
+                Spacer(modifier = Modifier.height(14.dp))
                 DtcListSection(
                     storedCodes = storedCodes,
                     pendingCodes = pendingCodes,
@@ -120,6 +125,36 @@ fun DiagnosticsScreen(
                     onOpenClearDialog = { showClearWarningDialog = true }
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun LiveViewLauncherButton(onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(containerColor = RaceRed),
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+            .border(1.dp, RubyGlow.copy(alpha = 0.5f), RoundedCornerShape(12.dp)),
+        contentPadding = PaddingValues(horizontal = 16.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.Refresh, contentDescription = null, tint = TextPrimary, modifier = Modifier.size(20.dp))
+                Spacer(Modifier.width(10.dp))
+                Column {
+                    Text("LIVE POWERTRAIN COCKPIT", color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                    Text("Speed • RPM • TPMS • Temperatures • Oscilloscope", color = TextPrimary.copy(alpha = 0.8f), fontSize = 10.sp)
+                }
+            }
+            Text("OPEN →", color = TextPrimary, fontWeight = FontWeight.ExtraBold, fontSize = 12.sp)
         }
     }
 }
@@ -215,7 +250,7 @@ private fun DtcItemRow(
     onClick: () -> Unit
 ) {
     val dtcInfo = remember(code) { DtcRepository.get(code) }
-    val borderColor = if (isSelected) NeonCyan else BorderSubtle
+    val borderColor = if (isSelected) RaceRed else BorderSubtle
 
     Surface(
         modifier = Modifier
@@ -246,7 +281,7 @@ private fun DtcItemRow(
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(text = dtcInfo.title, color = TextSecondary, fontSize = 13.sp, maxLines = 1)
             }
-            Text("Guide →", color = NeonCyan, fontSize = 12.sp)
+            Text("Guide →", color = RaceRed, fontSize = 12.sp)
         }
     }
 }
@@ -267,7 +302,7 @@ fun DtcDetailGuideCard(dtcInfo: DtcInfo, modifier: Modifier = Modifier) {
                     verticalAlignment = Alignment.Top
                 ) {
                     Column {
-                        Text(text = dtcInfo.code, color = NeonCyan, fontSize = 26.sp, fontWeight = FontWeight.Bold)
+                        Text(text = dtcInfo.code, color = RaceRed, fontSize = 26.sp, fontWeight = FontWeight.Bold)
                         Text(text = dtcInfo.title, color = TextPrimary, fontSize = 16.sp, fontWeight = FontWeight.Medium)
                         Text(text = dtcInfo.category, color = TextSecondary, fontSize = 12.sp)
                     }

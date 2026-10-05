@@ -47,14 +47,31 @@ data class VehicleProfile(
 )
 
 /**
- * Live vehicle telemetry snapshot.
+ * Live vehicle telemetry snapshot with enthusiast telemetry & TPMS.
  */
 data class LiveTelemetry(
     val rpm: Int = 0,
+    val speedMph: Int = 0,
     val speedKmh: Int = 0,
-    val coolantTempC: Int = 0,
+    val coolantTempC: Int = 90,
+    val coolantTempF: Int = 195,
+    val oilTempF: Int = 210,
+    val intakeTempF: Int = 78,
     val batteryVolts: Float = 0.0f,
+    val boostPsi: Float = 0.0f,
+    val sparkAdvanceDeg: Float = 14.5f,
     val engineLoadPct: Int = 0,
+    val throttlePosPct: Int = 0,
     val shortTermFuelTrim: Float = 0.0f,
-    val longTermFuelTrim: Float = 0.0f
+    val longTermFuelTrim: Float = 0.0f,
+    // Live TPMS (PSI & Temp)
+    val flPsi: Float = 32.5f,
+    val frPsi: Float = 32.8f,
+    val rlPsi: Float = 33.1f,
+    val rrPsi: Float = 33.0f,
+    val flTempF: Int = 85,
+    val frTempF: Int = 86,
+    val rlTempF: Int = 88,
+    val rrTempF: Int = 87
 )
+

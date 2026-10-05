@@ -44,7 +44,7 @@ fun TopStatusBar(
             // Left: Connection status
             Row(verticalAlignment = Alignment.CenterVertically) {
                 val iconColor = when (connectionState) {
-                    is ConnectionState.Connected -> NeonCyan
+                    is ConnectionState.Connected -> RaceRed
                     is ConnectionState.Connecting -> AlertAmber
                     is ConnectionState.Error -> CriticalCrimson
                     ConnectionState.Disconnected -> TextMuted
