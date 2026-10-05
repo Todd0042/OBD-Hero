@@ -44,16 +44,25 @@ object VehicleProfileRepository {
     fun resolveProfile(vin: String, make: String, model: String, year: Int?): VehicleProfileDefinition {
         val cleanVin = vin.trim().uppercase()
 
-        // 1. Direct WMI match (e.g. JM1 for Mazda ND)
+        // 1. Specific Platform & Generation matching
         for (profile in profiles.values) {
-            if (profile.vinWmis.any { wmi -> cleanVin.startsWith(wmi) }) {
-                // If it's Mazda, check if it's ND
-                if (profile.make.equals("Mazda", ignoreCase = true) && cleanVin.contains("ND")) {
+            if (profile.make.equals("Mazda", ignoreCase = true)) {
+                // Mazda ND (Gen 6)
+                if (profile.profileId == "MAZDA_SKYACTIV_ND2" && (cleanVin.contains("ND") || model.contains("MX-5", ignoreCase = true))) {
                     return profile
                 }
-                if (profile.make.equals("BMW", ignoreCase = true)) {
+                // Mazda Gen 7 (BP / DM - 2019+ Mazda 3 / CX-30 / CX-50)
+                if (profile.profileId == "MAZDA_GEN7_BP" && (
+                    cleanVin.contains("BP") || cleanVin.contains("DM") || cleanVin.contains("VA") ||
+                    model.contains("Mazda 3", ignoreCase = true) || model.contains("CX-30", ignoreCase = true) ||
+                    (year != null && year >= 2019 && !cleanVin.contains("ND"))
+                )) {
                     return profile
                 }
+            }
+
+            if (profile.make.equals("BMW", ignoreCase = true) && profile.vinWmis.any { cleanVin.startsWith(it) }) {
+                return profile
             }
         }
 

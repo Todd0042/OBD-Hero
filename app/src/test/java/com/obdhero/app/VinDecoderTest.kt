@@ -48,6 +48,20 @@ class VinDecoderTest {
     }
 
     @Test
+    fun testMazda3Gen7VinDecodesProperly() {
+        // 2021 Mazda 3 BP (JM1BP... or 3MZBP...)
+        val profileJapan = VinDecoder.decode("JM1BPABM8M1123456")
+        assertEquals("Mazda", profileJapan.make)
+        assertEquals(2021, profileJapan.year)
+        assertEquals("Mazda 3", profileJapan.model)
+
+        val profileMexico = VinDecoder.decode("3MZBPABM5MM123456")
+        assertEquals("Mazda", profileMexico.make)
+        assertEquals(2021, profileMexico.year)
+        assertEquals("Mazda 3", profileMexico.model)
+    }
+
+    @Test
     fun testParseVinMultiFrameResponse() {
         val manager = com.obdhero.app.obd.ObdConnectionManager()
         // ELM327 Mode 09 PID 02 response with multi-frame ISO-TP formatting

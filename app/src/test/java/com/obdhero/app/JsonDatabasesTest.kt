@@ -68,4 +68,21 @@ class JsonDatabasesTest {
         assertTrue(profile.metrics.containsKey("RPM"))
         assertTrue(profile.metrics.containsKey("SPEED"))
     }
+
+    @Test
+    fun testMazdaGen7ProfileJsonLoadsAndValidates() {
+        val file = File("src/main/assets/profiles/mazda_gen7_bp.json")
+        assertTrue("Mazda Gen 7 profile file must exist", file.exists())
+
+        val profile = gson.fromJson(FileReader(file), VehicleProfileDefinition::class.java)
+        assertEquals("MAZDA_GEN7_BP", profile.profileId)
+        assertEquals("Mazda", profile.make)
+        assertEquals("Mazda 3 (Gen 7)", profile.model)
+        assertEquals("7E0", profile.ecmHeader)
+        assertTrue(profile.generations.contains("BP"))
+        assertTrue(profile.metrics.containsKey("RPM"))
+        assertTrue(profile.metrics.containsKey("OIL_TEMP"))
+        assertTrue(profile.metrics.containsKey("TORQUE"))
+        assertTrue(profile.metrics.containsKey("TRANSMISSION_GEAR"))
+    }
 }

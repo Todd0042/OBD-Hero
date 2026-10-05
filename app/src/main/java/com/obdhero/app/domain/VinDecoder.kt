@@ -68,7 +68,14 @@ object VinDecoder {
             "Ford" -> if (cleanVin.contains("F15") || cleanVin.startsWith("1FT")) "F-150" else if (cleanVin.contains("MU")) "Mustang" else "Vehicle"
             "Chevrolet" -> if (cleanVin.startsWith("1GC")) "Silverado" else "Passenger Car"
             "Toyota" -> if (cleanVin.startsWith("4T1")) "Camry" else if (cleanVin.startsWith("JTE")) "RAV4" else "Vehicle"
-            "Mazda" -> if (cleanVin.startsWith("JM1ND")) "MX-5 Miata" else "Mazda Vehicle"
+            "Mazda" -> when {
+                cleanVin.contains("ND") || cleanVin.startsWith("JM1ND") -> "MX-5 Miata"
+                cleanVin.contains("BP") || cleanVin.startsWith("JM1BP") || cleanVin.startsWith("3MZBP") -> "Mazda 3"
+                cleanVin.contains("DM") || cleanVin.startsWith("JM1DM") || cleanVin.startsWith("3MZDM") -> "CX-30"
+                cleanVin.contains("VA") || cleanVin.startsWith("7MMVA") -> "CX-50"
+                cleanVin.contains("KF") || cleanVin.startsWith("JM3KF") -> "CX-5"
+                else -> "Mazda Vehicle"
+            }
             else -> "Standard Model"
         }
 

@@ -20,6 +20,26 @@
     "difficulty": "Moderate"
   },
   {
+    "code": "P2610",
+    "title": "ECM/PCM Engine Off Timer Performance",
+    "category": "Mazda Gen 7 Powertrain",
+    "meaning": "PCM internal soak/off-timer failed plausibility comparison against instrument cluster clock during engine-off period. Common on Gen 7 BP/DM models after battery disconnect.",
+    "symptoms": ["Check Engine Light illuminated", "i-Stop / start-stop system disabled", "No drivability change"],
+    "inspectionSteps": ["Verify 12V battery terminal clamp tightness and battery health.", "Check for aftermarket battery maintainers or dashcams drawing power while parked.", "Clear code and complete standard 15-minute key-off soak test."],
+    "verifiedFixes": ["Reprogram PCM with latest calibration update (Mazda TSB 01-008/21)", "Replace failing 12V AGM/EFB battery"],
+    "difficulty": "Beginner"
+  },
+  {
+    "code": "P05A0",
+    "title": "Active Grille Air Shutter 'A' Stuck",
+    "category": "Mazda Gen 7 Aerodynamics / Cooling",
+    "meaning": "The PCM commanded the active aerodynamic grille shutter (AGS) actuator to open or close, but mechanical position feedback indicated an obstructed or jammed vane.",
+    "symptoms": ["Check Engine Light on", "Slight increase in highway coolant temp or aerodynamic drag"],
+    "inspectionSteps": ["Inspect lower front bumper grille louvers for road debris, ice, or pebbles wedging the blades.", "Unplug AGS actuator harness and check for moisture or bent pins.", "Gently cycle shutter blades by hand with ignition off to check for mechanical binding."],
+    "verifiedFixes": ["Dislodge road debris/pebbles jamming grille shutter blades", "Replace Active Grille Air Shutter actuator assembly"],
+    "difficulty": "Moderate"
+  },
+  {
     "code": "U0073",
     "title": "Control Module Communication Bus 'A' Off",
     "category": "Mazda CAN Network",
@@ -38,5 +58,15 @@
     "inspectionSteps": ["Check tire pressures on all four wheels with manual gauge.", "Check if aftermarket wheels without TPMS sensors are mounted.", "Use 315MHz/433MHz TPMS tool to check wheel sensor battery life."],
     "verifiedFixes": ["Perform Mazda TPMS relearn procedure (drive >15 mph for 10 mins)", "Replace dead internal coin battery in tire sensor / replace sensor"],
     "difficulty": "Beginner"
+  },
+  {
+    "code": "C0051",
+    "title": "Steering Wheel Position Sensor Plausibility",
+    "category": "Mazda Chassis & G-Vectoring",
+    "meaning": "ABS/DSC module detected variance between steering angle sensor rate-of-turn and lateral accelerometer during G-Vectoring Control (GVC) calculation.",
+    "symptoms": ["TCS / DSC warning light illuminated", "G-Vectoring Control disabled message"],
+    "inspectionSteps": ["Verify wheel alignment (center steering wheel on straight road).", "Check front wheel speed sensor wiring and tire circumference consistency.", "Perform steering angle zero-point calibration."],
+    "verifiedFixes": ["Perform wheel alignment and steering angle sensor center-calibration", "Clean front wheel speed sensor reluctor teeth"],
+    "difficulty": "Moderate"
   }
 ]
