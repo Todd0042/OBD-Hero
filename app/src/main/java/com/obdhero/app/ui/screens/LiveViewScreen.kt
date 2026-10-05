@@ -32,15 +32,15 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.obdhero.app.R
-import com.obdhero.app.domain.EcuModule
+import com.obdhero.app.domain.FocusedMetric
 import com.obdhero.app.domain.LiveTelemetry
 import com.obdhero.app.ui.theme.*
 
 @Composable
 fun LiveViewScreen(
     telemetry: LiveTelemetry,
-    focusedModule: EcuModule? = null,
-    onSelectModule: (EcuModule?) -> Unit = {},
+    focusedMetric: FocusedMetric? = null,
+    onSelectMetric: (FocusedMetric?) -> Unit = {},
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -104,37 +104,12 @@ fun LiveViewScreen(
                                     Text("CAN 500k", color = TextSecondary, fontSize = 9.sp, fontWeight = FontWeight.SemiBold)
                                 }
                             }
-
-                            if (focusedModule != null) {
-                                Spacer(Modifier.width(8.dp))
-                                Surface(
-                                    color = RaceRed.copy(alpha = 0.2f),
-                                    shape = RoundedCornerShape(4.dp),
-                                    modifier = Modifier
-                                        .border(1.dp, RaceRed, RoundedCornerShape(4.dp))
-                                        .clickable { onSelectModule(null) }
-                                ) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                                    ) {
-                                        Text(
-                                            "PRIORITY: ${focusedModule.badge} ✕",
-                                            color = RaceRed,
-                                            fontSize = 9.sp,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    }
-                                }
-                            }
                         }
                         Text(
-                            text = if (focusedModule != null)
-                                "Focusing on ${focusedModule.displayName} (High-Rate Interleaving)"
-                            else if (isUnfolded)
-                                "Real-Time Powertrain & Chassis Matrix (Round-Robin)"
+                            text = if (isUnfolded)
+                                "Real-Time Powertrain & Chassis Matrix"
                             else
-                                "Real-Time Cockpit (Round-Robin)",
+                                "Real-Time Cockpit",
                             color = TextPrimary,
                             fontSize = if (isUnfolded) 20.sp else 16.sp,
                             fontWeight = FontWeight.Bold
@@ -168,8 +143,8 @@ fun LiveViewScreen(
                         valSize = heroValSize,
                         labelSize = heroLabelSize,
                         cardPadding = cardPadding,
-                        isFocused = (focusedModule == EcuModule.ECM),
-                        onClick = { onSelectModule(EcuModule.ECM) },
+                        isFocused = (focusedMetric == FocusedMetric.RPM),
+                        onClick = { onSelectMetric(if (focusedMetric == FocusedMetric.RPM) null else FocusedMetric.RPM) },
                         modifier = Modifier.weight(1f)
                     )
 
@@ -184,8 +159,8 @@ fun LiveViewScreen(
                         valSize = heroValSize,
                         labelSize = heroLabelSize,
                         cardPadding = cardPadding,
-                        isFocused = (focusedModule == EcuModule.ECM),
-                        onClick = { onSelectModule(EcuModule.ECM) },
+                        isFocused = (focusedMetric == FocusedMetric.SPEED),
+                        onClick = { onSelectMetric(if (focusedMetric == FocusedMetric.SPEED) null else FocusedMetric.SPEED) },
                         modifier = Modifier.weight(1f)
                     )
 
@@ -200,8 +175,8 @@ fun LiveViewScreen(
                         valSize = heroValSize,
                         labelSize = heroLabelSize,
                         cardPadding = cardPadding,
-                        isFocused = (focusedModule == EcuModule.ECM),
-                        onClick = { onSelectModule(EcuModule.ECM) },
+                        isFocused = (focusedMetric == FocusedMetric.TORQUE),
+                        onClick = { onSelectMetric(if (focusedMetric == FocusedMetric.TORQUE) null else FocusedMetric.TORQUE) },
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -230,8 +205,8 @@ fun LiveViewScreen(
                             mainText = telemetry.transGear,
                             subText = "${telemetry.transTempF}°F Fluid",
                             accentColor = AlertAmber,
-                            isFocused = (focusedModule == EcuModule.TCM),
-                            onClick = { onSelectModule(EcuModule.TCM) },
+                            isFocused = (focusedMetric == FocusedMetric.TRANSMISSION_GEAR),
+                            onClick = { onSelectMetric(if (focusedMetric == FocusedMetric.TRANSMISSION_GEAR) null else FocusedMetric.TRANSMISSION_GEAR) },
                             modifier = Modifier.weight(1f)
                         )
 
@@ -242,8 +217,8 @@ fun LiveViewScreen(
                             mainText = "%.1f MPG".format(telemetry.instantMpg),
                             subText = "${telemetry.airFuelRatio}:1 AFR • ${telemetry.fuelLevelPct}%",
                             accentColor = EmeraldSuccess,
-                            isFocused = (focusedModule == EcuModule.ECM),
-                            onClick = { onSelectModule(EcuModule.ECM) },
+                            isFocused = (focusedMetric == FocusedMetric.FUEL_ECONOMY),
+                            onClick = { onSelectMetric(if (focusedMetric == FocusedMetric.FUEL_ECONOMY) null else FocusedMetric.FUEL_ECONOMY) },
                             modifier = Modifier.weight(1f)
                         )
 
@@ -254,8 +229,8 @@ fun LiveViewScreen(
                             mainText = "%.2f G".format(telemetry.lateralG),
                             subText = "%.0f° Steer • %.2f Gx".format(telemetry.steeringAngleDeg, telemetry.longitudinalG),
                             accentColor = RubyGlow,
-                            isFocused = (focusedModule == EcuModule.ABS),
-                            onClick = { onSelectModule(EcuModule.ABS) },
+                            isFocused = (focusedMetric == FocusedMetric.DYNAMICS_G),
+                            onClick = { onSelectMetric(if (focusedMetric == FocusedMetric.DYNAMICS_G) null else FocusedMetric.DYNAMICS_G) },
                             modifier = Modifier.weight(1f)
                         )
                     }
@@ -263,6 +238,7 @@ fun LiveViewScreen(
             }
 
             // TPMS & ENTHUSIAST TELEMETRY SECTION
+            val isTpmsFocused = (focusedMetric == FocusedMetric.TPMS)
             if (isUnfolded) {
                 // Wide Screen / Pixel 9 Pro Fold Unfolded: Side-by-Side 2-Column Layout
                 item {
@@ -271,42 +247,36 @@ fun LiveViewScreen(
                         horizontalArrangement = Arrangement.spacedBy(14.dp)
                     ) {
                         // Left Column: TPMS Pods with center MX-5 Silhouette
-                        val isBcmFocused = (focusedModule == EcuModule.BCM)
                         Surface(
                             color = SurfaceCard,
                             shape = RoundedCornerShape(16.dp),
                             modifier = Modifier
                                 .weight(1.15f)
                                 .border(
-                                    if (isBcmFocused) 2.dp else 1.dp,
-                                    if (isBcmFocused) RaceRed else BorderSubtle,
+                                    if (isTpmsFocused) 2.dp else 1.dp,
+                                    if (isTpmsFocused) RaceRed else BorderSubtle,
                                     RoundedCornerShape(16.dp)
                                 )
                         ) {
                             Column(modifier = Modifier.padding(14.dp)) {
-                                TpmsHeader("BCM 720 / MS-CAN", isFocused = isBcmFocused)
+                                TpmsHeader("BCM 720 / MS-CAN", isFocused = isTpmsFocused)
                                 Spacer(Modifier.height(10.dp))
                                 Mx5TpmsVehicleLayout(
                                     telemetry = telemetry,
                                     isCompact = false,
-                                    isFocused = isBcmFocused,
-                                    onFocusModule = onSelectModule
+                                    isFocused = isTpmsFocused,
+                                    onSelectTpms = { onSelectMetric(if (focusedMetric == FocusedMetric.TPMS) null else FocusedMetric.TPMS) }
                                 )
                             }
                         }
 
                         // Right Column: Thermal & Combustion Telemetry Grid (ECM 0x7E0)
-                        val isEcmFocused = (focusedModule == EcuModule.ECM)
                         Surface(
                             color = SurfaceCard,
                             shape = RoundedCornerShape(16.dp),
                             modifier = Modifier
                                 .weight(0.85f)
-                                .border(
-                                    if (isEcmFocused) 2.dp else 1.dp,
-                                    if (isEcmFocused) RaceRed else BorderSubtle,
-                                    RoundedCornerShape(16.dp)
-                                )
+                                .border(1.dp, BorderSubtle, RoundedCornerShape(16.dp))
                         ) {
                             Column(modifier = Modifier.padding(14.dp)) {
                                 Row(
@@ -316,26 +286,26 @@ fun LiveViewScreen(
                                 ) {
                                     Text(
                                         "THERMAL & COMBUSTION",
-                                        color = if (isEcmFocused) RaceRed else TextPrimary,
+                                        color = TextPrimary,
                                         fontSize = 11.sp,
                                         fontWeight = FontWeight.Bold
                                     )
-                                    EcuBadge("ECM 7E0", isFocused = isEcmFocused)
+                                    EcuBadge("ECM 7E0")
                                 }
                                 Spacer(Modifier.height(10.dp))
                                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    GeekMetricTile("Coolant", "${telemetry.coolantTempF}°F", isFocused = isEcmFocused, onClick = { onSelectModule(EcuModule.ECM) }, modifier = Modifier.weight(1f))
-                                    GeekMetricTile("Oil Temp", "${telemetry.oilTempF}°F", isFocused = isEcmFocused, onClick = { onSelectModule(EcuModule.ECM) }, modifier = Modifier.weight(1f))
+                                    GeekMetricTile("Coolant", "${telemetry.coolantTempF}°F", isFocused = (focusedMetric == FocusedMetric.COOLANT), onClick = { onSelectMetric(if (focusedMetric == FocusedMetric.COOLANT) null else FocusedMetric.COOLANT) }, modifier = Modifier.weight(1f))
+                                    GeekMetricTile("Oil Temp", "${telemetry.oilTempF}°F", isFocused = (focusedMetric == FocusedMetric.OIL_TEMP), onClick = { onSelectMetric(if (focusedMetric == FocusedMetric.OIL_TEMP) null else FocusedMetric.OIL_TEMP) }, modifier = Modifier.weight(1f))
                                 }
                                 Spacer(Modifier.height(8.dp))
                                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    GeekMetricTile("Intake Air", "${telemetry.intakeTempF}°F", isFocused = isEcmFocused, onClick = { onSelectModule(EcuModule.ECM) }, modifier = Modifier.weight(1f))
-                                    GeekMetricTile("Boost", "%.1f PSI".format(telemetry.boostPsi), isFocused = isEcmFocused, onClick = { onSelectModule(EcuModule.ECM) }, modifier = Modifier.weight(1f))
+                                    GeekMetricTile("Intake Air", "${telemetry.intakeTempF}°F", isFocused = (focusedMetric == FocusedMetric.INTAKE_AIR), onClick = { onSelectMetric(if (focusedMetric == FocusedMetric.INTAKE_AIR) null else FocusedMetric.INTAKE_AIR) }, modifier = Modifier.weight(1f))
+                                    GeekMetricTile("Boost", "%.1f PSI".format(telemetry.boostPsi), isFocused = (focusedMetric == FocusedMetric.BOOST), onClick = { onSelectMetric(if (focusedMetric == FocusedMetric.BOOST) null else FocusedMetric.BOOST) }, modifier = Modifier.weight(1f))
                                 }
                                 Spacer(Modifier.height(8.dp))
                                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    GeekMetricTile("Spark Timing", "${telemetry.sparkAdvanceDeg}°", isFocused = isEcmFocused, onClick = { onSelectModule(EcuModule.ECM) }, modifier = Modifier.weight(1f))
-                                    GeekMetricTile("Battery", "%.1fV".format(telemetry.batteryVolts), isFocused = isEcmFocused, onClick = { onSelectModule(EcuModule.ECM) }, modifier = Modifier.weight(1f))
+                                    GeekMetricTile("Spark Timing", "${telemetry.sparkAdvanceDeg}°", isFocused = (focusedMetric == FocusedMetric.SPARK), onClick = { onSelectMetric(if (focusedMetric == FocusedMetric.SPARK) null else FocusedMetric.SPARK) }, modifier = Modifier.weight(1f))
+                                    GeekMetricTile("Battery", "%.1fV".format(telemetry.batteryVolts), isFocused = (focusedMetric == FocusedMetric.BATTERY), onClick = { onSelectMetric(if (focusedMetric == FocusedMetric.BATTERY) null else FocusedMetric.BATTERY) }, modifier = Modifier.weight(1f))
                                 }
                             }
                         }
@@ -343,7 +313,6 @@ fun LiveViewScreen(
                 }
             } else {
                 // Folded / Single-Column: Vehicle Silhouette with Per-Tire Corner Cards
-                val isBcmFocused = (focusedModule == EcuModule.BCM)
                 item {
                     Surface(
                         color = SurfaceCard,
@@ -351,25 +320,24 @@ fun LiveViewScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .border(
-                                if (isBcmFocused) 2.dp else 1.dp,
-                                if (isBcmFocused) RaceRed else BorderSubtle,
+                                if (isTpmsFocused) 2.dp else 1.dp,
+                                if (isTpmsFocused) RaceRed else BorderSubtle,
                                 RoundedCornerShape(14.dp)
                             )
                     ) {
                         Column(modifier = Modifier.padding(12.dp)) {
-                            TpmsHeader("BCM 720 / MS-CAN", isFocused = isBcmFocused)
+                            TpmsHeader("BCM 720 / MS-CAN", isFocused = isTpmsFocused)
                             Spacer(Modifier.height(10.dp))
                             Mx5TpmsVehicleLayout(
                                 telemetry = telemetry,
                                 isCompact = true,
-                                isFocused = isBcmFocused,
-                                onFocusModule = onSelectModule
+                                isFocused = isTpmsFocused,
+                                onSelectTpms = { onSelectMetric(if (focusedMetric == FocusedMetric.TPMS) null else FocusedMetric.TPMS) }
                             )
                         }
                     }
                 }
 
-                val isEcmFocused = (focusedModule == EcuModule.ECM)
                 item {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -378,23 +346,23 @@ fun LiveViewScreen(
                     ) {
                         Text(
                             "THERMAL & COMBUSTION TELEMETRY",
-                            color = if (isEcmFocused) RaceRed else TextMuted,
+                            color = TextMuted,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold
                         )
-                        EcuBadge("ECM 7E0", isFocused = isEcmFocused)
+                        EcuBadge("ECM 7E0")
                     }
                     Spacer(Modifier.height(6.dp))
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        GeekMetricTile("Coolant", "${telemetry.coolantTempF}°F", isFocused = isEcmFocused, onClick = { onSelectModule(EcuModule.ECM) }, modifier = Modifier.weight(1f))
-                        GeekMetricTile("Oil Temp", "${telemetry.oilTempF}°F", isFocused = isEcmFocused, onClick = { onSelectModule(EcuModule.ECM) }, modifier = Modifier.weight(1f))
-                        GeekMetricTile("Intake", "${telemetry.intakeTempF}°F", isFocused = isEcmFocused, onClick = { onSelectModule(EcuModule.ECM) }, modifier = Modifier.weight(1f))
+                        GeekMetricTile("Coolant", "${telemetry.coolantTempF}°F", isFocused = (focusedMetric == FocusedMetric.COOLANT), onClick = { onSelectMetric(if (focusedMetric == FocusedMetric.COOLANT) null else FocusedMetric.COOLANT) }, modifier = Modifier.weight(1f))
+                        GeekMetricTile("Oil Temp", "${telemetry.oilTempF}°F", isFocused = (focusedMetric == FocusedMetric.OIL_TEMP), onClick = { onSelectMetric(if (focusedMetric == FocusedMetric.OIL_TEMP) null else FocusedMetric.OIL_TEMP) }, modifier = Modifier.weight(1f))
+                        GeekMetricTile("Intake", "${telemetry.intakeTempF}°F", isFocused = (focusedMetric == FocusedMetric.INTAKE_AIR), onClick = { onSelectMetric(if (focusedMetric == FocusedMetric.INTAKE_AIR) null else FocusedMetric.INTAKE_AIR) }, modifier = Modifier.weight(1f))
                     }
                     Spacer(Modifier.height(6.dp))
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        GeekMetricTile("Boost", "%.1f PSI".format(telemetry.boostPsi), isFocused = isEcmFocused, onClick = { onSelectModule(EcuModule.ECM) }, modifier = Modifier.weight(1f))
-                        GeekMetricTile("Timing", "${telemetry.sparkAdvanceDeg}°", isFocused = isEcmFocused, onClick = { onSelectModule(EcuModule.ECM) }, modifier = Modifier.weight(1f))
-                        GeekMetricTile("Battery", "%.1fV".format(telemetry.batteryVolts), isFocused = isEcmFocused, onClick = { onSelectModule(EcuModule.ECM) }, modifier = Modifier.weight(1f))
+                        GeekMetricTile("Boost", "%.1f PSI".format(telemetry.boostPsi), isFocused = (focusedMetric == FocusedMetric.BOOST), onClick = { onSelectMetric(if (focusedMetric == FocusedMetric.BOOST) null else FocusedMetric.BOOST) }, modifier = Modifier.weight(1f))
+                        GeekMetricTile("Timing", "${telemetry.sparkAdvanceDeg}°", isFocused = (focusedMetric == FocusedMetric.SPARK), onClick = { onSelectMetric(if (focusedMetric == FocusedMetric.SPARK) null else FocusedMetric.SPARK) }, modifier = Modifier.weight(1f))
+                        GeekMetricTile("Battery", "%.1fV".format(telemetry.batteryVolts), isFocused = (focusedMetric == FocusedMetric.BATTERY), onClick = { onSelectMetric(if (focusedMetric == FocusedMetric.BATTERY) null else FocusedMetric.BATTERY) }, modifier = Modifier.weight(1f))
                     }
                 }
             }
@@ -492,7 +460,7 @@ private fun Mx5TpmsVehicleLayout(
     telemetry: LiveTelemetry,
     isCompact: Boolean,
     isFocused: Boolean = false,
-    onFocusModule: (EcuModule) -> Unit = {},
+    onSelectTpms: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -512,7 +480,7 @@ private fun Mx5TpmsVehicleLayout(
                 tempF = telemetry.flTempF,
                 isCompact = isCompact,
                 isFocused = isFocused,
-                onClick = { onFocusModule(EcuModule.BCM) }
+                onClick = onSelectTpms
             )
             Mx5CornerTireCard(
                 cornerLabel = "REAR LEFT",
@@ -521,7 +489,7 @@ private fun Mx5TpmsVehicleLayout(
                 tempF = telemetry.rlTempF,
                 isCompact = isCompact,
                 isFocused = isFocused,
-                onClick = { onFocusModule(EcuModule.BCM) }
+                onClick = onSelectTpms
             )
         }
 
@@ -530,7 +498,7 @@ private fun Mx5TpmsVehicleLayout(
             modifier = Modifier
                 .weight(if (isCompact) 0.85f else 1f)
                 .padding(horizontal = 6.dp)
-                .clickable { onFocusModule(EcuModule.BCM) },
+                .clickable { onSelectTpms() },
             contentAlignment = Alignment.Center
         ) {
             Surface(
@@ -568,7 +536,7 @@ private fun Mx5TpmsVehicleLayout(
                 tempF = telemetry.frTempF,
                 isCompact = isCompact,
                 isFocused = isFocused,
-                onClick = { onFocusModule(EcuModule.BCM) }
+                onClick = onSelectTpms
             )
             Mx5CornerTireCard(
                 cornerLabel = "REAR RIGHT",
@@ -577,7 +545,7 @@ private fun Mx5TpmsVehicleLayout(
                 tempF = telemetry.rrTempF,
                 isCompact = isCompact,
                 isFocused = isFocused,
-                onClick = { onFocusModule(EcuModule.BCM) }
+                onClick = onSelectTpms
             )
         }
     }

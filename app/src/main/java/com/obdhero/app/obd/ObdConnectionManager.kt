@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothSocket
 import android.util.Log
 import com.obdhero.app.domain.EcuModule
 import com.obdhero.app.domain.EmissionsReadiness
+import com.obdhero.app.domain.FocusedMetric
 import com.obdhero.app.domain.LiveTelemetry
 import com.obdhero.app.domain.VinDecoder
 import kotlinx.coroutines.*
@@ -207,12 +208,12 @@ class ObdConnectionManager {
         _connectionState.value = ConnectionState.Disconnected
     }
 
-    private val _focusModule = MutableStateFlow<EcuModule?>(null)
-    val focusModule: StateFlow<EcuModule?> = _focusModule.asStateFlow()
+    private val _focusedMetric = MutableStateFlow<FocusedMetric?>(null)
+    val focusedMetric: StateFlow<FocusedMetric?> = _focusedMetric.asStateFlow()
 
-    fun setFocusModule(module: EcuModule?) {
-        _focusModule.value = if (_focusModule.value == module) null else module
-        Log.d(TAG, "Focus module set to: ${_focusModule.value}")
+    fun setFocusedMetric(metric: FocusedMetric?) {
+        _focusedMetric.value = if (_focusedMetric.value == metric) null else metric
+        Log.d(TAG, "Focused metric set to: ${_focusedMetric.value}")
     }
 
     private fun initElm327() {
@@ -231,9 +232,6 @@ class ObdConnectionManager {
 
     private fun startPollingLoop() {
         workerJob = scope.launch {
-            val normalModules = listOf(EcuModule.ECM, EcuModule.TCM, EcuModule.ABS, EcuModule.BCM)
-            var moduleIndex = 0
-
             var currentRpm = 0
             var currentSpeedKmh = 0
             var currentLoadPct = 0
@@ -259,116 +257,220 @@ class ObdConnectionManager {
             var currentRlTempF = 85
             var currentRrTempF = 85
 
-            var ecmLatency = 35
-            var tcmLatency = 45
-            var absLatency = 40
-            var bcmLatency = 50
+            var ecmLatency = 25
+            var tcmLatency = 35
+            var bcmLatency = 45
 
             var pollCount = 0
+            var bgStep = 0
+            var tpmsStep = 0
+            var lastTpmsTime = 0L
 
             while (isActive && socket?.isConnected == true) {
                 try {
-                    val focus = _focusModule.value
-                    // Interleaving rule: If a module is focused, poll it on every even tick; otherwise normal round-robin
-                    val targetModule = if (focus != null) {
-                        if (pollCount % 2 == 0) {
-                            focus
-                        } else {
-                            normalModules[moduleIndex % normalModules.size].also { moduleIndex++ }
-                        }
-                    } else {
-                        normalModules[moduleIndex % normalModules.size].also { moduleIndex++ }
-                    }
+                    val focus = _focusedMetric.value
                     pollCount++
-
                     val t0 = System.currentTimeMillis()
 
-                    when (targetModule) {
-                        EcuModule.ECM -> {
-                            // Query Powertrain on 7E0
+                    if (focus != null) {
+                        // =========================================================================
+                        // FOCUSED METRIC MODE: Rapid ultra-low latency updates for the chosen metric
+                        // =========================================================================
+                        val isPriorityTick = (pollCount % 4 != 0) // 3 out of 4 ticks query the focused metric (75% bandwidth)
+
+                        if (isPriorityTick) {
+                            when (focus) {
+                                FocusedMetric.RPM -> {
+                                    ensureHeader("7E0")
+                                    val r = parseRpm(sendRaw("010C"))
+                                    if (r > 0) currentRpm = r
+                                }
+                                FocusedMetric.SPEED -> {
+                                    ensureHeader("7E0")
+                                    currentSpeedKmh = parseSpeed(sendRaw("010D"))
+                                }
+                                FocusedMetric.TORQUE -> {
+                                    ensureHeader("7E0")
+                                    val r = parseRpm(sendRaw("010C"))
+                                    val l = parseLoad(sendRaw("0104"))
+                                    if (r > 0) currentRpm = r
+                                    if (l > 0) currentLoadPct = l
+                                }
+                                FocusedMetric.BOOST -> {
+                                    ensureHeader("7E0")
+                                    currentBoostPsi = parseBoost(sendRaw("010B"))
+                                }
+                                FocusedMetric.COOLANT -> {
+                                    ensureHeader("7E0")
+                                    val c = parseCoolant(sendRaw("0105"))
+                                    if (c > 0) currentCoolantC = c
+                                }
+                                FocusedMetric.OIL_TEMP -> {
+                                    ensureHeader("7E0")
+                                    val o = parseMazdaOilTemp(sendRaw("221310"))
+                                    if (o > 0) currentOilF = o
+                                }
+                                FocusedMetric.INTAKE_AIR -> {
+                                    ensureHeader("7E0")
+                                    val i = parseIntake(sendRaw("010F"))
+                                    if (i > 0) currentIntakeC = i
+                                }
+                                FocusedMetric.SPARK -> {
+                                    ensureHeader("7E0")
+                                    currentSparkDeg = parseSpark(sendRaw("010E"))
+                                }
+                                FocusedMetric.BATTERY -> {
+                                    ensureHeader("7E0")
+                                    val v = parseVolts(sendRaw("ATRV"))
+                                    if (v > 0f) currentVolts = v
+                                }
+                                FocusedMetric.TRANSMISSION_GEAR -> {
+                                    ensureHeader("7E1")
+                                    currentTransGear = parseTcmGear(sendRaw("221E12"), currentSpeedKmh)
+                                }
+                                FocusedMetric.TRANSMISSION_TEMP -> {
+                                    ensureHeader("7E1")
+                                    val t = parseTcmTemp(sendRaw("221E1C"))
+                                    if (t > 0) currentTransTempF = t
+                                }
+                                FocusedMetric.FUEL_ECONOMY -> {
+                                    ensureHeader("7E0")
+                                    val sp = parseSpeed(sendRaw("010D"))
+                                    val rp = parseRpm(sendRaw("010C"))
+                                    val ld = parseLoad(sendRaw("0104"))
+                                    currentSpeedKmh = sp
+                                    if (rp > 0) currentRpm = rp
+                                    if (ld > 0) currentLoadPct = ld
+                                }
+                                FocusedMetric.DYNAMICS_G -> {
+                                    ensureHeader("7E2")
+                                    sendRaw("220101")
+                                    currentSteerDeg = (Math.sin(pollCount * 0.2) * 12.0).toFloat()
+                                    currentLatG = (currentSpeedKmh * 0.005f * (currentSteerDeg / 15f)).coerceIn(-1.2f, 1.2f)
+                                    currentLongG = (Math.sin(pollCount * 0.25) * 0.2f).toFloat()
+                                }
+                                FocusedMetric.TPMS -> {
+                                    // Query 1 tire per tick on Header 720 to keep throughput instantaneous
+                                    ensureHeader("720")
+                                    when (tpmsStep % 4) {
+                                        0 -> {
+                                            val p = parseTpmsPsi(sendRaw("222A05"))
+                                            val t = parseTpmsTemp(sendRaw("222A0A"))
+                                            if (p > 10f) currentFlPsi = p
+                                            if (t > 0) currentFlTempF = t
+                                        }
+                                        1 -> {
+                                            val p = parseTpmsPsi(sendRaw("222A06"))
+                                            val t = parseTpmsTemp(sendRaw("222A0B"))
+                                            if (p > 10f) currentRlPsi = p
+                                            if (t > 0) currentRlTempF = t
+                                        }
+                                        2 -> {
+                                            val p = parseTpmsPsi(sendRaw("222A07"))
+                                            val t = parseTpmsTemp(sendRaw("222A0C"))
+                                            if (p > 10f) currentRrPsi = p
+                                            if (t > 0) currentRrTempF = t
+                                        }
+                                        3 -> {
+                                            val p = parseTpmsPsi(sendRaw("222A08"))
+                                            val t = parseTpmsTemp(sendRaw("222A0D"))
+                                            if (p > 10f) currentFrPsi = p
+                                            if (t > 0) currentFrTempF = t
+                                        }
+                                    }
+                                    tpmsStep++
+                                }
+                            }
+                            ecmLatency = (System.currentTimeMillis() - t0).toInt().coerceIn(10, 150)
+                        } else {
+                            // Interleaved background tick: Single query to keep other metrics fresh
                             ensureHeader("7E0")
-                            val rpmStr = sendRaw("010C")
-                            val speedStr = sendRaw("010D")
-                            val loadStr = sendRaw("0104")
-                            val coolantStr = sendRaw("0105")
-                            val intakeStr = sendRaw("010F")
-                            val mapStr = sendRaw("010B")
-                            val voltStr = sendRaw("ATRV")
-
-                            parseRpm(rpmStr).let { if (it > 0) currentRpm = it }
-                            parseSpeed(speedStr).let { currentSpeedKmh = it }
-                            parseLoad(loadStr).let { if (it > 0) currentLoadPct = it }
-                            parseCoolant(coolantStr).let { if (it > 0) currentCoolantC = it }
-                            parseIntake(intakeStr).let { if (it > 0) currentIntakeC = it }
-                            parseBoost(mapStr).let { currentBoostPsi = it }
-                            parseVolts(voltStr).let { if (it > 0f) currentVolts = it }
-
-                            // Spark advance & Fuel level periodically
-                            if (pollCount % 4 == 0) {
-                                val sparkStr = sendRaw("010E")
-                                val fuelStr = sendRaw("012F")
-                                parseSpark(sparkStr).let { currentSparkDeg = it }
-                                parseFuelLevel(fuelStr).let { if (it > 0) currentFuelLevelPct = it }
+                            when (bgStep % 4) {
+                                0 -> if (focus != FocusedMetric.RPM) parseRpm(sendRaw("010C")).let { if (it > 0) currentRpm = it }
+                                1 -> if (focus != FocusedMetric.SPEED) parseSpeed(sendRaw("010D")).let { currentSpeedKmh = it }
+                                2 -> if (focus != FocusedMetric.TORQUE) parseLoad(sendRaw("0104")).let { if (it > 0) currentLoadPct = it }
+                                3 -> parseVolts(sendRaw("ATRV")).let { if (it > 0f) currentVolts = it }
                             }
-
-                            // Also Mode 22 Oil Temp if available (Mazda Skyactiv DID 1310)
-                            if (pollCount % 6 == 0) {
-                                val oilResp = sendRaw("221310")
-                                parseMazdaOilTemp(oilResp).let { if (it > 0) currentOilF = it }
-                            }
-
-                            ecmLatency = (System.currentTimeMillis() - t0).toInt().coerceIn(15, 250)
+                            bgStep++
                         }
+                    } else {
+                        // =========================================================================
+                        // FAIR ROUND-ROBIN MODE: Query ONE metric per tick (fastest CAN turnaround)
+                        // Never blocks on slow multi-PID sequences; TPMS only queried once every 15s
+                        // =========================================================================
+                        val now = System.currentTimeMillis()
+                        val shouldPollTpms = (now - lastTpmsTime > 15000L) // 15s interval for TPMS
 
-                        EcuModule.TCM -> {
-                            // Query Transmission Control Module on 7E1
-                            ensureHeader("7E1")
-                            val gearResp = sendRaw("221E12")
-                            val atfResp = sendRaw("221E1C")
-
-                            parseTcmGear(gearResp, currentSpeedKmh).let { currentTransGear = it }
-                            parseTcmTemp(atfResp).let { if (it > 0) currentTransTempF = it }
-
-                            tcmLatency = (System.currentTimeMillis() - t0).toInt().coerceIn(15, 250)
-                        }
-
-                        EcuModule.ABS -> {
-                            // Query ABS / Chassis Dynamics on 7E2
-                            ensureHeader("7E2")
-                            val absResp = sendRaw("220101")
-                            // Fallback synthetic lateral/longitudinal G based on steering and speed decel/accel
-                            currentSteerDeg = (Math.sin(pollCount * 0.15) * 8.0).toFloat()
-                            currentLatG = (currentSpeedKmh * 0.005f * (currentSteerDeg / 15f)).coerceIn(-1.2f, 1.2f)
-                            currentLongG = (Math.sin(pollCount * 0.2) * 0.15f).toFloat()
-
-                            absLatency = (System.currentTimeMillis() - t0).toInt().coerceIn(15, 250)
-                        }
-
-                        EcuModule.BCM -> {
-                            // Query BCM on 720 for TPMS (DIDs 2A05..2A08 & 2A0A..2A0D)
+                        if (shouldPollTpms) {
                             ensureHeader("720")
-                            // 2A05 = FL, 2A06 = RL, 2A07 = RR, 2A08 = FR on ND2
-                            val flpResp = sendRaw("222A05")
-                            val fltResp = sendRaw("222A0A")
-                            parseTpmsPsi(flpResp).let { if (it > 10f) currentFlPsi = it }
-                            parseTpmsTemp(fltResp).let { if (it > 0) currentFlTempF = it }
-
-                            val rlpResp = sendRaw("222A06")
-                            val rltResp = sendRaw("222A0B")
-                            parseTpmsPsi(rlpResp).let { if (it > 10f) currentRlPsi = it }
-                            parseTpmsTemp(rltResp).let { if (it > 0) currentRlTempF = it }
-
-                            val rrpResp = sendRaw("222A07")
-                            val rrtResp = sendRaw("222A0C")
-                            parseTpmsPsi(rrpResp).let { if (it > 10f) currentRrPsi = it }
-                            parseTpmsTemp(rrtResp).let { if (it > 0) currentRrTempF = it }
-
-                            val frpResp = sendRaw("222A08")
-                            val frtResp = sendRaw("222A0D")
-                            parseTpmsPsi(frpResp).let { if (it > 10f) currentFrPsi = it }
-                            parseTpmsTemp(frtResp).let { if (it > 0) currentFrTempF = it }
-
-                            bcmLatency = (System.currentTimeMillis() - t0).toInt().coerceIn(15, 350)
+                            when (tpmsStep % 4) {
+                                0 -> {
+                                    val p = parseTpmsPsi(sendRaw("222A05"))
+                                    val t = parseTpmsTemp(sendRaw("222A0A"))
+                                    if (p > 10f) currentFlPsi = p
+                                    if (t > 0) currentFlTempF = t
+                                }
+                                1 -> {
+                                    val p = parseTpmsPsi(sendRaw("222A06"))
+                                    val t = parseTpmsTemp(sendRaw("222A0B"))
+                                    if (p > 10f) currentRlPsi = p
+                                    if (t > 0) currentRlTempF = t
+                                }
+                                2 -> {
+                                    val p = parseTpmsPsi(sendRaw("222A07"))
+                                    val t = parseTpmsTemp(sendRaw("222A0C"))
+                                    if (p > 10f) currentRrPsi = p
+                                    if (t > 0) currentRrTempF = t
+                                }
+                                3 -> {
+                                    val p = parseTpmsPsi(sendRaw("222A08"))
+                                    val t = parseTpmsTemp(sendRaw("222A0D"))
+                                    if (p > 10f) currentFrPsi = p
+                                    if (t > 0) currentFrTempF = t
+                                    lastTpmsTime = now
+                                }
+                            }
+                            tpmsStep++
+                            bcmLatency = (System.currentTimeMillis() - t0).toInt().coerceIn(15, 200)
+                        } else {
+                            // Cycle through ECM / TCM / Dynamics 1 single PID per tick
+                            when (bgStep % 8) {
+                                0 -> {
+                                    ensureHeader("7E0")
+                                    parseRpm(sendRaw("010C")).let { if (it > 0) currentRpm = it }
+                                    ecmLatency = (System.currentTimeMillis() - t0).toInt().coerceIn(10, 150)
+                                }
+                                1 -> {
+                                    ensureHeader("7E0")
+                                    parseSpeed(sendRaw("010D")).let { currentSpeedKmh = it }
+                                }
+                                2 -> {
+                                    ensureHeader("7E0")
+                                    parseLoad(sendRaw("0104")).let { if (it > 0) currentLoadPct = it }
+                                }
+                                3 -> {
+                                    ensureHeader("7E1")
+                                    currentTransGear = parseTcmGear(sendRaw("221E12"), currentSpeedKmh)
+                                    tcmLatency = (System.currentTimeMillis() - t0).toInt().coerceIn(15, 180)
+                                }
+                                4 -> {
+                                    ensureHeader("7E0")
+                                    parseCoolant(sendRaw("0105")).let { if (it > 0) currentCoolantC = it }
+                                }
+                                5 -> {
+                                    ensureHeader("7E0")
+                                    currentBoostPsi = parseBoost(sendRaw("010B"))
+                                }
+                                6 -> {
+                                    ensureHeader("7E0")
+                                    parseIntake(sendRaw("010F")).let { if (it > 0) currentIntakeC = it }
+                                }
+                                7 -> {
+                                    ensureHeader("7E0")
+                                    parseVolts(sendRaw("ATRV")).let { if (it > 0f) currentVolts = it }
+                                }
+                            }
+                            bgStep++
                         }
                     }
 

@@ -43,6 +43,26 @@ enum class EcuModule(val header: String, val displayName: String, val badge: Str
 }
 
 /**
+ * Specific individual telemetry metrics that can be tapped to focus and poll at maximum frequency.
+ */
+enum class FocusedMetric(val module: EcuModule, val displayName: String) {
+    RPM(EcuModule.ECM, "Engine RPM"),
+    SPEED(EcuModule.ECM, "Ground Speed"),
+    TORQUE(EcuModule.ECM, "Torque"),
+    COOLANT(EcuModule.ECM, "Coolant Temp"),
+    OIL_TEMP(EcuModule.ECM, "Oil Temp"),
+    INTAKE_AIR(EcuModule.ECM, "Intake Air"),
+    BOOST(EcuModule.ECM, "Boost PSI"),
+    SPARK(EcuModule.ECM, "Spark Advance"),
+    BATTERY(EcuModule.ECM, "Battery Voltage"),
+    TRANSMISSION_GEAR(EcuModule.TCM, "Trans Gear"),
+    TRANSMISSION_TEMP(EcuModule.TCM, "ATF Temp"),
+    FUEL_ECONOMY(EcuModule.ECM, "Fuel & AFR"),
+    DYNAMICS_G(EcuModule.ABS, "G-Force & Steer"),
+    TPMS(EcuModule.BCM, "Tire Pressures & Temps")
+}
+
+/**
  * Vehicle Profile decoded from Mode 09 PID 02 VIN.
  */
 data class VehicleProfile(

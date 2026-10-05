@@ -89,7 +89,7 @@ class MainActivity : ComponentActivity() {
                 val storedCodes by obdManager.storedDtcs.collectAsState()
                 val pendingCodes by obdManager.pendingDtcs.collectAsState()
                 val emissionsReadiness by obdManager.emissionsReadiness.collectAsState()
-                val focusModule by obdManager.focusModule.collectAsState()
+                val focusedMetric by obdManager.focusedMetric.collectAsState()
 
                 val vehicleProfile = remember(rawVin) {
                     if (rawVin.isNotEmpty()) VinDecoder.decode(rawVin) else null
@@ -107,8 +107,8 @@ class MainActivity : ComponentActivity() {
                 if (showLiveView) {
                     LiveViewScreen(
                         telemetry = telemetry,
-                        focusedModule = focusModule,
-                        onSelectModule = { obdManager.setFocusModule(it) },
+                        focusedMetric = focusedMetric,
+                        onSelectMetric = { obdManager.setFocusedMetric(it) },
                         onBack = { showLiveView = false },
                         modifier = Modifier.statusBarsPadding()
                     )
