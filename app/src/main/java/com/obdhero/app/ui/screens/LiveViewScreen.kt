@@ -31,6 +31,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import android.app.Activity
+import android.view.WindowManager
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.platform.LocalContext
 import com.obdhero.app.R
 import com.obdhero.app.domain.FocusedMetric
 import com.obdhero.app.domain.LiveTelemetry
@@ -44,6 +48,16 @@ fun LiveViewScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // Keep the screen awake while Live Telemetry cockpit is displayed
+    val context = LocalContext.current
+    DisposableEffect(Unit) {
+        val window = (context as? Activity)?.window
+        window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        onDispose {
+            window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
+    }
+
     BoxWithConstraints(
         modifier = modifier
             .fillMaxSize()
