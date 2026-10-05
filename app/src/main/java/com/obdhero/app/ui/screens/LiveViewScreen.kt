@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ElectricBolt
+import androidx.compose.material.icons.filled.FiberManualRecord
 import androidx.compose.material.icons.filled.Hub
 import androidx.compose.material.icons.filled.LocalGasStation
 import androidx.compose.material.icons.filled.Speed
@@ -37,6 +38,10 @@ import android.view.WindowManager
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalContext
 import com.obdhero.app.R
+import com.obdhero.app.data.AdapterDatabase
+import com.obdhero.app.domain.AdapterProfile
+import com.obdhero.app.domain.BlackBoxIncidentReport
+import com.obdhero.app.domain.FlightRecorderState
 import com.obdhero.app.domain.FocusedMetric
 import com.obdhero.app.domain.LiveTelemetry
 import com.obdhero.app.ui.theme.*
@@ -87,6 +92,11 @@ fun LiveViewScreen(
     onSelectMetric: (FocusedMetric?) -> Unit = {},
     vehicleMake: String = "",
     vehicleModel: String = "",
+    adapterProfile: AdapterProfile? = null,
+    recorderState: FlightRecorderState = FlightRecorderState.ARMED_LISTENING,
+    incidentHistory: List<BlackBoxIncidentReport> = emptyList(),
+    onTriggerBlackBox: () -> Unit = {},
+    onRearmBlackBox: () -> Unit = {},
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -106,6 +116,7 @@ fun LiveViewScreen(
     var sub3Metric by remember { mutableStateOf(FocusedMetric.DYNAMICS_G) }
 
     var configuringSlot by remember { mutableStateOf<PodSlot?>(null) }
+    var showBlackBoxDialog by remember { mutableStateOf(false) }
 
     // Keep the screen awake while Live Telemetry cockpit is displayed
     val context = LocalContext.current
@@ -189,6 +200,34 @@ fun LiveViewScreen(
                         )
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Button(
+                            onClick = { showBlackBoxDialog = true },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (recorderState == FlightRecorderState.TRIGGERED_RECORDING) CriticalCrimson else SurfaceCardElevated
+                            ),
+                            shape = RoundedCornerShape(8.dp),
+                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp),
+                            modifier = Modifier.border(
+                                1.dp,
+                                if (recorderState == FlightRecorderState.TRIGGERED_RECORDING) CriticalCrimson else BorderSubtle,
+                                RoundedCornerShape(8.dp)
+                            )
+                        ) {
+                            Icon(
+                                Icons.Default.FiberManualRecord,
+                                contentDescription = null,
+                                tint = if (recorderState == FlightRecorderState.TRIGGERED_RECORDING) Color.White else RaceRed,
+                                modifier = Modifier.size(14.dp)
+                            )
+                            Spacer(Modifier.width(4.dp))
+                            Text(
+                                text = if (recorderState == FlightRecorderState.TRIGGERED_RECORDING) "REC..." else "Black Box",
+                                color = if (recorderState == FlightRecorderState.TRIGGERED_RECORDING) Color.White else TextPrimary,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+
                         Button(
                             onClick = { configuringSlot = PodSlot.HERO_3 },
                             colors = ButtonDefaults.buttonColors(containerColor = SurfaceCardElevated),
@@ -679,6 +718,18 @@ fun LiveViewScreen(
                         Text("Close", color = TextMuted)
                     }
                 }
+            )
+        }
+
+        // BLACK BOX FLIGHT RECORDER MODAL DIALOG
+        if (showBlackBoxDialog) {
+            BlackBoxDialog(
+                adapterProfile = adapterProfile ?: AdapterDatabase.PROFILES.first { it.name == "Vgate vLinker MS" },
+                recorderState = recorderState,
+                incidentHistory = incidentHistory,
+                onTriggerManual = onTriggerBlackBox,
+                onRearm = onRearmBlackBox,
+                onDismiss = { showBlackBoxDialog = false }
             )
         }
     }

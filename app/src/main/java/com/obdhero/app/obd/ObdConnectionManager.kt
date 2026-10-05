@@ -5,6 +5,9 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import android.util.Log
+import com.obdhero.app.data.AdapterDatabase
+import com.obdhero.app.domain.AdapterProfile
+import com.obdhero.app.domain.BlackBoxFlightRecorder
 import com.obdhero.app.domain.EcuModule
 import com.obdhero.app.domain.EmissionsReadiness
 import com.obdhero.app.domain.FocusedMetric
@@ -64,6 +67,13 @@ class ObdConnectionManager {
 
     private val _emissionsReadiness = MutableStateFlow<EmissionsReadiness?>(null)
     val emissionsReadiness: StateFlow<EmissionsReadiness?> = _emissionsReadiness.asStateFlow()
+
+    private val _adapterProfile = MutableStateFlow<AdapterProfile>(
+        AdapterDatabase.PROFILES.first { it.name == "Vgate vLinker MS" }
+    )
+    val adapterProfile: StateFlow<AdapterProfile> = _adapterProfile.asStateFlow()
+
+    val flightRecorder = BlackBoxFlightRecorder(_adapterProfile.value)
 
     private var socket: BluetoothSocket? = null
     private var outputStream: OutputStream? = null
@@ -137,6 +147,10 @@ class ObdConnectionManager {
         isSimulatorMode = true
         _connectionState.value = ConnectionState.Connected("Virtual ECU Simulator", isSimulator = true)
         _vin.value = "WBA3A5C58DF123456" // Default simulated BMW 3-Series (E90 / F30 era)
+        val simProfile = AdapterDatabase.PROFILES.first { it.name == "Vgate vLinker MS" }
+        _adapterProfile.value = simProfile
+        flightRecorder.updateAdapterProfile(simProfile)
+        flightRecorder.setVehicleVin(_vin.value)
         _storedDtcs.value = listOf("P0171", "P0300", "B1200")
         _pendingDtcs.value = listOf("P0420")
         _moduleReports.value = listOf(
@@ -253,6 +267,7 @@ class ObdConnectionManager {
                     tcmLatencyMs = 42 + (step % 15),
                     bcmLatencyMs = 48 + (step % 18)
                 )
+                flightRecorder.onTelemetryTick(_telemetry.value)
                 delay(200)
             }
         }
@@ -281,13 +296,37 @@ class ObdConnectionManager {
         sendRaw("ATE0")  // Echo off
         sendRaw("ATL0")  // Linefeeds off
         sendRaw("ATH0")  // Headers off by default for clean standard responses
+
+        // Probe hardware identity and capabilities
+        val atiResp = sendRaw("ATI")
+        val atDeviceResp = sendRaw("AT@1")
+        val stiResp = sendRaw("STI")
+        val connName = (_connectionState.value as? ConnectionState.Connected)?.deviceName ?: ""
+        val detectedProfile = AdapterDatabase.identifyAdapter(connName, atiResp, atDeviceResp, stiResp)
+        _adapterProfile.value = detectedProfile
+        flightRecorder.updateAdapterProfile(detectedProfile)
+        Log.i(TAG, "Hardware scan: ${detectedProfile.name} (Tier: ${detectedProfile.tier.badge}, Buffer: ${detectedProfile.bufferBytes}B)")
+
         sendRaw("ATSP0") // Auto-detect protocol
         val rawVinResp = sendRaw("0902") // Fetch VIN (Mode 09 PID 02)
         val parsedVin = parseVin(rawVinResp)
         if (parsedVin.isNotEmpty()) {
             _vin.value = parsedVin
+            flightRecorder.setVehicleVin(parsedVin)
             Log.i(TAG, "Successfully read VIN: $parsedVin")
         }
+    }
+
+    fun triggerBlackBoxManual(reason: String = "Manual Technician Mark") {
+        flightRecorder.triggerIncident(
+            reason = reason,
+            dtc = _storedDtcs.value.firstOrNull() ?: _pendingDtcs.value.firstOrNull(),
+            freezeFrame = _freezeFrameData.value.values.firstOrNull()
+        )
+    }
+
+    fun rearmBlackBox() {
+        flightRecorder.rearm()
     }
 
     private fun startPollingLoop() {
@@ -594,6 +633,7 @@ class ObdConnectionManager {
                         tcmLatencyMs = tcmLatency,
                         bcmLatencyMs = bcmLatency
                     )
+                    flightRecorder.onTelemetryTick(_telemetry.value)
 
                     delay(40) // Brief pacing between frames
                 } catch (e: Exception) {
@@ -794,6 +834,15 @@ class ObdConnectionManager {
                 _storedDtcs.value = allStored.distinct()
                 _pendingDtcs.value = allPending.distinct()
                 _freezeFrameData.value = ffMap
+
+                if (allStored.isNotEmpty() || allPending.isNotEmpty()) {
+                    val triggerCode = (allStored + allPending).first()
+                    flightRecorder.triggerIncident(
+                        reason = "ECU Diagnostic Trouble Code Reported ($triggerCode)",
+                        dtc = triggerCode,
+                        freezeFrame = ffMap[triggerCode] ?: ffMap.values.firstOrNull()
+                    )
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "Failed module DTC scan: ${e.message}", e)
             } finally {
