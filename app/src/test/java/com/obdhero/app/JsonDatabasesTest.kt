@@ -119,4 +119,21 @@ class JsonDatabasesTest {
         assertNotNull("P0456 EVAP ESIM code must be present", p0456)
         assertTrue(p0456!!.meaning.contains("ESIM"))
     }
+
+    @Test
+    fun testMasterDtcDefinitionsDictionaryLoadsAndValidates() {
+        val file = File("src/main/assets/dtc/dtc_definitions_master.json")
+        assertTrue("Master definitions file must exist", file.exists())
+
+        val type = object : TypeToken<Map<String, String>>() {}.type
+        val masterDict: Map<String, String> = gson.fromJson(FileReader(file), type)
+        assertTrue("Master dictionary must have over 4000 entries", masterDict.size >= 4000)
+
+        // Test known standardized codes from various sub-systems
+        assertTrue("P0135 must be defined in master", masterDict.containsKey("P0135"))
+        assertTrue("P0505 must be defined in master", masterDict.containsKey("P0505"))
+        assertTrue("B1200 must be defined in master", masterDict.containsKey("B1200"))
+        assertTrue("C0035 must be defined in master", masterDict.containsKey("C0035"))
+        assertTrue("U0155 must be defined in master", masterDict.containsKey("U0155"))
+    }
 }

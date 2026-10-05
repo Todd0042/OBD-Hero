@@ -14,6 +14,9 @@ object DtcRepository {
     // Generic SAE standard codes (shared across all vehicles)
     private val genericCodes = mutableMapOf<String, DtcInfo>()
 
+    // Master dictionary of 4,700+ official definitions (code -> official title/description)
+    private val masterDefinitions = mutableMapOf<String, String>()
+
     // Manufacturer specific codes (e.g. Mazda P1170, BMW P1014)
     private val manufacturerCodes = mutableMapOf<String, MutableMap<String, DtcInfo>>()
 
@@ -25,27 +28,38 @@ object DtcRepository {
     fun init(context: Context) {
         if (isInitialized) return
         try {
-            // 1. Load Generic J2012 Codes
+            // 1. Load Master Definitions Dictionary (4,700+ codes)
+            try {
+                context.assets.open("dtc/dtc_definitions_master.json").use { stream ->
+                    val type = object : TypeToken<Map<String, String>>() {}.type
+                    val map: Map<String, String> = gson.fromJson(InputStreamReader(stream), type)
+                    map.forEach { (k, v) -> masterDefinitions[k.uppercase()] = v }
+                }
+            } catch (e: Exception) {
+                Log.w(TAG, "Master definitions file not found or failed to parse: ${e.message}")
+            }
+
+            // 2. Load Rich Curated Generic J2012 Codes (with inspection steps and fixes)
             context.assets.open("dtc/dtc_generic.json").use { stream ->
                 val type = object : TypeToken<List<DtcInfo>>() {}.type
                 val list: List<DtcInfo> = gson.fromJson(InputStreamReader(stream), type)
                 list.forEach { genericCodes[it.code.uppercase()] = it }
             }
 
-            // 2. Load Mazda Codes
+            // 3. Load Mazda Codes
             loadManufacturerFile(context, "mazda", "dtc/dtc_mazda.json")
 
-            // 3. Load BMW Codes
+            // 4. Load BMW Codes
             loadManufacturerFile(context, "bmw", "dtc/dtc_bmw.json")
 
-            // 4. Load Chrysler / Jeep / Dodge / Ram Codes
+            // 5. Load Chrysler / Jeep / Dodge / Ram Codes
             loadManufacturerFile(context, "chrysler", "dtc/dtc_chrysler.json")
             loadManufacturerFile(context, "jeep", "dtc/dtc_chrysler.json")
             loadManufacturerFile(context, "dodge", "dtc/dtc_chrysler.json")
             loadManufacturerFile(context, "ram", "dtc/dtc_chrysler.json")
 
             isInitialized = true
-            Log.i(TAG, "DTC repository initialized with ${genericCodes.size} generic codes and ${manufacturerCodes.size} OEM packs.")
+            Log.i(TAG, "DTC repository initialized with ${masterDefinitions.size} master definitions, ${genericCodes.size} rich generic guides, and ${manufacturerCodes.size} OEM packs.")
         } catch (e: Exception) {
             Log.e(TAG, "Failed loading DTC database from assets: ${e.message}", e)
         }
@@ -66,15 +80,16 @@ object DtcRepository {
 
     /**
      * Lookup DTC definition with fallback chain:
-     * 1. Manufacturer specific lookup (if make provided and code is 1xxx/2xxx)
-     * 2. Universal Generic SAE lookup (0xxx)
-     * 3. Prefix decomposition fallback
+     * 1. Manufacturer specific rich repair guide (if make matches)
+     * 2. Universal Generic rich repair guide (if hand-curated)
+     * 3. Master dictionary definition (4,700+ codes) + upfront "data unavailable" disclaimers
+     * 4. Unknown code raw fallback + upfront "data unavailable" disclaimers
      */
     fun get(code: String, make: String = ""): DtcInfo {
         val clean = code.trim().uppercase()
         val makeClean = make.trim().lowercase()
 
-        // Check manufacturer overlay first
+        // 1. Check manufacturer rich guide first
         if (makeClean.isNotEmpty()) {
             val oemMap = manufacturerCodes.entries.firstOrNull { makeClean.contains(it.key) }?.value
             if (oemMap != null && oemMap.containsKey(clean)) {
@@ -82,13 +97,19 @@ object DtcRepository {
             }
         }
 
-        // Check universal generic standard codes
+        // 2. Check universal generic rich guide
         if (genericCodes.containsKey(clean)) {
             return genericCodes[clean]!!
         }
 
-        // Fallback: rule-based standard breakdown
-        return generateGeneric(clean)
+        // 3. Check master definition dictionary (4,700+ codes)
+        val officialTitle = masterDefinitions[clean]
+        if (officialTitle != null) {
+            return buildStandardDtcWithHonestDisclaimer(clean, officialTitle)
+        }
+
+        // 4. Absolute fallback for completely unknown/obscure codes
+        return buildCompletelyUnknownDtc(clean)
     }
 
     fun getAllPredefined(): List<DtcInfo> {
@@ -98,38 +119,57 @@ object DtcRepository {
         return all
     }
 
-    private fun generateGeneric(code: String): DtcInfo {
+    private fun getCategoryForCode(code: String): String {
         val prefix = if (code.isNotEmpty()) code.first() else 'P'
-        val category = when (prefix) {
+        return when (prefix) {
             'P' -> "Powertrain System (Engine & Transmission)"
             'B' -> "Body System (BCM, Lighting, Airbags, Climate)"
             'C' -> "Chassis System (ABS, Traction, Steering, Suspension)"
             'U' -> "Network Communication (CAN Bus Inter-Module)"
             else -> "Vehicle Diagnostic System"
         }
+    }
 
-        val isManufacturerControlled = code.length >= 2 && code[1] in listOf('1', '2', '3')
-        val typeDesc = if (isManufacturerControlled) "Manufacturer-Controlled Diagnostic Trouble Code" else "Standard SAE J2012 Diagnostic Trouble Code"
-
+    private fun buildStandardDtcWithHonestDisclaimer(code: String, title: String): DtcInfo {
         return DtcInfo(
             code = code,
-            title = typeDesc,
-            category = category,
-            meaning = "The onboard diagnostic computer logged a detected operational variance adhering to SAE J2012 classification for code $code.",
+            title = title,
+            category = getCategoryForCode(code),
+            meaning = "Official Definition: $title. The diagnostic controller registered an operational fault on this circuit.",
             symptoms = listOf(
                 "Illuminated Check Engine or Module Service Indicator",
-                "Potential driveability or performance variance depending on driving cycle"
+                "Detailed symptoms unavailable publicly. Contact an official repair center or OEM service manual for vehicle-specific driveability details."
             ),
             inspectionSteps = listOf(
-                "Check 12V battery health and terminal connections.",
-                "Inspect sensor connectors and wiring harness for visible damage, oil intrusion, or loose pins.",
-                "Query freeze frame data to inspect engine load, RPM, and temperature at moment code was tripped."
+                "Verify 12V battery health and terminal connections.",
+                "Inspect sensor/circuit connector and wiring harness for visible corrosion, oil, or pin damage.",
+                "Step-by-step diagnostic procedure unavailable publicly. Contact an official repair center or consult the OEM factory wiring manual for circuit pinouts."
             ),
             verifiedFixes = listOf(
-                "Consult OEM factory service manual for detailed circuit pinout diagnostics for code $code.",
-                "Verify sensor signal ground and 5V reference voltage."
+                "Verified fix history unavailable publicly. Contact an official repair center for service bulletins (TSBs) and verified technician repairs."
             ),
             difficulty = "Moderate"
+        )
+    }
+
+    private fun buildCompletelyUnknownDtc(code: String): DtcInfo {
+        return DtcInfo(
+            code = code,
+            title = "Diagnostic Trouble Code: $code",
+            category = getCategoryForCode(code),
+            meaning = "Detailed diagnostic definition unavailable publicly. Contact an official repair center or consult factory service documentation for code $code.",
+            symptoms = listOf(
+                "Illuminated Check Engine or Service Indicator",
+                "Symptom details unavailable publicly. Contact an official repair center for details."
+            ),
+            inspectionSteps = listOf(
+                "Check 12V battery state of charge and battery terminals.",
+                "Inspection steps unavailable publicly. Contact an official repair center for manufacturer diagnostic flowcharts."
+            ),
+            verifiedFixes = listOf(
+                "Repair guide unavailable publicly. Contact an official repair center for details."
+            ),
+            difficulty = "Undetermined"
         )
     }
 }
