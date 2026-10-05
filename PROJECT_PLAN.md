@@ -141,18 +141,45 @@ flowchart TD
 
 ---
 
-## Pixel 9 Pro Fold & Hardware Optimization
+## UI / UX Design System Specification: "Midnight Precision"
 
-1. **Foldable Responsive Form Factors**:
-   * **Folded (Cover Screen - 20:9)**: Streamlined single-column handheld diagnostic scanner; fast DTC quick-scan, large tap targets for gloved or oily hands.
-   * **Unfolded (Inner Main Screen - ~1:1 Large Canvas)**: Dual-pane master-detail diagnostic suite:
-     * *Left pane*: ECU module tree, live status, DTC fault list.
-     * *Right pane*: Full detailed repair manual, wiring clues, inspection checklist, freeze frame graphs.
-   * **Tabletop / Half-Fold Posture**: Place the phone upright on the engine bay cowl or dashboard while testing hands-free. Upper screen shows live PID telemetry / relearn status, lower screen shows control buttons.
-2. **Connectivity Support**:
-   * Bluetooth Classic (RFCOMM / SPP) for ELM327 / OBDLink LX.
-   * Bluetooth Low Energy (BLE) for modern BLE OBD adapters (vLinker MC+, Veepeak OBDCheck BLE+, Carista).
-   * Wi-Fi (TCP socket 192.168.0.10:35000) for standard Wi-Fi dongles.
+### 1. Aesthetic Identity: Dark Mode Only
+> [!IMPORTANT]
+> **Strict Dark Theme Rule**:
+> The app enforces **Dark Mode Only** globally. There is no light mode theme, no system toggle compliance, and zero light mode assets. 
+> 
+> Automotive diagnostic environments (garages, engine bays, night road trips, dark vehicle cabins) demand high contrast, anti-glare, and zero blinding light:
+> - **Primary Canvas Background**: Deep True Charcoal / OLED Pitch Black (`#0B0E14` / `#05070A`).
+> - **Surface Card Elevators**: Translucent frosted dark glass & dark gunmetal surfaces (`#131822` with 1dp border `#1F2636`).
+> - **Accent Hierarchy (Tactical Minimalist)**:
+>   - *Hero Neon Cyan / Electric Teal* (`#00E5FF` / `#00B4D8`): Active communication, selected items, system healthy.
+>   - *Alert Amber / Caution Gold* (`#FFB703` / `#FB8500`): Pending DTCs, timer countdowns, battery advisories.
+>   - *Critical Coral Crimson* (`#FF3366` / `#E63946`): Active fault codes, MIL illuminated, high-voltage warnings.
+>   - *Emerald Success* (`#06D6A0`): Emissions monitors passed, routine successful, battery adapted.
+> - **Typography**: High-legibility modern sans (Google Sans / Inter / Jetpack Compose Material 3 Roboto) with clear tabular mono figures for PIDs, hex addresses, and live telemetry.
+
+### 2. High-Production "Powerhouse" Simplistic Philosophy
+- **Zero Clutter**: Clean summary badges at the top ("Connected: vLinker MS", "14.2V Healthy", "VIN: 1FA6P8...").
+- **One-Tap Diagnostic Flow**: 
+  - Massive, clean "Hero Scan" circular trigger.
+  - No overwhelming nested menus: Diagnostics, Battery Reset, Emissions Readiness, and Vehicle Profile are direct primary tabs with zero cognitive friction.
+- **Shop / Garage Ergonomics**: Large touch targets (minimum 48dp–64dp button heights) with tactile haptic feedback to easily operate with one hand or with mechanics' gloves.
+- **Fluid Jetpack Compose Micro-Interactions**: Smooth state transitions, glowing subtle pulses when bus communication is active, and animated progress rings for countdowns and live PID meters.
+
+### 3. Foldable & Multi-Posture Engineering (Pixel 9 Pro Fold)
+- **Cover Screen (Folded - Handheld Mode)**:
+  - Streamlined single-column card layout.
+  - Quick-scan results, quick DTC summaries, and urgent prompts.
+- **Inner Display (Unfolded - Workshop Console Mode)**:
+  - Uses Jetpack Compose `ListDetailPaneScaffold` / adaptive window size classes (`WindowWidthSizeClass.EXPANDED`).
+  - **Dual-Pane Split**:
+    - *Left Column (35–40% width)*: Active vehicle overview, live connection telemetry, and DTC list tree.
+    - *Right Column (60–65% width)*: Comprehensive interactive repair manual, freeze-frame inspection graphs, step-by-step diagnostic workflows, and guided battery calibration wizards side-by-side.
+- **Tabletop / Half-Fold Posture (`FoldingFeature.State.HALF_OPENED`)**:
+  - Automatically triggers when the phone is bent and rested on the engine bay cowl or dash.
+  - **Top Half (Visual Display)**: Elevated glanceable screen showing live PID telemetry, voltage gauge, countdown timer, and visual "P / Hazard" verification guides.
+  - **Bottom Half (Control Pad)**: Flat, stable touch area with large start/stop, advance step, and reset action buttons for hands-free workflow without knocking over the phone.
+
 
 ---
 
