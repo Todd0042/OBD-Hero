@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BatteryChargingFull
 import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.BuildCircle
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material3.*
@@ -27,6 +28,7 @@ import com.obdhero.app.ui.screens.BatteryCalibrationScreen
 import com.obdhero.app.ui.screens.DiagnosticsScreen
 import com.obdhero.app.ui.screens.EmissionsScreen
 import com.obdhero.app.ui.screens.LiveViewScreen
+import com.obdhero.app.ui.screens.ShopServiceScreen
 import com.obdhero.app.ui.screens.VehicleProfileScreen
 import com.obdhero.app.ui.theme.*
 import android.os.Build
@@ -35,6 +37,7 @@ import kotlinx.coroutines.flow.collectLatest
 
 enum class AppTab(val title: String) {
     DIAGNOSTICS("Diagnostics"),
+    SERVICE("Shop Service"),
     BATTERY("Battery Reset"),
     EMISSIONS("Emissions I/M"),
     VEHICLE("Profile & Tools")
@@ -169,6 +172,19 @@ class MainActivity : ComponentActivity() {
                                     )
                                 )
                                 NavigationBarItem(
+                                    selected = (activeTab == AppTab.SERVICE),
+                                    onClick = { activeTab = AppTab.SERVICE },
+                                    icon = { Icon(Icons.Default.BuildCircle, contentDescription = null) },
+                                    label = { Text(AppTab.SERVICE.title, fontSize = 11.sp) },
+                                    colors = NavigationBarItemDefaults.colors(
+                                        selectedIconColor = Color.White,
+                                        selectedTextColor = CyanPulse,
+                                        indicatorColor = CyanPulse,
+                                        unselectedIconColor = TextMuted,
+                                        unselectedTextColor = TextMuted
+                                    )
+                                )
+                                NavigationBarItem(
                                     selected = (activeTab == AppTab.BATTERY),
                                     onClick = { activeTab = AppTab.BATTERY },
                                     icon = { Icon(Icons.Default.BatteryChargingFull, contentDescription = null) },
@@ -231,6 +247,14 @@ class MainActivity : ComponentActivity() {
                                         isScanning = isScanning,
                                         onScanAllModules = { obdManager.scanAllModules(resolvedProfile) },
                                         freezeFrame = selectedDtc?.let { freezeFrameData[it.code] }
+                                    )
+                                }
+                                AppTab.SERVICE -> {
+                                    ShopServiceScreen(
+                                        vehicleProfile = vehicleProfile,
+                                        onExecuteRoutine = { tool, callback ->
+                                            obdManager.executeShopServiceRoutine(tool, callback)
+                                        }
                                     )
                                 }
                                 AppTab.BATTERY -> {

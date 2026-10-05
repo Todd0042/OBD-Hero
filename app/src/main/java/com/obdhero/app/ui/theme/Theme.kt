@@ -19,6 +19,7 @@ val DarkCharcoal = Color(0xFF1E2129)
 val EmeraldSuccess = Color(0xFF00E676)
 val NeonCyan = RaceRed
 val ElectricTeal = RubyGlow
+val CyanPulse = Color(0xFF00E5FF)
 
 val TextPrimary = Color(0xFFF8FAFC)
 val TextSecondary = Color(0xFF94A3B8)

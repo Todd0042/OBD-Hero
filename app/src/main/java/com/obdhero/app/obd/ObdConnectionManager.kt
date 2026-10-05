@@ -14,6 +14,8 @@ import com.obdhero.app.domain.FocusedMetric
 import com.obdhero.app.domain.FreezeFrameData
 import com.obdhero.app.domain.LiveTelemetry
 import com.obdhero.app.domain.ModuleDtcReport
+import com.obdhero.app.domain.ServiceExecutionState
+import com.obdhero.app.domain.ShopMaintenanceTool
 import com.obdhero.app.domain.VehicleProfileDefinition
 import com.obdhero.app.domain.VinDecoder
 import kotlinx.coroutines.*
@@ -697,6 +699,50 @@ class ObdConnectionManager {
             else -> {
                 // Standard Clear & Reset
                 clearCodes()
+            }
+        }
+    }
+
+    fun executeShopServiceRoutine(tool: ShopMaintenanceTool, onResult: (ServiceExecutionState) -> Unit) {
+        if (isSimulatorMode) {
+            scope.launch {
+                onResult(ServiceExecutionState.Executing("Connecting to target ECU (${tool.targetEcuHeader})..."))
+                delay(600)
+                onResult(ServiceExecutionState.Executing("Transmitting bi-directional command ${tool.biDirectionalCommand}..."))
+                delay(700)
+                onResult(ServiceExecutionState.Success("${tool.title} executed successfully! Positive response received."))
+            }
+            return
+        }
+
+        scope.launch {
+            try {
+                onResult(ServiceExecutionState.Executing("Targeting ECU Header ${tool.targetEcuHeader}..."))
+                ensureHeader(tool.targetEcuHeader)
+                delay(80)
+
+                onResult(ServiceExecutionState.Executing("Transmitting Routine ${tool.biDirectionalCommand}..."))
+                val resp = sendRaw(tool.biDirectionalCommand.replace(" ", ""))
+
+                if (resp.contains("71") || resp.contains("6F") || resp.contains("OK")) {
+                    onResult(ServiceExecutionState.Success("${tool.title} completed successfully! ECU confirmed routine executed."))
+                } else {
+                    onResult(
+                        ServiceExecutionState.FallbackManual(
+                            reason = "ECU returned response: $resp. Showing official vehicle manual workshop procedure.",
+                            manualProcedure = tool.manualProcedureSteps
+                        )
+                    )
+                }
+            } catch (e: Exception) {
+                onResult(
+                    ServiceExecutionState.FallbackManual(
+                        reason = "Communication error (${e.message}). Showing official fallback manual procedure.",
+                        manualProcedure = tool.manualProcedureSteps
+                    )
+                )
+            } finally {
+                ensureHeader("7E0")
             }
         }
     }
