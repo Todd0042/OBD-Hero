@@ -112,13 +112,26 @@ To construct a universal database of battery reset routines without starting fro
        - If the file exists and less than 20 minutes (1,200,000 ms) have elapsed, the application **automatically intercepts navigation and locks into the 20-Minute Deep Sleep screen**, showing the accurate remaining time. Force closing, clearing app from recents, or rebooting the phone cannot skip the timer.
        - If the user manually advances their device clock forward, the monotonic delta verification detects clock drift and resets the 20-minute countdown to prevent user error.
        - **Automatic Clearance**: Once the current time reaches or exceeds 20 minutes from the recorded timestamp, the lock file is automatically deleted from storage, and the screen unlocks the subsequent visual inspection checkpoints and battery registration tools.
-  4. **Sleep Verification Checkpoints**:
-     - *Visual Checkpoint 1*: The orange LED next to "P" on the automatic gear selector shifter goes completely dark (typically 16–18 minutes).
-     - *Visual Checkpoint 2*: The Start/Stop engine button backlight completely extinguishes.
+  4. **Visual Sleep Indicators Displayed on the Timer Screen**:
+     - The timer screen prominently illustrates and explains the exact physical indicators that signal when the vehicle's electronic modules and CAN bus have entered deep sleep:
+       - **Indicator 1: Gear Selector "P" (Park) LED**:
+         - *Location*: Directly adjacent to the "P" on the automatic gear selector console / shift knob.
+         - *Behavior*: Illuminates solid orange while the CAN bus is awake. At approximately 16–18 minutes of undisturbed sleep, this LED extinguishes completely and turns dark.
+       - **Indicator 2: Hazard Light Triangle Button Backlight**:
+         - *Location*: Center dashboard / center console hazard triangle switch.
+         - *Behavior*: Backlit red while the vehicle's Body Control / Junction Box electronics are active. Goes completely dark simultaneously when the vehicle drops into sleep mode.
+       - **Indicator 3: Start/Stop Engine Button Ring**:
+         - *Location*: Dash ignition button.
+         - *Behavior*: Backlight ring extinguishes alongside the hazard and shifter lights.
+       - **Verification Confirmation Checklist**: Even after the 20-minute countdown hits 0:00, the user must explicitly check off confirmation checkboxes:
+         - [ ] *"The orange 'P' light on the gear shifter is completely OFF"*
+         - [ ] *"The red triangle Hazard button backlight is completely OFF"*
+         - [ ] *(If either light is still ON, DO NOT disconnect battery; an accessory or door latch is keeping the car awake)*
      - *Alternative Safety Option (FRM Fuse Pull)*: App provides fuse box diagram to pull FRM supply fuses (F41, F81, F84, F86 depending on chassis) before battery disconnect to physically isolate the module from inrush spikes.
 
   5. **Proceed with Battery Replacement**: Disconnect Negative terminal first, then Positive. Install new battery, connect Positive, connect Negative firmly in a single positive motion without arcing/bouncing terminals.
   6. **Release Trunk Latch & Wake Vehicle**: Press trunk release handle to restore normal latch state, turn ignition ON (KOEO).
+
 
 * **Software Registration Protocol (Post-Installation)**:
   - **Target Module**: Digital Motor Electronics (`DME` / `DDE` @ CAN ID `0x7E0` / `0x6F1` or Power Management Module via IBS).
