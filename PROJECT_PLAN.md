@@ -119,7 +119,9 @@ flowchart TD
 
 ### 4. Battery Calibration / BMS Reset Tool ("Battery Hero")
 * **Purpose**: Clear historical battery age and charge decay models in the BCM/PCM so the smart alternator applies the proper charging voltage (bulk/absorb/float) for a fresh battery.
+* **Detailed Technical Protocol & Data Sources Reference**: See [BATTERY_DATA_SOURCES.md](BATTERY_DATA_SOURCES.md) for full byte sequences, reverse-engineering projects, and OEM-by-OEM specifications.
 * **OEM Implementations Supported**:
+
   * **Ford BMS Reset**: Mode 22 / UDS Routine `$31` execution or automated guided flash-to-pass / brake sequence generator.
   * **GM BCM Reset**: Battery Current Sensor adaptation reset via diagnostic command.
   * **Toyota / Lexus**: Smart Key / Current Sensor memory clear.
