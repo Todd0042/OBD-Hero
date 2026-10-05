@@ -3,6 +3,7 @@ package com.obdhero.app
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -48,6 +49,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
 
         // Request Bluetooth permissions on Android 12+ (API 31+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -104,17 +106,20 @@ class MainActivity : ComponentActivity() {
                 if (showLiveView) {
                     LiveViewScreen(
                         telemetry = telemetry,
-                        onBack = { showLiveView = false }
+                        onBack = { showLiveView = false },
+                        modifier = Modifier.statusBarsPadding()
                     )
                 } else {
                     Scaffold(
                         modifier = Modifier.fillMaxSize(),
                         containerColor = CanvasBg,
+                        contentWindowInsets = WindowInsets.safeDrawing,
                         topBar = {
                             TopStatusBar(
                                 connectionState = connectionState,
                                 profile = vehicleProfile,
-                                telemetry = telemetry
+                                telemetry = telemetry,
+                                modifier = Modifier.statusBarsPadding()
                             )
                         },
                         bottomBar = {
