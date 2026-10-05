@@ -1,6 +1,7 @@
 package com.obdhero.app.ui.screens
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -22,11 +23,14 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.obdhero.app.R
 import com.obdhero.app.domain.LiveTelemetry
 import com.obdhero.app.ui.theme.*
 
@@ -222,26 +226,18 @@ fun LiveViewScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(14.dp)
                     ) {
-                        // Left Column: TPMS Pods (BCM / TPMS Module 0x7E4)
+                        // Left Column: TPMS Pods with center MX-5 Silhouette
                         Surface(
                             color = SurfaceCard,
                             shape = RoundedCornerShape(16.dp),
                             modifier = Modifier
-                                .weight(1f)
+                                .weight(1.15f)
                                 .border(1.dp, BorderSubtle, RoundedCornerShape(16.dp))
                         ) {
                             Column(modifier = Modifier.padding(14.dp)) {
-                                TpmsHeader("BCM 7E4")
+                                TpmsHeader("BCM 720 / MS-CAN")
                                 Spacer(Modifier.height(10.dp))
-                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    TirePressurePod("FRONT LEFT", telemetry.flPsi, telemetry.flTempF, Modifier.weight(1f))
-                                    TirePressurePod("FRONT RIGHT", telemetry.frPsi, telemetry.frTempF, Modifier.weight(1f))
-                                }
-                                Spacer(Modifier.height(8.dp))
-                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    TirePressurePod("REAR LEFT", telemetry.rlPsi, telemetry.rlTempF, Modifier.weight(1f))
-                                    TirePressurePod("REAR RIGHT", telemetry.rrPsi, telemetry.rrTempF, Modifier.weight(1f))
-                                }
+                                Mx5TpmsVehicleLayout(telemetry = telemetry, isCompact = false)
                             }
                         }
 
@@ -250,7 +246,7 @@ fun LiveViewScreen(
                             color = SurfaceCard,
                             shape = RoundedCornerShape(16.dp),
                             modifier = Modifier
-                                .weight(1f)
+                                .weight(0.85f)
                                 .border(1.dp, BorderSubtle, RoundedCornerShape(16.dp))
                         ) {
                             Column(modifier = Modifier.padding(14.dp)) {
@@ -259,27 +255,30 @@ fun LiveViewScreen(
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Text("THERMAL & COMBUSTION TELEMETRY", color = RaceRed, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                    Text("THERMAL & COMBUSTION", color = RaceRed, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                                     EcuBadge("ECM 7E0")
                                 }
                                 Spacer(Modifier.height(10.dp))
                                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    GeekMetricTile("Coolant Temp", "${telemetry.coolantTempF}°F", Modifier.weight(1f))
-                                    GeekMetricTile("Engine Oil", "${telemetry.oilTempF}°F", Modifier.weight(1f))
-                                    GeekMetricTile("Intake Temp", "${telemetry.intakeTempF}°F", Modifier.weight(1f))
+                                    GeekMetricTile("Coolant", "${telemetry.coolantTempF}°F", Modifier.weight(1f))
+                                    GeekMetricTile("Oil Temp", "${telemetry.oilTempF}°F", Modifier.weight(1f))
                                 }
                                 Spacer(Modifier.height(8.dp))
                                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    GeekMetricTile("Manifold Boost", "%.1f PSI".format(telemetry.boostPsi), Modifier.weight(1f))
+                                    GeekMetricTile("Intake Air", "${telemetry.intakeTempF}°F", Modifier.weight(1f))
+                                    GeekMetricTile("Boost", "%.1f PSI".format(telemetry.boostPsi), Modifier.weight(1f))
+                                }
+                                Spacer(Modifier.height(8.dp))
+                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                     GeekMetricTile("Spark Timing", "${telemetry.sparkAdvanceDeg}°", Modifier.weight(1f))
-                                    GeekMetricTile("Battery Volts", "%.1fV".format(telemetry.batteryVolts), Modifier.weight(1f))
+                                    GeekMetricTile("Battery", "%.1fV".format(telemetry.batteryVolts), Modifier.weight(1f))
                                 }
                             }
                         }
                     }
                 }
             } else {
-                // Folded / Single-Column: Stacked TPMS & Thermals
+                // Folded / Single-Column: Vehicle Silhouette with Per-Tire Corner Cards
                 item {
                     Surface(
                         color = SurfaceCard,
@@ -289,14 +288,9 @@ fun LiveViewScreen(
                             .border(1.dp, BorderSubtle, RoundedCornerShape(14.dp))
                     ) {
                         Column(modifier = Modifier.padding(12.dp)) {
-                            TpmsHeader("BCM 7E4")
-                            Spacer(Modifier.height(8.dp))
-                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                TirePressurePod("FL", telemetry.flPsi, telemetry.flTempF, Modifier.weight(1f))
-                                TirePressurePod("FR", telemetry.frPsi, telemetry.frTempF, Modifier.weight(1f))
-                                TirePressurePod("RL", telemetry.rlPsi, telemetry.rlTempF, Modifier.weight(1f))
-                                TirePressurePod("RR", telemetry.rrPsi, telemetry.rrTempF, Modifier.weight(1f))
-                            }
+                            TpmsHeader("BCM 720 / MS-CAN")
+                            Spacer(Modifier.height(10.dp))
+                            Mx5TpmsVehicleLayout(telemetry = telemetry, isCompact = true)
                         }
                     }
                 }
@@ -406,6 +400,176 @@ fun LiveViewScreen(
     }
 }
 
+/**
+ * Mazda MX-5 RF Top-Down Silhouette with 4 Corner TPMS Cards.
+ * Layout mirrors mx5-dash architecture:
+ *   Left Column:  Front-Left (DID 2A05), Rear-Left (DID 2A06)
+ *   Center:       Mazda MX-5 RF Top-Down Silhouette
+ *   Right Column: Front-Right (DID 2A08), Rear-Right (DID 2A07)
+ */
+@Composable
+private fun Mx5TpmsVehicleLayout(
+    telemetry: LiveTelemetry,
+    isCompact: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Left Column (Driver Side): Front-Left (2A05) & Rear-Left (2A06)
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(if (isCompact) 8.dp else 14.dp)
+        ) {
+            Mx5CornerTireCard(
+                cornerLabel = "FRONT LEFT",
+                didCode = "DID 2A05",
+                psi = telemetry.flPsi,
+                tempF = telemetry.flTempF,
+                isCompact = isCompact
+            )
+            Mx5CornerTireCard(
+                cornerLabel = "REAR LEFT",
+                didCode = "DID 2A06",
+                psi = telemetry.rlPsi,
+                tempF = telemetry.rlTempF,
+                isCompact = isCompact
+            )
+        }
+
+        // Center Column: Mazda MX-5 RF Top-Down Silhouette
+        Box(
+            modifier = Modifier
+                .weight(if (isCompact) 0.85f else 1f)
+                .padding(horizontal = 6.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Surface(
+                color = SurfaceCardElevated,
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(if (isCompact) 140.dp else 170.dp)
+                    .border(1.dp, BorderSubtle, RoundedCornerShape(12.dp))
+            ) {
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(6.dp)) {
+                    Image(
+                        painter = painterResource(id = R.drawable.img_mx5_rf_tpms),
+                        contentDescription = "Mazda MX-5 RF Top-Down Silhouette",
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+            }
+        }
+
+        // Right Column (Passenger Side): Front-Right (2A08) & Rear-Right (2A07)
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(if (isCompact) 8.dp else 14.dp)
+        ) {
+            Mx5CornerTireCard(
+                cornerLabel = "FRONT RIGHT",
+                didCode = "DID 2A08",
+                psi = telemetry.frPsi,
+                tempF = telemetry.frTempF,
+                isCompact = isCompact
+            )
+            Mx5CornerTireCard(
+                cornerLabel = "REAR RIGHT",
+                didCode = "DID 2A07",
+                psi = telemetry.rrPsi,
+                tempF = telemetry.rrTempF,
+                isCompact = isCompact
+            )
+        }
+    }
+}
+
+@Composable
+private fun Mx5CornerTireCard(
+    cornerLabel: String,
+    didCode: String,
+    psi: Float,
+    tempF: Int,
+    isCompact: Boolean,
+    modifier: Modifier = Modifier
+) {
+    val isPressureOk = psi in 29.0f..35.0f
+    val statusDotColor = if (isPressureOk) EmeraldSuccess else AlertAmber
+
+    Surface(
+        color = SurfaceCardElevated,
+        shape = RoundedCornerShape(10.dp),
+        modifier = modifier.border(1.dp, BorderSubtle, RoundedCornerShape(10.dp))
+    ) {
+        Column(
+            modifier = Modifier.padding(if (isCompact) 8.dp else 10.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = cornerLabel,
+                    color = TextMuted,
+                    fontSize = if (isCompact) 8.sp else 9.sp,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1
+                )
+                Box(
+                    modifier = Modifier
+                        .size(6.dp)
+                        .clip(CircleShape)
+                        .background(statusDotColor)
+                )
+            }
+            Spacer(Modifier.height(2.dp))
+            Row(
+                verticalAlignment = Alignment.Bottom
+            ) {
+                Text(
+                    text = "%.1f".format(psi),
+                    color = RaceRed,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = if (isCompact) 17.sp else 20.sp,
+                    maxLines = 1
+                )
+                Spacer(Modifier.width(3.dp))
+                Text(
+                    text = "PSI",
+                    color = TextMuted,
+                    fontSize = 9.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(bottom = 2.dp)
+                )
+            }
+            Spacer(Modifier.height(1.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "${tempF}°F",
+                    color = TextSecondary,
+                    fontSize = if (isCompact) 9.sp else 10.sp,
+                    fontWeight = FontWeight.Medium
+                )
+                Text(
+                    text = didCode,
+                    color = TextMuted,
+                    fontSize = 7.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    }
+}
+
 @Composable
 private fun HeroMetricPod(
     label: String,
@@ -507,7 +671,7 @@ private fun EcuBadge(ecu: String) {
 }
 
 @Composable
-private fun TpmsHeader(badgeText: String = "BCM 7E4") {
+private fun TpmsHeader(badgeText: String = "BCM 720") {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -519,30 +683,9 @@ private fun TpmsHeader(badgeText: String = "BCM 7E4") {
             Text("TPMS TIRE PRESSURES & TEMPS", color = TextPrimary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("TARGET: 32 PSI", color = TextMuted, fontSize = 10.sp)
+            Text("TARGET: 29 PSI", color = TextMuted, fontSize = 10.sp)
             Spacer(Modifier.width(6.dp))
             EcuBadge(badgeText)
-        }
-    }
-}
-
-@Composable
-private fun TirePressurePod(label: String, psi: Float, tempF: Int, modifier: Modifier = Modifier) {
-    Surface(
-        color = SurfaceCardElevated,
-        shape = RoundedCornerShape(10.dp),
-        modifier = modifier.border(1.dp, BorderSubtle, RoundedCornerShape(10.dp))
-    ) {
-        Column(modifier = Modifier.padding(8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(label, color = TextMuted, fontSize = 9.sp, fontWeight = FontWeight.Bold)
-            Spacer(Modifier.height(2.dp))
-            Text(
-                text = "%.1f".format(psi),
-                color = RaceRed,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
-            )
-            Text("PSI • ${tempF}°F", color = TextSecondary, fontSize = 9.sp)
         }
     }
 }
