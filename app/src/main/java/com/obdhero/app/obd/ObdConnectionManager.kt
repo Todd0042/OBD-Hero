@@ -62,14 +62,22 @@ class ObdConnectionManager {
 
     @SuppressLint("MissingPermission")
     fun getPairedScanners(): List<BluetoothDevice> {
-        val adapter = BluetoothAdapter.getDefaultAdapter() ?: return emptyList()
-        if (!adapter.isEnabled) return emptyList()
+        return try {
+            val adapter = BluetoothAdapter.getDefaultAdapter() ?: return emptyList()
+            if (!adapter.isEnabled) return emptyList()
 
-        return adapter.bondedDevices.filter { dev ->
-            val name = (dev.name ?: "").uppercase()
-            SCANNER_NAME_KEYWORDS.any { name.contains(it) }
-        }.toList()
+            adapter.bondedDevices?.filter { dev ->
+                val name = (dev.name ?: "").uppercase()
+                SCANNER_NAME_KEYWORDS.any { name.contains(it) }
+            }?.toList() ?: emptyList()
+        } catch (e: SecurityException) {
+            Log.w(TAG, "BLUETOOTH_CONNECT permission not yet granted: ${e.message}")
+            emptyList()
+        } catch (e: Exception) {
+            emptyList()
+        }
     }
+
 
     @SuppressLint("MissingPermission")
     fun connectToDevice(device: BluetoothDevice) {

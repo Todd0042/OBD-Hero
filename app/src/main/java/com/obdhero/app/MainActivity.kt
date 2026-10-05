@@ -26,6 +26,8 @@ import com.obdhero.app.ui.screens.DiagnosticsScreen
 import com.obdhero.app.ui.screens.EmissionsScreen
 import com.obdhero.app.ui.screens.VehicleProfileScreen
 import com.obdhero.app.ui.theme.*
+import android.os.Build
+import androidx.activity.result.contract.ActivityResultContracts
 import kotlinx.coroutines.flow.collectLatest
 
 enum class AppTab(val title: String) {
@@ -37,14 +39,31 @@ enum class AppTab(val title: String) {
 
 class MainActivity : ComponentActivity() {
 
+    private val permissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) {
+        // Permissions handled
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Request Bluetooth permissions on Android 12+ (API 31+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            permissionLauncher.launch(
+                arrayOf(
+                    android.Manifest.permission.BLUETOOTH_CONNECT,
+                    android.Manifest.permission.BLUETOOTH_SCAN
+                )
+            )
+        }
 
         val app = application as ObdHeroApp
         val obdManager = app.obdConnectionManager
         val lockManager = app.bmwSleepLockManager
 
         setContent {
+
             MaterialTheme(colorScheme = MidnightColorScheme) {
                 var isDualPane by remember { mutableStateOf(false) }
 
