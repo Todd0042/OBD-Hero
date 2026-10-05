@@ -14,19 +14,17 @@ The application bridges standard SAE J1979 OBD2 protocols and manufacturer-exten
 
 ## Technical Feasibility & Device Reality Analysis
 
-### 1. TPMS Sensors: Phone Radios vs. Dedicated Tools vs. OBD-II Write
-* **Direct RF Reading via Pixel 9 Pro Fold**:
+### 1. TPMS Sensors: Status — CANCELLED (Pending Dedicated Hardware)
+> [!WARNING]
+> **Status: CANCELLED / ON HOLD**
+> Direct reading of factory TPMS sensors requires 315 MHz or 433.92 MHz radio hardware, which is physically absent in standard smartphones (including the Pixel 9 Pro Fold). Development of this module is deferred until external RF receiver/LF trigger hardware is acquired or integrated.
+
+* **Direct RF Reading Hardware Constraint**:
   * Direct tire pressure monitoring sensors broadcast on ultra-high frequencies: **315 MHz** (predominantly domestic US and older Japanese makes) or **433.92 MHz** (European makes and modern universal sensors).
-  * The Pixel 9 Pro Fold (and commercial smartphones in general) contains radios for Cellular (5G/LTE), Wi-Fi (2.4/5/6 GHz), Bluetooth/BLE (2.4 GHz), NFC (13.56 MHz), and UWB (6.5–8.0 GHz).
+  * The Pixel 9 Pro Fold contains radios for Cellular (5G/LTE), Wi-Fi (2.4/5/6 GHz), Bluetooth/BLE (2.4 GHz), NFC (13.56 MHz), and UWB (6.5–8.0 GHz).
   * **Smartphone Hardware Limit**: No smartphone hardware can listen to or transmit on 315 MHz or 433 MHz RF bands without external SDR (Software-Defined Radio) or dedicated 125 kHz LF trigger hardware.
-  * **Indirect TPMS vs. Direct TPMS**: Some modern vehicles (e.g., Honda, VW, Mazda) calculate tire pressure indirectly via ABS wheel speed sensor rotational variance. These require zero RF tools and can be triggered/calibrated purely via OBD2 PID / routine or dash controls.
-  * **OBD-Hero Solution Architecture**:
-    * **OBD2 TPMS Registration Routine**: OBD-Hero supports writing TPMS Sensor IDs into the BCM / TPMS ECU via UDS / manufacturer routine services (e.g., ISO 14229 RoutineControl `$31` or WriteDataByIdentifier `$2E`).
-    * **Input Flow**:
-      1. Manual hex/dec ID entry (reading printed IDs off replaced sensor shells or tire shop paperwork).
-      2. Camera OCR scanner: Live optical character recognition using ML Kit Text Recognition to scan printed sensor barcodes or 8-digit hex IDs directly from the sensor casing.
-      3. Bluetooth BLE TPMS support: For aftermarket direct BLE valve-stem sensors (which broadcast on standard 2.4 GHz BLE).
-      4. Step-by-step OEM manual relearn instructions (e.g., ignition cycles, brake pedal sequence, hazard switch toggling, key fob pairing).
+  * **Future Activation Pathway**: Revisit when dedicated peripheral hardware (e.g. USB/Bluetooth TPMS RF wand or SDR receiver) is acquired.
+
 
 ### 2. Battery Monitoring System (BMS) Calibration / Reset
 * When a modern vehicle receives a new 12V battery, the alternator charging algorithm must be informed. Otherwise, the ECU continues using degraded-capacity profiles, leading to premature battery death, disabled start/stop, or electrical phantom codes.
@@ -113,14 +111,11 @@ flowchart TD
   * Offline NHTSA vPIC database cache bundled with app for instant Year, Make, Model, Trim, Engine size, Fuel type, and Drive type identification without requiring active cellular connection in a garage.
   * Automatic vehicle profile creation with service log history.
 
-### 3. TPMS Diagnostics & Relearn / Registration System
-* **Vehicle Protocol Mapping**:
-  * UDS OBD2 Write: Direct OBD2 writing of sensor hex IDs into BCM (common on Toyota/Lexus via CAN 750/758, Nissan/Infiniti, Honda, Hyundai/Kia).
-  * OBD2 Relearn Mode Trigger: Commanding ECU into "Learn" mode over OBD2, allowing manual pressure deflation sequence to register wheels (e.g., GM, Ford).
-* **Smart Input Assist**:
-  * ML Kit OCR Scanner: Point phone camera at new sensor stem or packaging to automatically parse 8-digit hexadecimal / 10-digit decimal sensor IDs.
-  * Wheel-by-Wheel Visual Interface: Visual vehicle tire diagram (Front-Left, Front-Right, Rear-Right, Rear-Left, Spare) showing target pressures and active ID mappings.
-* **Relearn Procedure Handbook**: Comprehensive offline vehicle-specific manual relearn procedures (e.g. "Key ON, press hazard button 3 times, honk horn will confirm learn mode").
+### 3. TPMS Diagnostics & Relearn / Registration System — CANCELLED
+> [!WARNING]
+> **Status: CANCELLED (Pending Dedicated Hardware Acquisition)**
+> Direct TPMS sensor interrogation cannot be completed using phone internal radios due to 315/433 MHz RF limits. Feature is paused until a companion hardware accessory / RF wand is introduced.
+
 
 ### 4. Battery Calibration / BMS Reset Tool ("Battery Hero")
 * **Purpose**: Clear historical battery age and charge decay models in the BCM/PCM so the smart alternator applies the proper charging voltage (bulk/absorb/float) for a fresh battery.
@@ -176,11 +171,10 @@ flowchart TD
 - [ ] Implement safety check engine (KOEO validation, voltage sanity check).
 - [ ] Create step-by-step interactive reset wizard with post-reset verification.
 
-### Phase 5: TPMS Management & ML Kit OCR
-- [ ] Implement TPMS sensor ID OCR reader using Google ML Kit Camera Text Recognition.
-- [ ] Build visual tire layout selector (FL, FR, RR, RL, Spare).
-- [ ] Implement OBD2 TPMS ID write routines for supported manufacturers (Toyota, Nissan, Honda, Hyundai/Kia).
-- [ ] Assemble comprehensive database of manual/ignition-based TPMS relearn procedures for vehicles without OBD write.
+### Phase 5: TPMS Management — CANCELLED (Pending Additional Hardware)
+- [x] ~~Direct 315/433 MHz RF sensor reading: Cancelled due to smartphone hardware radio limits.~~
+- [ ] *Deferred*: Revisit TPMS module if/when a Bluetooth or USB 315/433 MHz RF receiver / LF trigger accessory is added.
+
 
 ### Phase 6: Foldable UI & Polishing (Pixel 9 Pro Fold)
 - [ ] Implement Jetpack WindowManager adaptive layouts (`ListDetailPaneScaffold`).
