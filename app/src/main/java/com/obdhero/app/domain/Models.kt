@@ -53,6 +53,8 @@ data class LiveTelemetry(
     val rpm: Int = 0,
     val speedMph: Int = 0,
     val speedKmh: Int = 0,
+    val torqueLbFt: Int = 0,
+    val torqueNm: Int = 0,
     val coolantTempC: Int = 90,
     val coolantTempF: Int = 195,
     val oilTempF: Int = 210,

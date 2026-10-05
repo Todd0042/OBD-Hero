@@ -150,11 +150,17 @@ class ObdConnectionManager {
                 val simulatedIntakeF = 78 + (Math.sin(step * 0.02) * 5).toInt()
                 val simulatedBoost = ((Math.sin(step * 0.2) + 1.0) * 7.5).toFloat()
                 val simulatedSpark = 12.0f + (Math.sin(step * 0.15) * 6.0).toFloat()
+                val simulatedLoadPct = 18 + (step % 25)
+                // Calculated instantaneous engine torque: Peak ~320 lb-ft scaled by load & boost
+                val simulatedTorqueLbFt = (65 + (simulatedLoadPct * 2.8f) + (simulatedBoost * 9.5f)).toInt()
+                val simulatedTorqueNm = (simulatedTorqueLbFt * 1.35582f).toInt()
 
                 _telemetry.value = LiveTelemetry(
                     rpm = simulatedRpm,
                     speedKmh = (simulatedSpeed * 1.60934f).toInt(),
                     speedMph = simulatedSpeed,
+                    torqueLbFt = simulatedTorqueLbFt,
+                    torqueNm = simulatedTorqueNm,
                     coolantTempC = simulatedCoolantC,
                     coolantTempF = simulatedCoolantF,
                     oilTempF = simulatedOilF,
@@ -162,7 +168,7 @@ class ObdConnectionManager {
                     boostPsi = simulatedBoost,
                     sparkAdvanceDeg = simulatedSpark,
                     batteryVolts = simulatedVolts,
-                    engineLoadPct = 18 + (step % 25),
+                    engineLoadPct = simulatedLoadPct,
                     shortTermFuelTrim = 2.5f,
                     longTermFuelTrim = 4.8f,
                     flPsi = 32.8f,
