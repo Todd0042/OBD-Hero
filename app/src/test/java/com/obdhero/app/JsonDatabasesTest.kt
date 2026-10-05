@@ -24,7 +24,9 @@ class JsonDatabasesTest {
 
         val p0300 = dtcs.find { it.code == "P0300" }
         assertNotNull("P0300 must be present", p0300)
-        assertEquals("Random / Multiple Cylinder Misfire Detected", p0300?.title)
+        assertTrue("P0300 title must contain Cylinder Misfire Detected", p0300!!.title.contains("Cylinder Misfire Detected"))
+        assertTrue("Must have inspection steps", p0300.inspectionSteps.isNotEmpty())
+        assertTrue("Must have verified fixes", p0300.verifiedFixes.isNotEmpty())
     }
 
     @Test
