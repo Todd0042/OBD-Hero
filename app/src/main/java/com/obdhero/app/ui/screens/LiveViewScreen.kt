@@ -45,9 +45,13 @@ fun LiveViewScreen(
     telemetry: LiveTelemetry,
     focusedMetric: FocusedMetric? = null,
     onSelectMetric: (FocusedMetric?) -> Unit = {},
+    vehicleMake: String = "",
+    vehicleModel: String = "",
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val isMiata = vehicleMake.equals("Mazda", ignoreCase = true) && (vehicleModel.contains("MX-5", ignoreCase = true) || vehicleModel.contains("Miata", ignoreCase = true))
+
     // Keep the screen awake while Live Telemetry cockpit is displayed
     val context = LocalContext.current
     DisposableEffect(Unit) {
@@ -275,12 +279,22 @@ fun LiveViewScreen(
                             Column(modifier = Modifier.padding(14.dp)) {
                                 TpmsHeader("BCM 720 / MS-CAN", isFocused = isTpmsFocused)
                                 Spacer(Modifier.height(10.dp))
-                                Mx5TpmsVehicleLayout(
-                                    telemetry = telemetry,
-                                    isCompact = false,
-                                    isFocused = isTpmsFocused,
-                                    onSelectTpms = { onSelectMetric(if (focusedMetric == FocusedMetric.TPMS) null else FocusedMetric.TPMS) }
-                                )
+                                if (isMiata) {
+                                    Mx5TpmsVehicleLayout(
+                                        telemetry = telemetry,
+                                        isCompact = false,
+                                        isFocused = isTpmsFocused,
+                                        onSelectTpms = { onSelectMetric(if (focusedMetric == FocusedMetric.TPMS) null else FocusedMetric.TPMS) }
+                                    )
+                                } else {
+                                    UniversalProceduralChassisLayout(
+                                        telemetry = telemetry,
+                                        isCompact = false,
+                                        isFocused = isTpmsFocused,
+                                        vehicleMake = vehicleMake,
+                                        onSelectTpms = { onSelectMetric(if (focusedMetric == FocusedMetric.TPMS) null else FocusedMetric.TPMS) }
+                                    )
+                                }
                             }
                         }
 
@@ -342,12 +356,22 @@ fun LiveViewScreen(
                         Column(modifier = Modifier.padding(12.dp)) {
                             TpmsHeader("BCM 720 / MS-CAN", isFocused = isTpmsFocused)
                             Spacer(Modifier.height(10.dp))
-                            Mx5TpmsVehicleLayout(
-                                telemetry = telemetry,
-                                isCompact = true,
-                                isFocused = isTpmsFocused,
-                                onSelectTpms = { onSelectMetric(if (focusedMetric == FocusedMetric.TPMS) null else FocusedMetric.TPMS) }
-                            )
+                            if (isMiata) {
+                                Mx5TpmsVehicleLayout(
+                                    telemetry = telemetry,
+                                    isCompact = true,
+                                    isFocused = isTpmsFocused,
+                                    onSelectTpms = { onSelectMetric(if (focusedMetric == FocusedMetric.TPMS) null else FocusedMetric.TPMS) }
+                                )
+                            } else {
+                                UniversalProceduralChassisLayout(
+                                    telemetry = telemetry,
+                                    isCompact = true,
+                                    isFocused = isTpmsFocused,
+                                    vehicleMake = vehicleMake,
+                                    onSelectTpms = { onSelectMetric(if (focusedMetric == FocusedMetric.TPMS) null else FocusedMetric.TPMS) }
+                                )
+                            }
                         }
                     }
                 }
@@ -562,6 +586,222 @@ private fun Mx5TpmsVehicleLayout(
                 onClick = onSelectTpms
             )
         }
+    }
+}
+
+/**
+ * Universal Procedural Powertrain & Chassis Layout with 4 Corner Tires.
+ * Used for all non-MX-5 vehicles (Ford, GM, Chrysler, BMW, Toyota, Honda, etc.),
+ * rendering a minimalist procedural spine, axles, differential, powertrain block, and 4 tire health indicators.
+ */
+@Composable
+private fun UniversalProceduralChassisLayout(
+    telemetry: LiveTelemetry,
+    isCompact: Boolean,
+    isFocused: Boolean = false,
+    vehicleMake: String = "",
+    onSelectTpms: () -> Unit = {},
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Left Column: Front-Left & Rear-Left
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(if (isCompact) 8.dp else 14.dp)
+        ) {
+            Mx5CornerTireCard(
+                cornerLabel = "FRONT LEFT",
+                didCode = "FL TIRE",
+                psi = telemetry.flPsi,
+                tempF = telemetry.flTempF,
+                isCompact = isCompact,
+                isFocused = isFocused,
+                onClick = onSelectTpms
+            )
+            Mx5CornerTireCard(
+                cornerLabel = "REAR LEFT",
+                didCode = "RL TIRE",
+                psi = telemetry.rlPsi,
+                tempF = telemetry.rlTempF,
+                isCompact = isCompact,
+                isFocused = isFocused,
+                onClick = onSelectTpms
+            )
+        }
+
+        // Center Column: Minimalist Procedural Chassis Canvas
+        Box(
+            modifier = Modifier
+                .weight(if (isCompact) 0.9f else 1.05f)
+                .padding(horizontal = 6.dp)
+                .clickable { onSelectTpms() },
+            contentAlignment = Alignment.Center
+        ) {
+            Surface(
+                color = SurfaceCardElevated,
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(if (isCompact) 140.dp else 170.dp)
+                    .border(
+                        if (isFocused) 2.dp else 1.dp,
+                        if (isFocused) RaceRed else BorderSubtle,
+                        RoundedCornerShape(12.dp)
+                    )
+            ) {
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize().padding(8.dp)) {
+                    ProceduralChassisCanvas(
+                        flPsi = telemetry.flPsi,
+                        frPsi = telemetry.frPsi,
+                        rlPsi = telemetry.rlPsi,
+                        rrPsi = telemetry.rrPsi,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                    Text(
+                        text = if (vehicleMake.isNotEmpty()) vehicleMake.uppercase() else "CHASSIS",
+                        color = TextSecondary.copy(alpha = 0.45f),
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        letterSpacing = 2.sp,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+            }
+        }
+
+        // Right Column: Front-Right & Rear-Right
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(if (isCompact) 8.dp else 14.dp)
+        ) {
+            Mx5CornerTireCard(
+                cornerLabel = "FRONT RIGHT",
+                didCode = "FR TIRE",
+                psi = telemetry.frPsi,
+                tempF = telemetry.frTempF,
+                isCompact = isCompact,
+                isFocused = isFocused,
+                onClick = onSelectTpms
+            )
+            Mx5CornerTireCard(
+                cornerLabel = "REAR RIGHT",
+                didCode = "RR TIRE",
+                psi = telemetry.rrPsi,
+                tempF = telemetry.rrTempF,
+                isCompact = isCompact,
+                isFocused = isFocused,
+                onClick = onSelectTpms
+            )
+        }
+    }
+}
+
+@Composable
+private fun ProceduralChassisCanvas(
+    flPsi: Float,
+    frPsi: Float,
+    rlPsi: Float,
+    rrPsi: Float,
+    modifier: Modifier = Modifier
+) {
+    Canvas(modifier = modifier) {
+        val w = size.width
+        val h = size.height
+        val centerX = w / 2f
+        val frontAxleY = h * 0.22f
+        val rearAxleY = h * 0.78f
+        val axleLeft = w * 0.22f
+        val axleRight = w * 0.78f
+
+        val spineColor = Color(0xFF334155)
+        val axleColor = Color(0xFF475569)
+        val componentColor = Color(0xFF1E293B)
+
+        // 1. Central Longitudinal Spine / Driveshaft
+        drawLine(
+            color = spineColor,
+            start = Offset(centerX, frontAxleY - 10f),
+            end = Offset(centerX, rearAxleY + 10f),
+            strokeWidth = 6f
+        )
+
+        // 2. Front & Rear Axles
+        drawLine(
+            color = axleColor,
+            start = Offset(axleLeft, frontAxleY),
+            end = Offset(axleRight, frontAxleY),
+            strokeWidth = 5f
+        )
+        drawLine(
+            color = axleColor,
+            start = Offset(axleLeft, rearAxleY),
+            end = Offset(axleRight, rearAxleY),
+            strokeWidth = 5f
+        )
+
+        // 3. Powertrain Block (Front Engine / Motor)
+        drawRoundRect(
+            color = componentColor,
+            topLeft = Offset(centerX - 16f, frontAxleY - 20f),
+            size = androidx.compose.ui.geometry.Size(32f, 40f),
+            cornerRadius = androidx.compose.ui.geometry.CornerRadius(4f, 4f)
+        )
+        drawRoundRect(
+            color = axleColor,
+            topLeft = Offset(centerX - 16f, frontAxleY - 20f),
+            size = androidx.compose.ui.geometry.Size(32f, 40f),
+            cornerRadius = androidx.compose.ui.geometry.CornerRadius(4f, 4f),
+            style = Stroke(width = 1.5f)
+        )
+
+        // 4. Rear Differential
+        drawCircle(
+            color = componentColor,
+            radius = 12f,
+            center = Offset(centerX, rearAxleY)
+        )
+        drawCircle(
+            color = axleColor,
+            radius = 12f,
+            center = Offset(centerX, rearAxleY),
+            style = Stroke(width = 1.5f)
+        )
+
+        // 5. 4 Wheels / Tires with real-time pressure indicators
+        val tireW = 14f
+        val tireH = 32f
+
+        fun drawTire(centerXPos: Float, centerYPos: Float, psi: Float) {
+            val tireColor = if (psi in 28f..38f) EmeraldSuccess.copy(alpha = 0.9f) else AlertAmber
+            drawRoundRect(
+                color = Color(0xFF0F172A),
+                topLeft = Offset(centerXPos - (tireW / 2f), centerYPos - (tireH / 2f)),
+                size = androidx.compose.ui.geometry.Size(tireW, tireH),
+                cornerRadius = androidx.compose.ui.geometry.CornerRadius(4f, 4f)
+            )
+            drawRoundRect(
+                color = tireColor,
+                topLeft = Offset(centerXPos - (tireW / 2f), centerYPos - (tireH / 2f)),
+                size = androidx.compose.ui.geometry.Size(tireW, tireH),
+                cornerRadius = androidx.compose.ui.geometry.CornerRadius(4f, 4f),
+                style = Stroke(width = 2f)
+            )
+            drawLine(
+                color = AccentSilver,
+                start = Offset(centerXPos, centerYPos - 5f),
+                end = Offset(centerXPos, centerYPos + 5f),
+                strokeWidth = 2f
+            )
+        }
+
+        drawTire(axleLeft, frontAxleY, flPsi)
+        drawTire(axleRight, frontAxleY, frPsi)
+        drawTire(axleLeft, rearAxleY, rlPsi)
+        drawTire(axleRight, rearAxleY, rrPsi)
     }
 }
 

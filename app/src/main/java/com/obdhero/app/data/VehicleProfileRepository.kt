@@ -74,6 +74,26 @@ object VehicleProfileRepository {
             )) {
                 return profile
             }
+
+            if (profile.profileId == "FORD_CAN_ECOBOOST" && (
+                profile.vinWmis.any { cleanVin.startsWith(it) } ||
+                make.contains("Ford", ignoreCase = true) ||
+                make.contains("Lincoln", ignoreCase = true)
+            )) {
+                return profile
+            }
+
+            if (profile.profileId == "GM_GLOBAL_A" && (
+                profile.vinWmis.any { cleanVin.startsWith(it) } ||
+                make.contains("Chevrolet", ignoreCase = true) ||
+                make.contains("Chevy", ignoreCase = true) ||
+                make.contains("GMC", ignoreCase = true) ||
+                make.contains("Cadillac", ignoreCase = true) ||
+                make.contains("Buick", ignoreCase = true) ||
+                make.equals("GM", ignoreCase = true)
+            )) {
+                return profile
+            }
         }
 
         // 2. Make match

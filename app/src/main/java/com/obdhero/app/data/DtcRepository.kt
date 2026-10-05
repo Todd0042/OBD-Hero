@@ -58,6 +58,18 @@ object DtcRepository {
             loadManufacturerFile(context, "dodge", "dtc/dtc_chrysler.json")
             loadManufacturerFile(context, "ram", "dtc/dtc_chrysler.json")
 
+            // 6. Load Ford & Lincoln Codes
+            loadManufacturerFile(context, "ford", "dtc/dtc_ford.json")
+            loadManufacturerFile(context, "lincoln", "dtc/dtc_ford.json")
+
+            // 7. Load GM / Chevrolet / GMC / Cadillac Codes
+            loadManufacturerFile(context, "chevrolet", "dtc/dtc_gm.json")
+            loadManufacturerFile(context, "chevy", "dtc/dtc_gm.json")
+            loadManufacturerFile(context, "gmc", "dtc/dtc_gm.json")
+            loadManufacturerFile(context, "cadillac", "dtc/dtc_gm.json")
+            loadManufacturerFile(context, "buick", "dtc/dtc_gm.json")
+            loadManufacturerFile(context, "gm", "dtc/dtc_gm.json")
+
             isInitialized = true
             Log.i(TAG, "DTC repository initialized with ${masterDefinitions.size} master definitions, ${genericCodes.size} rich generic guides, and ${manufacturerCodes.size} OEM packs.")
         } catch (e: Exception) {

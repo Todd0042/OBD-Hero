@@ -39,8 +39,36 @@ enum class EcuModule(val header: String, val displayName: String, val badge: Str
     ECM("7E0", "Engine Control Module", "ECM 7E0"),
     TCM("7E1", "Transmission Control Module", "TCM 7E1"),
     ABS("7E2", "Anti-Lock Braking / Dynamics", "ABS 7E2"),
-    BCM("720", "Body Control Module / TPMS", "BCM 720")
+    BCM("720", "Body Control Module / TPMS", "BCM 720"),
+    SRS("780", "Airbag & Safety Restraints", "SRS 780")
 }
+
+/**
+ * Diagnostic scan report for an individual ECU computer on the vehicle CAN network.
+ */
+data class ModuleDtcReport(
+    val module: EcuModule,
+    val header: String,
+    val storedCodes: List<String> = emptyList(),
+    val pendingCodes: List<String> = emptyList(),
+    val isResponding: Boolean = true
+) {
+    val totalFaults: Int get() = storedCodes.size + pendingCodes.size
+    val isHealthy: Boolean get() = isResponding && totalFaults == 0
+}
+
+/**
+ * SAE J1979 Mode 02 Freeze Frame Engine Snapshot taken at the exact millisecond a DTC was recorded.
+ */
+data class FreezeFrameData(
+    val dtc: String,
+    val rpm: Int? = null,
+    val speedMph: Int? = null,
+    val coolantTempF: Int? = null,
+    val engineLoadPct: Int? = null,
+    val shortTermFuelTrim: Float? = null,
+    val longTermFuelTrim: Float? = null
+)
 
 /**
  * Specific individual telemetry metrics that can be tapped to focus and poll at maximum frequency.

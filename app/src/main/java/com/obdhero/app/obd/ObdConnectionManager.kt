@@ -8,7 +8,10 @@ import android.util.Log
 import com.obdhero.app.domain.EcuModule
 import com.obdhero.app.domain.EmissionsReadiness
 import com.obdhero.app.domain.FocusedMetric
+import com.obdhero.app.domain.FreezeFrameData
 import com.obdhero.app.domain.LiveTelemetry
+import com.obdhero.app.domain.ModuleDtcReport
+import com.obdhero.app.domain.VehicleProfileDefinition
 import com.obdhero.app.domain.VinDecoder
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -49,6 +52,15 @@ class ObdConnectionManager {
 
     private val _pendingDtcs = MutableStateFlow<List<String>>(emptyList())
     val pendingDtcs: StateFlow<List<String>> = _pendingDtcs.asStateFlow()
+
+    private val _moduleReports = MutableStateFlow<List<ModuleDtcReport>>(emptyList())
+    val moduleReports: StateFlow<List<ModuleDtcReport>> = _moduleReports.asStateFlow()
+
+    private val _isScanning = MutableStateFlow(false)
+    val isScanning: StateFlow<Boolean> = _isScanning.asStateFlow()
+
+    private val _freezeFrameData = MutableStateFlow<Map<String, FreezeFrameData>>(emptyMap())
+    val freezeFrameData: StateFlow<Map<String, FreezeFrameData>> = _freezeFrameData.asStateFlow()
 
     private val _emissionsReadiness = MutableStateFlow<EmissionsReadiness?>(null)
     val emissionsReadiness: StateFlow<EmissionsReadiness?> = _emissionsReadiness.asStateFlow()
@@ -125,11 +137,59 @@ class ObdConnectionManager {
         isSimulatorMode = true
         _connectionState.value = ConnectionState.Connected("Virtual ECU Simulator", isSimulator = true)
         _vin.value = "WBA3A5C58DF123456" // Default simulated BMW 3-Series (E90 / F30 era)
-        _storedDtcs.value = listOf("P0171", "P0300")
+        _storedDtcs.value = listOf("P0171", "P0300", "B1200")
         _pendingDtcs.value = listOf("P0420")
+        _moduleReports.value = listOf(
+            ModuleDtcReport(
+                module = EcuModule.ECM,
+                header = "7E0",
+                storedCodes = listOf("P0171", "P0300"),
+                pendingCodes = listOf("P0420"),
+                isResponding = true
+            ),
+            ModuleDtcReport(
+                module = EcuModule.TCM,
+                header = "7E1",
+                storedCodes = emptyList(),
+                pendingCodes = emptyList(),
+                isResponding = true
+            ),
+            ModuleDtcReport(
+                module = EcuModule.ABS,
+                header = "7E2",
+                storedCodes = emptyList(),
+                pendingCodes = emptyList(),
+                isResponding = true
+            ),
+            ModuleDtcReport(
+                module = EcuModule.BCM,
+                header = "720",
+                storedCodes = listOf("B1200"),
+                pendingCodes = emptyList(),
+                isResponding = true
+            ),
+            ModuleDtcReport(
+                module = EcuModule.SRS,
+                header = "780",
+                storedCodes = emptyList(),
+                pendingCodes = emptyList(),
+                isResponding = true
+            )
+        )
+        _freezeFrameData.value = mapOf(
+            "P0171" to FreezeFrameData(
+                dtc = "P0171",
+                rpm = 2150,
+                speedMph = 48,
+                coolantTempF = 194,
+                engineLoadPct = 42,
+                shortTermFuelTrim = 18.8f,
+                longTermFuelTrim = 21.5f
+            )
+        )
         _emissionsReadiness.value = EmissionsReadiness(
             milActive = true,
-            dtcCount = 2,
+            dtcCount = 3,
             misfireReady = true,
             fuelSystemReady = true,
             compComponentsReady = true,
@@ -549,6 +609,8 @@ class ObdConnectionManager {
         if (isSimulatorMode) {
             _storedDtcs.value = emptyList()
             _pendingDtcs.value = emptyList()
+            _freezeFrameData.value = emptyMap()
+            _moduleReports.value = _moduleReports.value.map { it.copy(storedCodes = emptyList(), pendingCodes = emptyList()) }
             _emissionsReadiness.value = _emissionsReadiness.value?.copy(
                 milActive = false,
                 dtcCount = 0,
@@ -562,6 +624,8 @@ class ObdConnectionManager {
         if (success) {
             _storedDtcs.value = emptyList()
             _pendingDtcs.value = emptyList()
+            _freezeFrameData.value = emptyMap()
+            _moduleReports.value = _moduleReports.value.map { it.copy(storedCodes = emptyList(), pendingCodes = emptyList()) }
         }
         return success
     }
@@ -588,6 +652,270 @@ class ObdConnectionManager {
                 clearCodes()
             }
         }
+    }
+
+    /**
+     * Executes a full multi-computer vehicle health scan across all known ECU headers.
+     * Extracts confirmed and pending DTCs per computer, plus Mode 02 Freeze Frame snapshots.
+     */
+    fun scanAllModules(activeProfile: VehicleProfileDefinition? = null) {
+        if (_isScanning.value) return
+        _isScanning.value = true
+
+        scope.launch {
+            try {
+                if (isSimulatorMode) {
+                    delay(800) // Simulated bus transit delay
+                    val ecmReport = ModuleDtcReport(
+                        module = EcuModule.ECM,
+                        header = activeProfile?.ecmHeader ?: "7E0",
+                        storedCodes = listOf("P0171", "P0300"),
+                        pendingCodes = listOf("P0420"),
+                        isResponding = true
+                    )
+                    val tcmReport = ModuleDtcReport(
+                        module = EcuModule.TCM,
+                        header = activeProfile?.tcmHeader ?: "7E1",
+                        storedCodes = emptyList(),
+                        pendingCodes = emptyList(),
+                        isResponding = true
+                    )
+                    val absReport = ModuleDtcReport(
+                        module = EcuModule.ABS,
+                        header = activeProfile?.absHeader ?: "7E2",
+                        storedCodes = emptyList(),
+                        pendingCodes = emptyList(),
+                        isResponding = true
+                    )
+                    val bcmReport = ModuleDtcReport(
+                        module = EcuModule.BCM,
+                        header = activeProfile?.bcmHeader ?: "720",
+                        storedCodes = listOf("B1200"),
+                        pendingCodes = emptyList(),
+                        isResponding = true
+                    )
+                    val srsReport = ModuleDtcReport(
+                        module = EcuModule.SRS,
+                        header = "780",
+                        storedCodes = emptyList(),
+                        pendingCodes = emptyList(),
+                        isResponding = true
+                    )
+
+                    _moduleReports.value = listOf(ecmReport, tcmReport, absReport, bcmReport, srsReport)
+                    _storedDtcs.value = listOf("P0171", "P0300", "B1200")
+                    _pendingDtcs.value = listOf("P0420")
+                    _freezeFrameData.value = mapOf(
+                        "P0171" to FreezeFrameData(
+                            dtc = "P0171",
+                            rpm = 2150,
+                            speedMph = 48,
+                            coolantTempF = 194,
+                            engineLoadPct = 42,
+                            shortTermFuelTrim = 18.8f,
+                            longTermFuelTrim = 21.5f
+                        )
+                    )
+                    return@launch
+                }
+
+                // Real Hardware Query
+                val targets = mutableListOf<Pair<EcuModule, String>>()
+                targets.add(EcuModule.ECM to (activeProfile?.ecmHeader ?: "7E0"))
+                activeProfile?.tcmHeader?.let { targets.add(EcuModule.TCM to it) }
+                activeProfile?.absHeader?.let { targets.add(EcuModule.ABS to it) }
+                activeProfile?.bcmHeader?.let { targets.add(EcuModule.BCM to it) }
+                targets.add(EcuModule.SRS to "780")
+
+                val reports = mutableListOf<ModuleDtcReport>()
+                val allStored = mutableListOf<String>()
+                val allPending = mutableListOf<String>()
+                val ffMap = mutableMapOf<String, FreezeFrameData>()
+
+                for ((mod, header) in targets) {
+                    sendRaw("ATSH $header")
+                    val rawStored = sendRaw("03")
+                    val rawPending = sendRaw("07")
+
+                    val isResponding = !rawStored.contains("UNABLE") && !rawStored.contains("ERROR") && !rawStored.contains("CAN ERROR")
+                    val stored = if (isResponding) parseDtcResponse(rawStored) else emptyList()
+                    val pending = if (isResponding) parseDtcResponse(rawPending) else emptyList()
+
+                    allStored.addAll(stored)
+                    allPending.addAll(pending)
+
+                    reports.add(
+                        ModuleDtcReport(
+                            module = mod,
+                            header = header,
+                            storedCodes = stored,
+                            pendingCodes = pending,
+                            isResponding = isResponding
+                        )
+                    )
+
+                    // If ECM and has stored DTCs, query Mode 02 Freeze Frame
+                    if (mod == EcuModule.ECM && stored.isNotEmpty()) {
+                        val ffDtcRaw = sendRaw("020200")
+                        val ffDtc = parseFreezeFrameDtc(ffDtcRaw) ?: stored.firstOrNull()
+                        if (ffDtc != null) {
+                            val rpm = parseFreezeFrameRpm(sendRaw("020C00"))
+                            val speed = parseFreezeFrameSpeed(sendRaw("020D00"))
+                            val coolant = parseFreezeFrameCoolant(sendRaw("020500"))
+                            val load = parseFreezeFrameLoad(sendRaw("020400"))
+                            val stft = parseFreezeFrameTrim(sendRaw("020600"), "06")
+                            val ltft = parseFreezeFrameTrim(sendRaw("020700"), "07")
+
+                            ffMap[ffDtc] = FreezeFrameData(
+                                dtc = ffDtc,
+                                rpm = rpm,
+                                speedMph = speed,
+                                coolantTempF = coolant,
+                                engineLoadPct = load,
+                                shortTermFuelTrim = stft,
+                                longTermFuelTrim = ltft
+                            )
+                        }
+                    }
+                }
+
+                // Restore active header to ECM
+                sendRaw("ATSH ${activeProfile?.ecmHeader ?: "7E0"}")
+                currentActiveHeader = activeProfile?.ecmHeader ?: "7E0"
+
+                _moduleReports.value = reports
+                _storedDtcs.value = allStored.distinct()
+                _pendingDtcs.value = allPending.distinct()
+                _freezeFrameData.value = ffMap
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed module DTC scan: ${e.message}", e)
+            } finally {
+                _isScanning.value = false
+            }
+        }
+    }
+
+    fun parseDtcResponse(raw: String): List<String> {
+        val dtcs = mutableListOf<String>()
+        val clean = raw.uppercase().replace("\r", " ").replace("\n", " ")
+        val tokens = clean.split("\\s+".toRegex()).filter { it.isNotEmpty() && !it.contains(":") }
+
+        var i = 0
+        while (i < tokens.size) {
+            val token = tokens[i]
+            if (token == "43" || token == "47" || token == "4A") {
+                val remaining = tokens.size - (i + 1)
+                var pairStart = if (remaining % 2 != 0) i + 2 else i + 1
+                while (pairStart + 1 < tokens.size) {
+                    val hexA = tokens[pairStart]
+                    val hexB = tokens[pairStart + 1]
+                    if (hexA.length == 2 && hexB.length == 2) {
+                        val byteA = hexA.toIntOrNull(16)
+                        val byteB = hexB.toIntOrNull(16)
+                        if (byteA != null && byteB != null) {
+                            val code = decodeDtcBytes(byteA, byteB)
+                            if (code != null && !dtcs.contains(code)) {
+                                dtcs.add(code)
+                            }
+                        }
+                    }
+                    pairStart += 2
+                }
+                break
+            } else if (token.startsWith("43") && token.length >= 6) {
+                val hexOnly = token.substring(2)
+                for (j in 0 until hexOnly.length - 3 step 4) {
+                    val sub = hexOnly.substring(j, j + 4)
+                    val byteA = sub.substring(0, 2).toIntOrNull(16)
+                    val byteB = sub.substring(2, 4).toIntOrNull(16)
+                    if (byteA != null && byteB != null) {
+                        val code = decodeDtcBytes(byteA, byteB)
+                        if (code != null && !dtcs.contains(code)) {
+                            dtcs.add(code)
+                        }
+                    }
+                }
+            }
+            i++
+        }
+        return dtcs
+    }
+
+    fun decodeDtcBytes(byteA: Int, byteB: Int): String? {
+        if (byteA == 0 && byteB == 0) return null
+        val typeChar = when ((byteA and 0xC0) shr 6) {
+            0 -> 'P'
+            1 -> 'C'
+            2 -> 'B'
+            3 -> 'U'
+            else -> 'P'
+        }
+        val digit2 = ((byteA and 0x30) shr 4).toString(16).uppercase()
+        val digit3 = (byteA and 0x0F).toString(16).uppercase()
+        val digit45 = String.format("%02X", byteB)
+        return "$typeChar$digit2$digit3$digit45"
+    }
+
+    fun parseFreezeFrameDtc(raw: String): String? {
+        val clean = raw.replace(" ", "").replace("\r", "").replace("\n", "").uppercase()
+        val idx = clean.indexOf("4202")
+        if (idx != -1 && clean.length >= idx + 8) {
+            val byteA = clean.substring(idx + 4, idx + 6).toIntOrNull(16) ?: return null
+            val byteB = clean.substring(idx + 6, idx + 8).toIntOrNull(16) ?: return null
+            return decodeDtcBytes(byteA, byteB)
+        }
+        return null
+    }
+
+    fun parseFreezeFrameRpm(raw: String): Int? {
+        val clean = raw.replace(" ", "").replace("\r", "").replace("\n", "").uppercase()
+        val idx = clean.indexOf("420C")
+        if (idx != -1 && clean.length >= idx + 8) {
+            val a = clean.substring(idx + 4, idx + 6).toIntOrNull(16) ?: return null
+            val b = clean.substring(idx + 6, idx + 8).toIntOrNull(16) ?: return null
+            return ((a * 256) + b) / 4
+        }
+        return null
+    }
+
+    fun parseFreezeFrameSpeed(raw: String): Int? {
+        val clean = raw.replace(" ", "").replace("\r", "").replace("\n", "").uppercase()
+        val idx = clean.indexOf("420D")
+        if (idx != -1 && clean.length >= idx + 6) {
+            val kmh = clean.substring(idx + 4, idx + 6).toIntOrNull(16) ?: return null
+            return (kmh * 0.621371f).toInt()
+        }
+        return null
+    }
+
+    fun parseFreezeFrameCoolant(raw: String): Int? {
+        val clean = raw.replace(" ", "").replace("\r", "").replace("\n", "").uppercase()
+        val idx = clean.indexOf("4205")
+        if (idx != -1 && clean.length >= idx + 6) {
+            val c = (clean.substring(idx + 4, idx + 6).toIntOrNull(16) ?: return null) - 40
+            return (c * 9 / 5) + 32
+        }
+        return null
+    }
+
+    fun parseFreezeFrameLoad(raw: String): Int? {
+        val clean = raw.replace(" ", "").replace("\r", "").replace("\n", "").uppercase()
+        val idx = clean.indexOf("4204")
+        if (idx != -1 && clean.length >= idx + 6) {
+            val a = clean.substring(idx + 4, idx + 6).toIntOrNull(16) ?: return null
+            return (a * 100) / 255
+        }
+        return null
+    }
+
+    fun parseFreezeFrameTrim(raw: String, pidHex: String): Float? {
+        val clean = raw.replace(" ", "").replace("\r", "").replace("\n", "").uppercase()
+        val idx = clean.indexOf("42$pidHex")
+        if (idx != -1 && clean.length >= idx + 6) {
+            val a = clean.substring(idx + 4, idx + 6).toIntOrNull(16) ?: return null
+            return ((a - 128) * 100.0f) / 128.0f
+        }
+        return null
     }
 
     private fun sendRaw(command: String): String {

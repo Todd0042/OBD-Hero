@@ -1,0 +1,130 @@
+{
+  "profileId": "GM_GLOBAL_A",
+  "make": "Chevrolet",
+  "model": "GM Global Platform (Chevy, GMC, Cadillac)",
+  "generations": ["Corvette (C7/C8)", "Silverado/Sierra 1500/2500", "Camaro Gen 6", "LS / LT V8", "8L90/10L90"],
+  "yearMin": 2010,
+  "yearMax": 2026,
+  "vinWmis": ["1G1", "1GC", "1GT", "1G6", "2G1", "3GC"],
+  "preferredProtocol": "ATSP6",
+  "ecmHeader": "7E0",
+  "tcmHeader": "7E2",
+  "bcmHeader": "724",
+  "absHeader": "7E2",
+  "supportedFeatures": [
+    "BASIC_TELEMETRY",
+    "READINESS",
+    "DTCS",
+    "OIL_TEMP",
+    "OIL_PRESSURE",
+    "TRANSMISSION_TEMP",
+    "TRANSMISSION_GEAR",
+    "TORQUE"
+  ],
+  "metrics": {
+    "RPM": {
+      "id": "RPM",
+      "displayName": "Engine Speed",
+      "ecuHeader": "7E0",
+      "command": "010C",
+      "formulaType": "RAW_RPM",
+      "unit": "RPM"
+    },
+    "SPEED": {
+      "id": "SPEED",
+      "displayName": "Vehicle Speed",
+      "ecuHeader": "7E0",
+      "command": "010D",
+      "formulaType": "RAW_SPEED_KMH",
+      "unit": "MPH"
+    },
+    "TORQUE": {
+      "id": "TORQUE",
+      "displayName": "Engine Output Torque",
+      "ecuHeader": "7E0",
+      "command": "0162",
+      "formulaType": "RAW_SPARK_DEG",
+      "unit": "LB-FT"
+    },
+    "COOLANT": {
+      "id": "COOLANT",
+      "displayName": "Engine Coolant Temp (ECT)",
+      "ecuHeader": "7E0",
+      "command": "0105",
+      "formulaType": "RAW_TEMP_C",
+      "unit": "°F"
+    },
+    "OIL_TEMP": {
+      "id": "OIL_TEMP",
+      "displayName": "Engine Oil Temperature",
+      "ecuHeader": "7E0",
+      "command": "221154",
+      "formulaType": "RAW_TEMP_C",
+      "unit": "°F"
+    },
+    "OIL_PRESSURE": {
+      "id": "OIL_PRESSURE",
+      "displayName": "Engine Oil Pressure",
+      "ecuHeader": "7E0",
+      "command": "22115C",
+      "formulaType": "RAW_MAP_KPA",
+      "unit": "PSI"
+    },
+    "INTAKE_AIR": {
+      "id": "INTAKE_AIR",
+      "displayName": "Intake Air Temperature",
+      "ecuHeader": "7E0",
+      "command": "010F",
+      "formulaType": "RAW_TEMP_C",
+      "unit": "°F"
+    },
+    "BOOST": {
+      "id": "BOOST",
+      "displayName": "Manifold Absolute Pressure (MAP)",
+      "ecuHeader": "7E0",
+      "command": "010B",
+      "formulaType": "RAW_MAP_KPA",
+      "unit": "PSI"
+    },
+    "SPARK": {
+      "id": "SPARK",
+      "displayName": "Spark Advance",
+      "ecuHeader": "7E0",
+      "command": "010E",
+      "formulaType": "RAW_SPARK_DEG",
+      "unit": "°"
+    },
+    "BATTERY": {
+      "id": "BATTERY",
+      "displayName": "Module Regulated Voltage",
+      "ecuHeader": "7E0",
+      "command": "0142",
+      "formulaType": "RAW_MODULE_VOLTS",
+      "unit": "V"
+    },
+    "TRANSMISSION_GEAR": {
+      "id": "TRANSMISSION_GEAR",
+      "displayName": "Transmission Commanded Gear",
+      "ecuHeader": "7E2",
+      "command": "221990",
+      "formulaType": "MAZDA_GEAR",
+      "unit": "Gear"
+    },
+    "TRANSMISSION_TEMP": {
+      "id": "TRANSMISSION_TEMP",
+      "displayName": "Transmission Fluid Temp (TFT)",
+      "ecuHeader": "7E2",
+      "command": "221940",
+      "formulaType": "RAW_TEMP_C",
+      "unit": "°F"
+    },
+    "FUEL_ECONOMY": {
+      "id": "FUEL_ECONOMY",
+      "displayName": "Mass Air Flow / Fuel",
+      "ecuHeader": "7E0",
+      "command": "0110",
+      "formulaType": "RAW_MAF_GPS",
+      "unit": "MPG"
+    }
+  }
+}

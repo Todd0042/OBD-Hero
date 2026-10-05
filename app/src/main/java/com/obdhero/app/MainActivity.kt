@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.window.layout.FoldingFeature
 import androidx.window.layout.WindowInfoTracker
+import com.obdhero.app.data.VehicleProfileRepository
 import com.obdhero.app.domain.DtcInfo
 import com.obdhero.app.domain.VinDecoder
 import com.obdhero.app.ui.components.TopStatusBar
@@ -88,11 +89,25 @@ class MainActivity : ComponentActivity() {
                 val rawVin by obdManager.vin.collectAsState()
                 val storedCodes by obdManager.storedDtcs.collectAsState()
                 val pendingCodes by obdManager.pendingDtcs.collectAsState()
+                val moduleReports by obdManager.moduleReports.collectAsState()
+                val isScanning by obdManager.isScanning.collectAsState()
+                val freezeFrameData by obdManager.freezeFrameData.collectAsState()
                 val emissionsReadiness by obdManager.emissionsReadiness.collectAsState()
                 val focusedMetric by obdManager.focusedMetric.collectAsState()
 
                 val vehicleProfile = remember(rawVin) {
                     if (rawVin.isNotEmpty()) VinDecoder.decode(rawVin) else null
+                }
+
+                val resolvedProfile = remember(rawVin, vehicleProfile) {
+                    if (vehicleProfile != null) {
+                        VehicleProfileRepository.resolveProfile(
+                            vin = vehicleProfile.vin,
+                            make = vehicleProfile.make,
+                            model = vehicleProfile.model,
+                            year = vehicleProfile.year
+                        )
+                    } else null
                 }
 
                 // Check persistent BMW sleep lock to auto-lock navigation to Battery screen if timer is active
@@ -108,6 +123,8 @@ class MainActivity : ComponentActivity() {
                     LiveViewScreen(
                         telemetry = telemetry,
                         focusedMetric = focusedMetric,
+                        vehicleMake = vehicleProfile?.make ?: "",
+                        vehicleModel = vehicleProfile?.model ?: "",
                         onSelectMetric = { obdManager.setFocusedMetric(it) },
                         onBack = { showLiveView = false },
                         modifier = Modifier.statusBarsPadding()
@@ -201,7 +218,11 @@ class MainActivity : ComponentActivity() {
                                         onClearCodes = { obdManager.clearCodes() },
                                         onOpenLiveView = { showLiveView = true },
                                         vehicleMake = vehicleProfile?.make ?: "",
-                                        isDualPane = isDualPane
+                                        isDualPane = isDualPane,
+                                        moduleReports = moduleReports,
+                                        isScanning = isScanning,
+                                        onScanAllModules = { obdManager.scanAllModules(resolvedProfile) },
+                                        freezeFrame = selectedDtc?.let { freezeFrameData[it.code] }
                                     )
                                 }
                                 AppTab.BATTERY -> {
