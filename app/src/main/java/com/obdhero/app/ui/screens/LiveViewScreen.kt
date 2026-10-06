@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ElectricBolt
 import androidx.compose.material.icons.filled.FiberManualRecord
 import androidx.compose.material.icons.filled.Hub
@@ -29,6 +30,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.clickable
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
@@ -185,103 +187,130 @@ fun LiveViewScreen(
         ) {
             // Header Bar & ECU Network Status
             item {
-                Row(
+                Column(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Column {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = "MULTI-ECU LIVE TELEMETRY",
-                                color = RaceRed,
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold,
-                                letterSpacing = 1.sp
-                            )
-                            Spacer(Modifier.width(8.dp))
-                            // CAN Bus Heartbeat Pill
-                            Surface(
-                                color = SurfaceCardElevated,
-                                shape = RoundedCornerShape(4.dp),
-                                modifier = Modifier.border(1.dp, BorderSubtle, RoundedCornerShape(4.dp))
+                    // Top App Bar: Navigation, Title & Tool Actions
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f, fill = false)
+                        ) {
+                            IconButton(
+                                onClick = onBack,
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .background(SurfaceCardElevated, RoundedCornerShape(8.dp))
+                                    .border(1.dp, BorderSubtle, RoundedCornerShape(8.dp))
                             ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                                ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(6.dp)
-                                            .clip(CircleShape)
-                                            .background(EmeraldSuccess)
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = "Exit Cockpit",
+                                    tint = TextPrimary,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                            Spacer(Modifier.width(10.dp))
+                            Text(
+                                text = if (isUnfolded)
+                                    "Real-Time Powertrain & Chassis Matrix"
+                                else
+                                    "Real-Time Cockpit",
+                                color = TextPrimary,
+                                fontSize = if (isUnfolded) 20.sp else 17.sp,
+                                fontWeight = FontWeight.Bold,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+
+                        // Right: Quick Actions (Dragy, Black Box, Gauge Config)
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            IconButton(
+                                onClick = { showDragyDialog = true },
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .background(SurfaceCardElevated, RoundedCornerShape(8.dp))
+                                    .border(1.dp, BorderSubtle, RoundedCornerShape(8.dp))
+                            ) {
+                                Icon(Icons.Default.Speed, contentDescription = "Dyno & Dragy", tint = CyanPulse, modifier = Modifier.size(18.dp))
+                            }
+
+                            IconButton(
+                                onClick = { showBlackBoxDialog = true },
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .background(
+                                        if (recorderState == FlightRecorderState.TRIGGERED_RECORDING) CriticalCrimson else SurfaceCardElevated,
+                                        RoundedCornerShape(8.dp)
                                     )
-                                    Spacer(Modifier.width(4.dp))
-                                    Text("CAN 500k", color = TextSecondary, fontSize = 9.sp, fontWeight = FontWeight.SemiBold)
-                                }
+                                    .border(
+                                        1.dp,
+                                        if (recorderState == FlightRecorderState.TRIGGERED_RECORDING) CriticalCrimson else BorderSubtle,
+                                        RoundedCornerShape(8.dp)
+                                    )
+                            ) {
+                                Icon(
+                                    Icons.Default.FiberManualRecord,
+                                    contentDescription = "Black Box",
+                                    tint = if (recorderState == FlightRecorderState.TRIGGERED_RECORDING) Color.White else RaceRed,
+                                    modifier = Modifier.size(17.dp)
+                                )
+                            }
+
+                            IconButton(
+                                onClick = { configuringSlot = PodSlot.HERO_3 },
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .background(SurfaceCardElevated, RoundedCornerShape(8.dp))
+                                    .border(1.dp, BorderSubtle, RoundedCornerShape(8.dp))
+                            ) {
+                                Icon(Icons.Default.Tune, contentDescription = "Gauges", tint = RaceRed, modifier = Modifier.size(18.dp))
                             }
                         }
-                        Text(
-                            text = if (isUnfolded)
-                                "Real-Time Powertrain & Chassis Matrix"
-                            else
-                                "Real-Time Cockpit",
-                            color = TextPrimary,
-                            fontSize = if (isUnfolded) 20.sp else 16.sp,
-                            fontWeight = FontWeight.Bold
-                        )
                     }
-                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
-                        IconButton(
-                            onClick = { showDragyDialog = true },
-                            modifier = Modifier
-                                .size(34.dp)
-                                .background(SurfaceCardElevated, RoundedCornerShape(8.dp))
-                                .border(1.dp, BorderSubtle, RoundedCornerShape(8.dp))
-                        ) {
-                            Icon(Icons.Default.Speed, contentDescription = "Dyno & Dragy", tint = CyanPulse, modifier = Modifier.size(17.dp))
-                        }
 
-                        IconButton(
-                            onClick = { showBlackBoxDialog = true },
-                            modifier = Modifier
-                                .size(34.dp)
-                                .background(
-                                    if (recorderState == FlightRecorderState.TRIGGERED_RECORDING) CriticalCrimson else SurfaceCardElevated,
-                                    RoundedCornerShape(8.dp)
+                    // Telemetry Stream Status Row
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "MULTI-ECU LIVE TELEMETRY",
+                            color = RaceRed,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 1.sp
+                        )
+
+                        // CAN Bus Heartbeat Pill
+                        Surface(
+                            color = SurfaceCardElevated,
+                            shape = RoundedCornerShape(6.dp),
+                            modifier = Modifier.border(1.dp, BorderSubtle, RoundedCornerShape(6.dp))
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(6.dp)
+                                        .clip(CircleShape)
+                                        .background(EmeraldSuccess)
                                 )
-                                .border(
-                                    1.dp,
-                                    if (recorderState == FlightRecorderState.TRIGGERED_RECORDING) CriticalCrimson else BorderSubtle,
-                                    RoundedCornerShape(8.dp)
-                                )
-                        ) {
-                            Icon(
-                                Icons.Default.FiberManualRecord,
-                                contentDescription = "Black Box",
-                                tint = if (recorderState == FlightRecorderState.TRIGGERED_RECORDING) Color.White else RaceRed,
-                                modifier = Modifier.size(16.dp)
-                            )
-                        }
-
-                        IconButton(
-                            onClick = { configuringSlot = PodSlot.HERO_3 },
-                            modifier = Modifier
-                                .size(34.dp)
-                                .background(SurfaceCardElevated, RoundedCornerShape(8.dp))
-                                .border(1.dp, BorderSubtle, RoundedCornerShape(8.dp))
-                        ) {
-                            Icon(Icons.Default.Tune, contentDescription = "Gauges", tint = RaceRed, modifier = Modifier.size(17.dp))
-                        }
-
-                        Button(
-                            onClick = onBack,
-                            colors = ButtonDefaults.buttonColors(containerColor = SurfaceCardElevated),
-                            shape = RoundedCornerShape(8.dp),
-                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp),
-                            modifier = Modifier.border(1.dp, BorderSubtle, RoundedCornerShape(8.dp))
-                        ) {
-                            Text("← Exit", color = TextPrimary, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                                Spacer(Modifier.width(5.dp))
+                                Text("CAN 500k", color = TextSecondary, fontSize = 10.sp, fontWeight = FontWeight.SemiBold)
+                            }
                         }
                     }
                 }
