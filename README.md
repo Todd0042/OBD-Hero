@@ -1,3 +1,11 @@
+<p align="center">
+  <a href="https://ko-fi.com/todd0042">
+    <img src="https://raw.githubusercontent.com/Todd0042/creator-assets/main/banners/todd_creator_banner_v1.0.png" alt="Support Todd on Ko-fi" width="100%" />
+  </a>
+</p>
+
+---
+
 # OBD-Hero
 
 A modern, universal OBD-II diagnostic and maintenance assistant for Android, engineered for common US consumer vehicles (Ford, GM, Stellantis/Chrysler, Toyota, Honda, Nissan, Hyundai, Kia, Subaru, Mazda, VW, BMW).
@@ -16,3 +24,12 @@ Optimized for standard Android devices and foldables, including the **Google Pix
 ## Documentation & Roadmap
 For full architecture specifications, protocol breakdowns, technical feasibility analyses, and the implementation roadmap, see:
 - [PROJECT_PLAN.md](PROJECT_PLAN.md)
+
+---
+
+<p align="center">
+  <a href="https://ko-fi.com/todd0042">
+    <img src="https://raw.githubusercontent.com/Todd0042/creator-assets/main/banners/todd_creator_banner_v2.0.png" alt="Support Todd on Ko-fi" width="100%" />
+  </a>
+</p>
+
