@@ -210,6 +210,7 @@ OBD-Hero includes automated verification tests for DTC parsing, VIN validation, 
 
 - **Zero Cloud Accounts, Zero Telemetry**: Your vehicle's VIN, fault history, and diagnostic data remain 100% private on your own local device storage.
 - **PolyForm Noncommercial 1.0.0**: Licensed for personal, DIY hobbyist, and educational use. For commercial fleet inquiries, contact **[todd.0042.git@gmail.com](mailto:todd.0042.git@gmail.com)**.
+- **Media License**: the images, artwork and audio made for this project (paths listed in [LICENSE-MEDIA](LICENSE-MEDIA)) are © Todd0042 under **[CC BY-NC 4.0](LICENSE-MEDIA)**: free to share and adapt with credit for non-commercial purposes; commercial use requires permission.
 
 ---
 
