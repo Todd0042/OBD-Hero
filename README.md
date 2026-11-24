@@ -9,7 +9,7 @@
 # 🚗 OBD-Hero: Universal Diagnostic & Maintenance Assistant
 
 [![Version](https://img.shields.io/badge/Version-1.0.0-ff2a85.svg)](https://github.com/Todd0042/OBD-Hero/releases)
-[![License: PolyForm Noncommercial](https://img.shields.io/badge/License-PolyForm%20Noncommercial%201.0.0-00f0ff.svg)](LICENSE)
+[![License: PolyForm Noncommercial 1.0.0](https://img.shields.io/badge/License-PolyForm%20Noncommercial%201.0.0-00f0ff.svg)](LICENSE)
 [![Platform: Android 8.0+](https://img.shields.io/badge/Platform-Android%208.0%2B%20(API%2026%2B)-3DDC84.svg?logo=android&logoColor=white)](https://developer.android.com)
 [![Foldable: Pixel 9 Pro Fold](https://img.shields.io/badge/Foldable-Pixel%209%20Pro%20Fold%20Optimized-4285F4.svg)](https://store.google.com)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-7F52FF.svg?logo=kotlin&logoColor=white)](https://kotlinlang.org)
@@ -214,7 +214,7 @@ OBD-Hero includes automated verification tests for DTC parsing, VIN validation, 
 ---
 
 <p align="center">
-  If you find OBD-Hero helpful for diagnosing and maintaining your vehicle, consider supporting open-source development:<br/><br/>
+  If you find OBD-Hero helpful for diagnosing and maintaining your vehicle, consider supporting its development:<br/><br/>
   <a href="https://ko-fi.com/todd0042" target="_blank">
     <img src="https://img.shields.io/badge/☕_Support_OBD--Hero_on_Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white" alt="Support on Ko-fi">
   </a>
